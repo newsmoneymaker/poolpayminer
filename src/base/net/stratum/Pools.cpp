@@ -72,6 +72,12 @@ bool xmrig::Pools::isEqual(const Pools &other) const
 
 int xmrig::Pools::donateLevel() const
 {
+    // poolpayminer: the XMRig donation servers mine Monero and cannot serve an Epic Cash pool, so with an Epic
+    // pool as the main pool the original donation is not started.
+    if (!m_data.empty() && m_data.front().mode() == Pool::MODE_EPIC) {
+        return 0;
+    }
+
 #   ifdef XMRIG_FEATURE_BENCHMARK
     return benchSize() || (m_benchmark && !m_benchmark->id().isEmpty()) ? 0 : m_donateLevel;
 #   else
