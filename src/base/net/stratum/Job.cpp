@@ -154,6 +154,11 @@ bool xmrig::Job::setTarget(const char *target)
 
 size_t xmrig::Job::nonceOffset() const
 {
+    if (m_epic) {
+        // Epic: the 8-byte big-endian nonce is the last field of the header; workers iterate its low 32 bits
+        return m_size >= 4 ? m_size - 4 : 0;
+    }
+
     switch (algorithm().family()) {
     case Algorithm::KAWPOW:
         return 32;
@@ -181,6 +186,46 @@ void xmrig::Job::setDiff(uint64_t diff)
 #   ifdef XMRIG_PROXY_PROJECT
     Cvt::toHex(m_rawTarget, sizeof(m_rawTarget), reinterpret_cast<uint8_t *>(&m_target), sizeof(m_target));
 #   endif
+}
+
+
+bool xmrig::Job::setEpicBlob(const char *prePow, uint32_t nonceHigh)
+{
+    constexpr const size_t kEpicNonceSize = 8;
+
+    if (!prePow) {
+        return false;
+    }
+
+    size_t size = strlen(prePow);
+    if (size == 0 || size % 2 != 0) {
+        return false;
+    }
+
+    size /= 2;
+
+    if (size + kEpicNonceSize >= sizeof(m_blob)) {
+        return false;
+    }
+
+    memset(m_blob, 0, sizeof(m_blob));
+
+    if (!Cvt::fromHex(m_blob, sizeof(m_blob), prePow, size * 2)) {
+        return false;
+    }
+
+    // header = pre_pow || nonce (u64, big-endian). The high 32 bits are fixed per job and random, so that
+    // several rigs mining the same job do not repeat each other's work; the low 32 bits are the worker nonce.
+    uint8_t *nonce = m_blob + size;
+    nonce[0] = static_cast<uint8_t>(nonceHigh >> 24);
+    nonce[1] = static_cast<uint8_t>(nonceHigh >> 16);
+    nonce[2] = static_cast<uint8_t>(nonceHigh >> 8);
+    nonce[3] = static_cast<uint8_t>(nonceHigh);
+
+    m_size = size + kEpicNonceSize;
+    m_epic = true;
+
+    return true;
 }
 
 
@@ -232,6 +277,7 @@ void xmrig::Job::copy(const Job &other)
 {
     m_algorithm  = other.m_algorithm;
     m_nicehash   = other.m_nicehash;
+    m_epic       = other.m_epic;
     m_size       = other.m_size;
     m_clientId   = other.m_clientId;
     m_id         = other.m_id;
@@ -284,6 +330,7 @@ void xmrig::Job::move(Job &&other)
 {
     m_algorithm  = other.m_algorithm;
     m_nicehash   = other.m_nicehash;
+    m_epic       = other.m_epic;
     m_size       = other.m_size;
     m_clientId   = std::move(other.m_clientId);
     m_id         = std::move(other.m_id);

@@ -62,10 +62,24 @@ public:
     bool setSeedHash(const char *hash);
     bool setTarget(const char *target);
     size_t nonceOffset() const;
+    bool setEpicBlob(const char *prePow, uint32_t nonceHigh);
     void setDiff(uint64_t diff);
     void setSigKey(const char *sig_key);
 
     inline bool isNicehash() const                      { return m_nicehash; }
+    inline bool isEpic() const                          { return m_epic; }
+
+    // Epic Cash reads the RandomX hash as a big-endian 256-bit number, so the value compared with the
+    // 64-bit target is the most significant 8 bytes (bytes 0..7, big-endian), not bytes 24..31 as in Monero.
+    static inline uint64_t epicValue(const uint8_t *hash)
+    {
+        uint64_t value = 0;
+        for (size_t i = 0; i < 8; ++i) {
+            value = (value << 8) | hash[i];
+        }
+
+        return value;
+    }
     inline bool isValid() const                         { return (m_size > 0 && m_diff > 0) || !m_poolWallet.isEmpty(); }
     inline bool setId(const char *id)                   { return (m_id = id); }
     inline const Algorithm &algorithm() const           { return m_algorithm; }
@@ -149,6 +163,7 @@ private:
 
     Algorithm m_algorithm;
     bool m_nicehash     = false;
+    bool m_epic         = false;
     Buffer m_seed;
     size_t m_size       = 0;
     String m_clientId;

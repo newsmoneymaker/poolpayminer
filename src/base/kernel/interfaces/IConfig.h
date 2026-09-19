@@ -63,6 +63,7 @@ public:
         FingerprintKey       = 1014,
         ProxyDonateKey       = 1017,
         DaemonKey            = 1018,
+        EpicKey              = 1990,
         DaemonPollKey        = 1019,
         SelfSelectKey        = 1028,
         DataDirKey           = 1035,

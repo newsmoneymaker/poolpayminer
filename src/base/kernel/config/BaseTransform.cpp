@@ -257,6 +257,7 @@ void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const ch
     case IConfig::DryRunKey:      /* --dry-run */
     case IConfig::HttpEnabledKey: /* --http-enabled */
     case IConfig::DaemonKey:      /* --daemon */
+    case IConfig::EpicKey:        /* --epic */
     case IConfig::SubmitToOriginKey: /* --submit-to-origin */
     case IConfig::VerboseKey:     /* --verbose */
     case IConfig::DnsIPv4Key:     /* --ipv4 */
@@ -295,6 +296,9 @@ void xmrig::BaseTransform::transformBoolean(rapidjson::Document &doc, int key, b
     case IConfig::DaemonKey: /* --daemon */
         return add(doc, Pools::kPools, Pool::kDaemon, enable);
 #   endif
+
+    case IConfig::EpicKey: /* --epic */
+        return add(doc, Pools::kPools, Pool::kEpic, enable);
 
 #   ifndef XMRIG_PROXY_PROJECT
     case IConfig::NicehashKey: /* --nicehash */

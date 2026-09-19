@@ -56,6 +56,8 @@ public:
 
     constexpr static uint64_t kConnectTimeout   = 20 * 1000;
     constexpr static uint64_t kResponseTimeout  = 20 * 1000;
+    constexpr static int kEpicPlaceholder       = -2;              // node answers with a height 0 job until it built its first template
+    constexpr static int64_t kEpicJobRequestId  = 1000000000;      // id of our getjobtemplate request, far above share sequence numbers
     constexpr static size_t kMaxSendBufferSize  = 1024 * 16;
 
     Client(int id, const char *agent, IClientListener *listener);
@@ -98,6 +100,10 @@ private:
     class Tls;
 
     bool parseJob(const rapidjson::Value &params, int *code);
+    bool parseEpicJob(const rapidjson::Value &params, int *code);
+    int64_t submitEpic(const JobResult &result);
+    void parseEpicResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error);
+    void requestEpicJob();
     bool send(BIO *bio);
     bool verifyAlgorithm(const Algorithm &algorithm, const char *algo) const;
     bool write(const uv_buf_t &buf);

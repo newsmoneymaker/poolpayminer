@@ -64,6 +64,7 @@ const String Pool::kDefaultUser           = "x";
 const char *Pool::kAlgo                   = "algo";
 const char *Pool::kCoin                   = "coin";
 const char *Pool::kDaemon                 = "daemon";
+const char *Pool::kEpic                   = "epic";
 const char *Pool::kDaemonPollInterval     = "daemon-poll-interval";
 const char *Pool::kDaemonJobTimeout       = "daemon-job-timeout";
 const char *Pool::kDaemonZMQPort          = "daemon-zmq-port";
@@ -148,6 +149,11 @@ xmrig::Pool::Pool(const rapidjson::Value &object) :
     }
     else if (Json::getBool(object, kDaemon)) {
         m_mode = MODE_DAEMON;
+    }
+    else if (Json::getBool(object, kEpic)) {
+        // Epic Cash stratum (RandomX only), see Client::parseEpicJob
+        m_mode      = MODE_EPIC;
+        m_algorithm = Algorithm::RX_0;
     }
 }
 
@@ -237,6 +243,9 @@ xmrig::IClient *xmrig::Pool::createClient(int id, IClientListener *listener) con
             client = new Client(id, Platform::userAgent(), listener);
         }
     }
+    else if (m_mode == MODE_EPIC) {
+        client = new Client(id, Platform::userAgent(), listener);
+    }
 #   ifdef XMRIG_FEATURE_HTTP
     else if (m_mode == MODE_DAEMON) {
         client = new DaemonClient(id, listener);
@@ -304,6 +313,7 @@ rapidjson::Value xmrig::Pool::toJSON(rapidjson::Document &doc) const
     obj.AddMember(StringRef(kSni),          isSNI(), allocator);
     obj.AddMember(StringRef(kFingerprint),  m_fingerprint.toJSON(), allocator);
     obj.AddMember(StringRef(kDaemon),       m_mode == MODE_DAEMON, allocator);
+    obj.AddMember(StringRef(kEpic),         m_mode == MODE_EPIC, allocator);
     obj.AddMember(StringRef(kSOCKS5),       m_proxy.toJSON(doc), allocator);
 
     if (m_mode == MODE_DAEMON) {

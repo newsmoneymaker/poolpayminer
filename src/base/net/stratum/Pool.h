@@ -47,6 +47,7 @@ public:
         MODE_DAEMON,
         MODE_SELF_SELECT,
         MODE_AUTO_ETH,
+        MODE_EPIC,
 #       ifdef XMRIG_FEATURE_BENCHMARK
         MODE_BENCHMARK,
 #       endif
@@ -58,6 +59,7 @@ public:
     static const char *kAlgo;
     static const char *kCoin;
     static const char *kDaemon;
+    static const char *kEpic;
     static const char *kDaemonPollInterval;
     static const char *kDaemonJobTimeout;
     static const char *kEnabled;

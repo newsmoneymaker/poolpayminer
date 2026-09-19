@@ -353,7 +353,7 @@ void xmrig::CpuWorker<N>::start()
 
             if (valid) {
                 for (size_t i = 0; i < N; ++i) {
-                    const uint64_t value = *reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24);
+                    const uint64_t value = job.isEpic() ? Job::epicValue(m_hash + (i * 32)) : *reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24);
 
 #                   ifdef XMRIG_FEATURE_BENCHMARK
                     if (m_benchSize) {

@@ -190,6 +190,10 @@ int64_t xmrig::Client::submit(const JobResult &result)
         return -1;
     }
 
+    if (m_pool.mode() == Pool::MODE_EPIC) {
+        return submitEpic(result);
+    }
+
     using namespace rapidjson;
 
 #   ifdef XMRIG_PROXY_PROJECT
@@ -645,11 +649,15 @@ void xmrig::Client::login()
     params.AddMember("pass",  m_password.toJSON(), allocator);
     params.AddMember("agent", StringRef(m_agent),  allocator);
 
-    if (!m_rigId.isNull()) {
+    const bool epic = m_pool.mode() == Pool::MODE_EPIC;
+
+    if (!m_rigId.isNull() && !epic) {
         params.AddMember("rigid", m_rigId.toJSON(), allocator);
     }
 
-    m_listener->onLogin(this, doc, params);
+    if (!epic) {
+        m_listener->onLogin(this, doc, params);
+    }
 
     JsonRequest::create(doc, 1, "login", params);
 
@@ -807,10 +815,11 @@ void xmrig::Client::parseNotification(const char *method, const rapidjson::Value
 {
     if (strcmp(method, "job") == 0) {
         int code = -1;
-        if (parseJob(params, &code)) {
+        const bool epic = m_pool.mode() == Pool::MODE_EPIC;
+        if (epic ? parseEpicJob(params, &code) : parseJob(params, &code)) {
             m_listener->onJobReceived(this, m_job, params);
         }
-        else {
+        else if (!epic || code != kEpicPlaceholder) {
             close();
         }
 
@@ -823,6 +832,10 @@ void xmrig::Client::parseResponse(int64_t id, const rapidjson::Value &result, co
 {
     if (handleResponse(id, result, error)) {
         return;
+    }
+
+    if (m_pool.mode() == Pool::MODE_EPIC) {
+        return parseEpicResponse(id, result, error);
     }
 
     if (error.IsObject()) {
@@ -868,8 +881,223 @@ void xmrig::Client::parseResponse(int64_t id, const rapidjson::Value &result, co
 }
 
 
+namespace {
+
+// splitmix64 over what libuv can tell us on every platform. The value only has to differ between rigs.
+uint32_t epicNonceHigh()
+{
+    uint64_t x = uv_hrtime() ^ (static_cast<uint64_t>(uv_os_getpid()) << 32) ^ static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&x));
+
+    x += 0x9e3779b97f4a7c15ULL;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+
+    return static_cast<uint32_t>((x ^ (x >> 31)) >> 16);
+}
+
+} // namespace
+
+
+// Epic Cash stratum: a job is {height, job_id, difficulty[[algo, n]], pre_pow (hex, no nonce), epochs[[start, end, seed]], ...}
+bool xmrig::Client::parseEpicJob(const rapidjson::Value &params, int *code)
+{
+    if (!params.IsObject()) {
+        *code = 2;
+        return false;
+    }
+
+    const uint64_t height = Json::getUint64(params, "height");
+    if (height == 0) {
+        *code = kEpicPlaceholder;
+        return false;
+    }
+
+    const rapidjson::SizeType k0 = 0, k1 = 1, k2 = 2;
+
+    // minimum share difficulty of RandomX
+    uint64_t diff = 0;
+    const auto &difficulty = Json::getValue(params, "difficulty");
+    if (difficulty.IsArray()) {
+        for (rapidjson::SizeType i = 0; i < difficulty.Size(); ++i) {
+            const auto &item = difficulty[i];
+            if (item.IsArray() && item.Size() >= 2 && item[k0].IsString() && item[k1].IsUint64() && strcmp(item[k0].GetString(), "randomx") == 0) {
+                diff = item[k1].GetUint64();
+                break;
+            }
+        }
+    }
+
+    if (diff == 0) {
+        *code = 5;
+        return false;
+    }
+
+    // RandomX seed of the current epoch: epochs[0] = [start, end, [32 bytes]]
+    uint8_t seed[32];
+    bool seedOk = false;
+
+    const auto &epochs = Json::getValue(params, "epochs");
+    if (epochs.IsArray() && epochs.Size() > 0 && epochs[k0].IsArray() && epochs[k0].Size() >= 3 && epochs[k0][k2].IsArray() && epochs[k0][k2].Size() == sizeof(seed)) {
+        const auto &bytes = epochs[k0][k2];
+
+        seedOk = true;
+        for (rapidjson::SizeType i = 0; i < sizeof(seed); ++i) {
+            if (!bytes[i].IsUint() || bytes[i].GetUint() > 255) {
+                seedOk = false;
+                break;
+            }
+
+            seed[i] = static_cast<uint8_t>(bytes[i].GetUint());
+        }
+    }
+
+    if (!seedOk) {
+        *code = 7;
+        return false;
+    }
+
+    char seedHex[sizeof(seed) * 2 + 1] = {};
+    Cvt::toHex(seedHex, sizeof(seedHex), seed, sizeof(seed));
+
+    const uint32_t high = epicNonceHigh();
+
+    Job job(false, Algorithm(Algorithm::RX_0), m_rpcId);
+
+    if (!job.setEpicBlob(Json::getString(params, "pre_pow"), high)) {
+        *code = 4;
+        return false;
+    }
+
+    if (!job.setSeedHash(seedHex)) {
+        *code = 7;
+        return false;
+    }
+
+    job.setDiff(diff);
+    job.setHeight(height);
+
+    // With every share the node needs the height, its own job_id and the full 64-bit nonce. JobResult carries only
+    // the job id string, so the three travel in it: "<node job_id>:<height>:<high 32 bits of the nonce, hex>"
+    char id[64];
+    snprintf(id, sizeof(id), "%" PRIu64 ":%" PRIu64 ":%x", Json::getUint64(params, "job_id"), height, high);
+    job.setId(id);
+
+    m_jobs++;
+    m_job = std::move(job);
+
+    return true;
+}
+
+
+void xmrig::Client::requestEpicJob()
+{
+    using namespace rapidjson;
+
+    Document doc(kObjectType);
+    auto &allocator = doc.GetAllocator();
+
+    Value params(kObjectType);
+    params.AddMember("algorithm", "randomx", allocator);
+
+    JsonRequest::create(doc, kEpicJobRequestId, "getjobtemplate", params);
+
+    send(doc);
+}
+
+
+int64_t xmrig::Client::submitEpic(const JobResult &result)
+{
+    using namespace rapidjson;
+
+    uint64_t nodeJobId = 0;
+    uint64_t height    = 0;
+    unsigned int high  = 0;
+
+    if (sscanf(result.jobId.data(), "%" SCNu64 ":%" SCNu64 ":%x", &nodeJobId, &height, &high) != 3) {
+        return -1;
+    }
+
+    // The worker writes its 32-bit nonce little-endian into the last 4 bytes of the header, the node reads them big-endian
+    const uint32_t n   = result.nonce;
+    const uint32_t low = (n << 24) | ((n & 0xff00U) << 8) | ((n >> 8) & 0xff00U) | (n >> 24);
+    const uint64_t nonce = (static_cast<uint64_t>(high) << 32) | low;
+
+    Document doc(kObjectType);
+    auto &allocator = doc.GetAllocator();
+
+    Value hash(kArrayType);
+    const uint8_t *bytes = result.result();
+    for (size_t i = 0; i < 32; ++i) {
+        hash.PushBack(static_cast<unsigned>(bytes[i]), allocator);
+    }
+
+    Value pow(kObjectType);
+    pow.AddMember("RandomX", hash, allocator);
+
+    Value params(kObjectType);
+    params.AddMember("height", height,    allocator);
+    params.AddMember("job_id", nodeJobId, allocator);
+    params.AddMember("nonce",  nonce,     allocator);
+    params.AddMember("pow",    pow,       allocator);
+
+    JsonRequest::create(doc, m_sequence, "submit", params);
+
+    m_results[m_sequence] = SubmitResult(m_sequence, result.diff, result.actualDiff(), 0, result.backend);
+
+    return send(doc);
+}
+
+
+void xmrig::Client::parseEpicResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error)
+{
+    if (error.IsObject()) {
+        const char *message = Json::getString(error, "message", "unknown error");
+
+        if (!handleSubmitResponse(id, message) && !isQuiet()) {
+            LOG_ERR("%s " RED("error: ") RED_BOLD("\"%s\"") RED(", code: ") RED_BOLD("%d"), tag(), message, Json::getInt(error, "code"));
+        }
+
+        if (id == 1 || isCriticalError(message)) {
+            close();
+        }
+
+        return;
+    }
+
+    if (id == 1) {
+        // login accepted. The node does not push a job on login: ask for one, the following jobs are pushed
+        setRpcId("epic");
+        m_failures = 0;
+        m_jobs     = 0;
+        m_listener->onLoginSuccess(this);
+        requestEpicJob();
+
+        return;
+    }
+
+    if (id == kEpicJobRequestId) {
+        int code = -1;
+        if (parseEpicJob(result, &code)) {
+            m_listener->onJobReceived(this, m_job, result);
+        }
+        else if (code != kEpicPlaceholder && !isQuiet()) {
+            LOG_ERR("%s " RED("job error code: ") RED_BOLD("%d"), tag(), code);
+        }
+
+        return;
+    }
+
+    handleSubmitResponse(id);
+}
+
+
 void xmrig::Client::ping()
 {
+    if (m_pool.mode() == Pool::MODE_EPIC) {
+        send(snprintf(m_sendBuf.data(), m_sendBuf.size(), "{\"id\":%" PRId64 ",\"jsonrpc\":\"2.0\",\"method\":\"keepalive\"}\n", m_sequence));
+        return;
+    }
+
     send(snprintf(m_sendBuf.data(), m_sendBuf.size(), "{\"id\":%" PRId64 ",\"jsonrpc\":\"2.0\",\"method\":\"keepalived\",\"params\":{\"id\":\"%s\"}}\n", m_sequence, m_rpcId.data()));
 }
 
