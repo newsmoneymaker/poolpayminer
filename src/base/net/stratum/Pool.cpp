@@ -153,7 +153,7 @@ xmrig::Pool::Pool(const rapidjson::Value &object) :
     else if (Json::getBool(object, kEpic)) {
         // Epic Cash stratum (RandomX only), see Client::parseEpicJob
         m_mode      = MODE_EPIC;
-        m_algorithm = Algorithm::RX_0;
+        m_algorithm = Algorithm::RX_EPIC;
     }
 }
 

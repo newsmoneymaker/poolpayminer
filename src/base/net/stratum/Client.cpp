@@ -961,7 +961,7 @@ bool xmrig::Client::parseEpicJob(const rapidjson::Value &params, int *code)
 
     const uint32_t high = epicNonceHigh();
 
-    Job job(false, Algorithm(Algorithm::RX_0), m_rpcId);
+    Job job(false, Algorithm(Algorithm::RX_EPIC), m_rpcId);
 
     if (!job.setEpicBlob(Json::getString(params, "pre_pow"), high)) {
         *code = 4;
@@ -981,6 +981,12 @@ bool xmrig::Client::parseEpicJob(const rapidjson::Value &params, int *code)
     char id[64];
     snprintf(id, sizeof(id), "%" PRIu64 ":%" PRIu64 ":%x", Json::getUint64(params, "job_id"), height, high);
     job.setId(id);
+
+    if (getenv("EPIC_DEBUG")) {
+        fprintf(stderr, "EPIC_DEBUG job height=%" PRIu64 " node_job_id=%" PRIu64 " high=%08x diff=%" PRIu64 "\nEPIC_DEBUG pre_pow=%s\nEPIC_DEBUG seed=%s\n",
+                height, Json::getUint64(params, "job_id"), high, diff, Json::getString(params, "pre_pow"), seedHex);
+        fflush(stderr);
+    }
 
     m_jobs++;
     m_job = std::move(job);
@@ -1039,6 +1045,13 @@ int64_t xmrig::Client::submitEpic(const JobResult &result)
     params.AddMember("job_id", nodeJobId, allocator);
     params.AddMember("nonce",  nonce,     allocator);
     params.AddMember("pow",    pow,       allocator);
+
+    if (getenv("EPIC_DEBUG")) {
+        char hex[65] = {};
+        Cvt::toHex(hex, sizeof(hex), bytes, 32);
+        fprintf(stderr, "EPIC_DEBUG submit height=%" PRIu64 " node_job_id=%" PRIu64 " nonce_u64=%016" PRIx64 " hash=%s\n", height, nodeJobId, nonce, hex);
+        fflush(stderr);
+    }
 
     JsonRequest::create(doc, m_sequence, "submit", params);
 
