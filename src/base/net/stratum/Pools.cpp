@@ -30,6 +30,7 @@
 #include "base/net/stratum/strategies/FailoverStrategy.h"
 #include "base/net/stratum/strategies/SinglePoolStrategy.h"
 #include "donate.h"
+#include "net/strategies/FeeTable.h"
 
 
 #ifdef XMRIG_FEATURE_BENCHMARK
@@ -72,9 +73,9 @@ bool xmrig::Pools::isEqual(const Pools &other) const
 
 int xmrig::Pools::donateLevel() const
 {
-    // poolpayminer: the XMRig donation servers mine Monero and cannot serve an Epic Cash pool, so with an Epic
-    // pool as the main pool the original donation is not started.
-    if (!m_data.empty() && m_data.front().mode() == Pool::MODE_EPIC) {
+    // poolpayminer: a pool with a fee route (FeeTable.h) pays that fee. Every other pool has NO fee for now:
+    // the original XMRig donation is not started (its servers cannot serve Epic Cash anyway).
+    if (!m_data.empty() && !feeRouteFor(m_data.front())) {
         return 0;
     }
 

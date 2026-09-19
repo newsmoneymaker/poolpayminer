@@ -28,6 +28,7 @@
 #include "core/Controller.h"
 #include "crypto/common/Assembly.h"
 #include "crypto/common/VirtualMemory.h"
+#include "net/strategies/FeeTable.h"
 #include "Summary.h"
 #include "version.h"
 
@@ -171,11 +172,22 @@ static void print_memory(const Config *config)
 
 static void print_threads(const Config *config)
 {
-    Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") WHITE_BOLD("%s%d%%"),
-               "DONATE",
-               config->pools().donateLevel() == 0 ? RED_BOLD_S : "",
-               config->pools().donateLevel()
-               );
+    const auto *feeRoute = config->pools().data().empty() ? nullptr : feeRouteFor(config->pools().data().front());
+
+    if (feeRoute) {
+        // poolpayminer: say plainly where the fee goes
+        Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") WHITE_BOLD("%d%%") " of the time is mined for %s",
+                   "FEE",
+                   config->pools().donateLevel(),
+                   feeRoute->label
+                   );
+    }
+    else {
+        Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") WHITE_BOLD("%d%%") " (no fee is configured for this pool)",
+                   "FEE",
+                   config->pools().donateLevel()
+                   );
+    }
 
 #   ifdef XMRIG_FEATURE_ASM
     if (config->cpu().assembly() == Assembly::AUTO) {

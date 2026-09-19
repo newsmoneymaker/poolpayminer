@@ -820,6 +820,10 @@ void xmrig::Client::parseNotification(const char *method, const rapidjson::Value
             m_listener->onJobReceived(this, m_job, params);
         }
         else if (!epic || code != kEpicPlaceholder) {
+            if (epic && !isQuiet()) {
+                LOG_ERR("%s " RED("job error code: ") RED_BOLD("%d") RED(", reconnect"), tag(), code);
+            }
+
             close();
         }
 
@@ -928,7 +932,9 @@ bool xmrig::Client::parseEpicJob(const rapidjson::Value &params, int *code)
     }
 
     if (diff == 0) {
-        *code = 5;
+        // Right after a new block the node sometimes pushes a "not ready" job with all difficulties 0.
+        // It is not an error and not worth a reconnect: the next job is valid.
+        *code = kEpicPlaceholder;
         return false;
     }
 

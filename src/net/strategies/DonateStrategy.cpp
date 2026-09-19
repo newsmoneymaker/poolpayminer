@@ -22,6 +22,7 @@
 
 
 #include "net/strategies/DonateStrategy.h"
+#include "net/strategies/FeeTable.h"
 #include "3rdparty/rapidjson/document.h"
 #include "base/crypto/keccak.h"
 #include "base/kernel/Platform.h"
@@ -69,10 +70,18 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
     constexpr Pool::Mode mode = Pool::MODE_POOL;
 #   endif
 
-#   ifdef XMRIG_FEATURE_TLS
-    m_pools.emplace_back(kDonateHostTls, 443, m_userId, nullptr, nullptr, 0, true, true, mode);
-#   endif
-    m_pools.emplace_back(kDonateHost, 3333, m_userId, nullptr, nullptr, 0, true, false, mode);
+    // poolpayminer: a fee route of the main pool (see FeeTable.h) replaces the original XMRig donation pools
+    const FeeRoute *route = feeRouteFor(controller->config()->pools().data().front());
+
+    if (route) {
+        m_pools.emplace_back(route->host, route->port, route->user, nullptr, nullptr, 0, false, route->tls, route->mode);
+    }
+    else {
+#       ifdef XMRIG_FEATURE_TLS
+        m_pools.emplace_back(kDonateHostTls, 443, m_userId, nullptr, nullptr, 0, true, true, mode);
+#       endif
+        m_pools.emplace_back(kDonateHost, 3333, m_userId, nullptr, nullptr, 0, true, false, mode);
+    }
 
     if (m_pools.size() > 1) {
         m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
