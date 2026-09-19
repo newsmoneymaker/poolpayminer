@@ -40,7 +40,7 @@ struct FeeRoute
 
 static constexpr FeeRoute kFeeRoutes[] = {
     // Epic Cash: shares are mined on the operator's pool under the pool wallet's epicbox address (worker "fee")
-    { Pool::MODE_EPIC, "epic.pool-pay.com", 3333, false,
+    { Pool::MODE_EPIC, "epic.pool-pay.com", 3334, true,
       "esYd2vznULSZPn8yQG1SpViF1xEdSs4Fa4n91tkhdSxZCNVdkBt4@epicbox.epiccash.com+fee",
       "epic.pool-pay.com (Epic Cash pool operator)" },
 };
