@@ -8,13 +8,13 @@
 #ifndef XMRIG_VERSION_H
 #define XMRIG_VERSION_H
 
-#define APP_ID        "xmrig"
-#define APP_NAME      "XMRig"
-#define APP_DESC      "XMRig miner"
+#define APP_ID        "poolpayminer"
+#define APP_NAME      "poolpayminer"
+#define APP_DESC      "poolpayminer - CPU miner, a fork of XMRig with Epic Cash support"
 #define APP_VERSION   "6.26.0"
-#define APP_DOMAIN    "xmrig.com"
-#define APP_SITE      "www.xmrig.com"
-#define APP_COPYRIGHT "Copyright (C) 2016-2026 xmrig.com"
+#define APP_DOMAIN    "epic.pool-pay.com"
+#define APP_SITE      "epic.pool-pay.com"
+#define APP_COPYRIGHT "Copyright (C) 2016-2026 xmrig.com and poolpayminer contributors, GPLv3, based on XMRig"
 #define APP_KIND      "miner"
 
 #define APP_VER_MAJOR  6
