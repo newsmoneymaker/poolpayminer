@@ -17,6 +17,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <cinttypes>
 #include <iterator>
@@ -305,6 +306,10 @@ void xmrig::Client::deleteLater()
 void xmrig::Client::tick(uint64_t now)
 {
     if (m_state == ConnectedState) {
+        if (m_pool.mode() == Pool::MODE_EPIC && epicWatch(now)) {
+            return;
+        }
+
         if (m_expire && now > m_expire) {
             LOG_DEBUG_ERR("[%s] timeout", url());
             close();
@@ -336,7 +341,10 @@ void xmrig::Client::onResolved(const DnsRecords &records, int status, const char
     }
 
     if (status < 0 && records.isEmpty()) {
-        if (!isQuiet()) {
+        if (m_pool.mode() == Pool::MODE_EPIC && m_failures >= 0) {
+            LOG_VERBOSE("%s " YELLOW("DNS error: ") "%s", tag(), error);
+        }
+        else if (!isQuiet()) {
             LOG_ERR("%s " RED("DNS error: ") RED_BOLD("\"%s\""), tag(), error);
         }
 
@@ -1124,13 +1132,28 @@ void xmrig::Client::ping()
 void xmrig::Client::read(ssize_t nread, const uv_buf_t *buf)
 {
     const auto size = static_cast<size_t>(nread);
+    const bool epic = m_pool.mode() == Pool::MODE_EPIC;
+
     if (nread < 0) {
-        if (!isQuiet()) {
+        if (epic) {
+            // The link is renewed at once and mining goes on with the current job, see Network::onPause: worth a line
+            // only when the person asked for verbose output. A pool that stays unreachable is reported by Network.
+            if (!m_planned) {
+                epicLearn(Chrono::steadyMSecs() - m_connectedAt);
+            }
+
+            LOG_VERBOSE("%s " YELLOW("connection lost: ") "%s", tag(), uv_strerror(static_cast<int>(nread)));
+        }
+        else if (!isQuiet()) {
             LOG_ERR("%s " RED("read error: ") RED_BOLD("\"%s\""), tag(), uv_strerror(static_cast<int>(nread)));
         }
 
         close();
         return;
+    }
+
+    if (epic && nread > 0) {
+        m_lastRx = Chrono::steadyMSecs();
     }
 
     assert(m_listener != nullptr);
@@ -1187,8 +1210,77 @@ void xmrig::Client::reconnect()
 
     setState(ReconnectingState);
 
+    if (m_pool.mode() == Pool::MODE_EPIC) {
+        const uint64_t now = Chrono::steadyMSecs();
+
+        if (m_planned) {
+            // renewed on purpose: not a failure, connect again right away
+            m_planned = false;
+            m_expire  = now + 100;
+        }
+        else {
+            m_failures++;
+            m_expire = now + std::min<uint64_t>(m_retryPause, 1000 * static_cast<uint64_t>(m_failures));
+        }
+
+        m_listener->onClose(this, static_cast<int>(m_failures));
+        return;
+    }
+
     m_failures++;
     m_listener->onClose(this, static_cast<int>(m_failures));
+}
+
+
+bool xmrig::Client::epicWatch(uint64_t now)
+{
+    if (now > m_lastRx + kEpicDeadTimeout) {
+        LOG_VERBOSE("%s " YELLOW("no data from the pool for %d s, renewing the connection"), tag(), static_cast<int>((now - m_lastRx) / 1000));
+
+        epicLearn(m_lastRx > m_connectedAt ? m_lastRx - m_connectedAt : 0);
+        close();
+
+        return true;
+    }
+
+    // wait for the answers to our shares first (at most 5 s), so that no "accepted" line gets lost
+    if (m_rotate && now > m_connectedAt + m_rotate && (m_results.empty() || now > m_connectedAt + m_rotate + 5000)) {
+        LOG_VERBOSE("%s " CYAN("renewing the connection ahead of the network's timeout"), tag());
+
+        m_planned = true;
+        close();
+
+        return true;
+    }
+
+    return false;
+}
+
+
+// A connection that died on its own after `age` ms. Two such deaths at similar ages mean the network kills long flows: from
+// then on renew the connection at 60% of the shorter age. One-off events (pool restarted, cable pulled) change nothing.
+void xmrig::Client::epicLearn(uint64_t age)
+{
+    if (age < kEpicMinAge || age > kEpicMaxAge) {
+        return;
+    }
+
+    m_deaths[0] = m_deaths[1];
+    m_deaths[1] = age;
+
+    if (m_deaths[0] == 0) {
+        return;
+    }
+
+    const uint64_t lo = std::min(m_deaths[0], m_deaths[1]);
+    const uint64_t hi = std::max(m_deaths[0], m_deaths[1]);
+    if (hi > lo * 2) {
+        return;
+    }
+
+    m_rotate = std::max(kEpicMinRotate, std::min(kEpicMaxRotate, lo * 6 / 10));
+
+    LOG_VERBOSE("%s " CYAN("connections die after ~%d s, renewing them every %d s"), tag(), static_cast<int>(lo / 1000), static_cast<int>(m_rotate / 1000));
 }
 
 
@@ -1213,6 +1305,11 @@ void xmrig::Client::setState(SocketState state)
         m_expire = Chrono::steadyMSecs() + m_retryPause;
         break;
 
+    case ConnectedState:
+        m_connectedAt = m_lastRx = Chrono::steadyMSecs();
+        m_planned     = false;
+        break;
+
     default:
         break;
     }
@@ -1224,6 +1321,12 @@ void xmrig::Client::setState(SocketState state)
 void xmrig::Client::startTimeout()
 {
     m_expire = 0;
+
+    if (m_pool.mode() == Pool::MODE_EPIC) {
+        // always ping: the answers are what tells a live link from one that was silently cut
+        m_keepAlive = Chrono::steadyMSecs() + kEpicPingInterval;
+        return;
+    }
 
     if (has<EXT_KEEPALIVE>()) {
         const uint64_t ms = static_cast<uint64_t>(m_pool.keepAlive() > 0 ? m_pool.keepAlive() : Pool::kKeepAliveTimeout) * 1000;
@@ -1280,7 +1383,12 @@ void xmrig::Client::onConnect(uv_connect_t *req, int status)
     }
 
     if (status < 0) {
-        if (!client->isQuiet()) {
+        if (client->m_pool.mode() == Pool::MODE_EPIC && client->m_failures >= 0) {
+            // We were logged in before: the pool restarts or the network hiccups, the miner keeps working on its job
+            // (see Network::onPause). If the pool stays away for a minute Network says so.
+            LOG_VERBOSE("%s %s " YELLOW("connect error: ") "%s", client->tag(), client->ip().data(), uv_strerror(status));
+        }
+        else if (!client->isQuiet()) {
             LOG_ERR("%s %s " RED("connect error: ") RED_BOLD("\"%s\""), client->tag(), client->ip().data(), uv_strerror(status));
         }
 

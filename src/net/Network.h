@@ -30,6 +30,7 @@
 #include "interfaces/IJobResultListener.h"
 
 
+#include <cstdint>
 #include <vector>
 
 
@@ -72,6 +73,7 @@ protected:
 
 private:
     constexpr static int kTickInterval = 1 * 1000;
+    constexpr static uint64_t kEpicGrace = 60 * 1000;   // Epic: keep mining the current job this long while the pool connection is renewed
 
     void setJob(IClient *client, const Job &job, bool donate);
     void tick();
@@ -86,6 +88,10 @@ private:
     IStrategy *m_strategy   = nullptr;
     NetworkState *m_state   = nullptr;
     Timer *m_timer          = nullptr;
+    bool m_epic             = false;    // the main pool speaks the Epic stratum
+    bool m_quietJob         = false;    // the next job is the one we already had, delivered again after a reconnect
+    uint64_t m_graceUntil   = 0;        // Epic: connection is being renewed, mining goes on until this moment
+    uint64_t m_height       = 0;        // height of the last job of the main pool
 };
 
 

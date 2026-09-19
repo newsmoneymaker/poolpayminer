@@ -60,6 +60,16 @@ public:
     constexpr static int64_t kEpicJobRequestId  = 1000000000;      // id of our getjobtemplate request, far above share sequence numbers
     constexpr static size_t kMaxSendBufferSize  = 1024 * 16;
 
+    // Epic: some networks silently drop long-lived TCP flows (no RST, no FIN). To keep mining seamless the client pings the
+    // pool, treats a silent link as dead after kEpicDeadTimeout, reconnects at once, and once it has seen the same kind of
+    // death twice it renews the connection before the network can kill it (kEpicRotateFactor of the observed lifetime).
+    constexpr static uint64_t kEpicPingInterval = 5 * 1000;
+    constexpr static uint64_t kEpicDeadTimeout  = 20 * 1000;
+    constexpr static uint64_t kEpicMinRotate    = 20 * 1000;
+    constexpr static uint64_t kEpicMaxRotate    = 300 * 1000;
+    constexpr static uint64_t kEpicMinAge       = 5 * 1000;            // shorter lives say nothing about the network
+    constexpr static uint64_t kEpicMaxAge       = 600 * 1000;          // longer lives are not the kind of kill described above
+
     Client(int id, const char *agent, IClientListener *listener);
     ~Client() override;
 
@@ -114,6 +124,8 @@ private:
     void parse(char *line, size_t len);
     void parseExtensions(const rapidjson::Value &result);
     void parseResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error);
+    bool epicWatch(uint64_t now);
+    void epicLearn(uint64_t age);
     void ping();
     void read(ssize_t nread, const uv_buf_t *buf);
     void reconnect();
@@ -144,6 +156,11 @@ private:
     uint64_t m_expire           = 0;
     uint64_t m_jobs             = 0;
     uint64_t m_keepAlive        = 0;
+    uint64_t m_connectedAt      = 0;       // Epic: when the socket connected
+    uint64_t m_lastRx           = 0;       // Epic: when bytes last arrived from the pool
+    uint64_t m_deaths[2]        = {};      // Epic: lifetimes (ms) of the last two connections that died on their own
+    uint64_t m_rotate           = 0;       // Epic: renew the connection after this many ms (0 = never)
+    bool m_planned              = false;   // Epic: the connection is being closed on purpose
     uintptr_t m_key             = 0;
     uv_tcp_t *m_socket          = nullptr;
 

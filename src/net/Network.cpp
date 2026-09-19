@@ -131,6 +131,17 @@ void xmrig::Network::onActive(IStrategy *strategy, IClient *client)
     }
 #   endif
 
+    m_epic = pool.mode() == Pool::MODE_EPIC;
+
+    if (m_graceUntil) {
+        // The connection was renewed while the miner kept working: nothing the person has to know, see onPause()
+        m_graceUntil = 0;
+        m_quietJob   = true;
+
+        LOG_VERBOSE("%s " BLACK_BOLD("reconnected to %s:%d"), Tags::network(), pool.host().data(), pool.port());
+        return;
+    }
+
     char zmq_buf[32] = {};
     if (client->pool().zmq_port() >= 0) {
         snprintf(zmq_buf, sizeof(zmq_buf), " (ZMQ:%d)", client->pool().zmq_port());
@@ -216,6 +227,16 @@ void xmrig::Network::onPause(IStrategy *strategy)
     }
 
     if (!m_strategy->isActive()) {
+        if (m_epic) {
+            // The Epic client renews its connection within a second (some networks cut long-lived flows). Keep hashing the
+            // current job meanwhile; tick() stops the miner if the pool stays away for longer than kEpicGrace.
+            if (!m_graceUntil) {
+                m_graceUntil = Chrono::steadyMSecs() + kEpicGrace;
+            }
+
+            return;
+        }
+
         LOG_ERR("%s " RED("no active pools, stop mining"), Tags::network());
 
         return m_controller->miner()->pause();
@@ -287,8 +308,23 @@ void xmrig::Network::setJob(IClient *client, const Job &job, bool donate)
             snprintf(height_buf, sizeof(height_buf), " height " WHITE_BOLD("%" PRIu64), job.height());
         }
 
-        LOG_INFO("%s " MAGENTA_BOLD("new job") " from " WHITE_BOLD("%s:%d%s") " diff " WHITE_BOLD("%" PRIu64 "%s") " algo " WHITE_BOLD("%s") "%s%s",
-                 Tags::network(), client->pool().host().data(), client->pool().port(), zmq_buf, diff, scale, job.algorithm().name(), height_buf, tx_buf);
+        // after a quiet reconnect the pool hands out the block we are already working on: not news
+        const bool again = !donate && m_quietJob && job.height() == m_height;
+
+        if (again) {
+            LOG_VERBOSE("%s " MAGENTA_BOLD("new job") " from " WHITE_BOLD("%s:%d%s") " diff " WHITE_BOLD("%" PRIu64 "%s") " algo " WHITE_BOLD("%s") "%s%s",
+                        Tags::network(), client->pool().host().data(), client->pool().port(), zmq_buf, diff, scale, job.algorithm().name(), height_buf, tx_buf);
+        }
+        else {
+            LOG_INFO("%s " MAGENTA_BOLD("new job") " from " WHITE_BOLD("%s:%d%s") " diff " WHITE_BOLD("%" PRIu64 "%s") " algo " WHITE_BOLD("%s") "%s%s",
+                     Tags::network(), client->pool().host().data(), client->pool().port(), zmq_buf, diff, scale, job.algorithm().name(), height_buf, tx_buf);
+        }
+    }
+
+    if (!donate) {
+        // stays quiet until the height changes: the pool may repeat the same block a few times after a reconnect
+        m_quietJob = m_quietJob && job.height() == m_height;
+        m_height   = job.height();
     }
 
     if (!donate && m_donate) {
@@ -304,6 +340,16 @@ void xmrig::Network::tick()
     const uint64_t now = Chrono::steadyMSecs();
 
     m_strategy->tick(now);
+
+    if (m_graceUntil && now > m_graceUntil) {
+        m_graceUntil = 0;
+
+        if (!m_strategy->isActive()) {
+            LOG_ERR("%s " RED("no active pools, stop mining"), Tags::network());
+
+            m_controller->miner()->pause();
+        }
+    }
 
     if (m_donate) {
         m_donate->tick(now);
