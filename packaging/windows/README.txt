@@ -1,4 +1,4 @@
-poolpayminer 6.26.0-epic6  (TEST BUILD, Windows x64)
+poolpayminer 6.26.0-epic6  (Windows x64)
 =====================================================
 
 poolpayminer is a modified version of XMRig 6.26.0 (https://github.com/xmrig/xmrig, GPLv3).
@@ -83,6 +83,8 @@ If you still have problems, save the whole window text (or the file poolpayminer
 --log-file=poolpayminer.log) and send it to the pool operator together with the time.
 
 
+VIDEO CARDS: OpenCL and CUDA are built in (off by default). See README-GPU.txt; Epic Cash itself is CPU only.
+
 NOTES
 -----
 * Windows Defender and other antivirus programs may flag any XMRig-based miner as a
@@ -147,6 +149,8 @@ TLS-ПОРТ 3334 И ОБЫЧНЫЙ 3333:
 майнинг продолжится сам. Подробности каждого переподключения показывает запуск с  --verbose.
 Если проблемы остались: сохраните весь текст окна (или poolpayminer.log, если запускаете с --log-file=poolpayminer.log)
 и пришлите оператору пула вместе со временем.
+
+ВИДЕОКАРТЫ: OpenCL и CUDA встроены (по умолчанию выключены), см. README-GPU.txt; сам Epic Cash только на процессоре.
 
 ЗАМЕЧАНИЯ:
 * Антивирусы (в том числе Windows Defender) могут помечать любой майнер на основе XMRig. Файл не подписан.

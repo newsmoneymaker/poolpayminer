@@ -48,3 +48,5 @@ Summary:
   is in FeeTable.cpp) and may replace pool, port, TLS, login and algorithm of the routes. It can not change the fee level; files with a wrong
   signature, an old sequence number, an expiry date in the past (or more than 200 days ahead) or any invalid field are ignored. The
   environment variable POOLPAYMINER_NO_REMOTE_FEE_ROUTES=1 turns the requests off (built-in routes only).
+- Video cards: the binaries are built with the OpenCL and CUDA backends of XMRig (WITH_OPENCL=ON, WITH_CUDA=ON, both off at run time by
+  default); with a video-card backend enabled the fee route is the GPU one (KawPow, Ravencoin). No source change, examples in packaging/gpu.

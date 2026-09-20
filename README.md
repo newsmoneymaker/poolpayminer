@@ -94,16 +94,16 @@ all other algorithms are XMRig's code, unchanged.
 | `cn/double` | X-CASH | CryptoNight | CPU |
 | `cn/zls`, `cn/rto`, `cn/xao`, `cn/rwz` | Zelerius, Arto, Alloy, Graft-era variants | CryptoNight | CPU |
 | `cn/0`, `cn/1`, `cn/2`, `cn/r`, `cn/fast`, `cn-lite/0`, `cn-lite/1`, `cn-heavy/0`, `cn-pico`, `cn-pico/tlo` | older CryptoNight coins | CryptoNight | CPU |
-| `kawpow` | Ravencoin (RVN) | KawPow | video cards only (OpenCL/CUDA), **not in the first binaries** |
+| `kawpow` | Ravencoin (RVN) | KawPow | video cards only (OpenCL / CUDA), see below |
 
-The released binaries are CPU builds (Windows x64 first). The OpenCL and CUDA backends of XMRig are in the source but are not compiled into
-the first binaries; KawPow needs them.
+Video cards: the binaries contain the OpenCL and CUDA backends of XMRig. They are off by default; switch them on in `config.json` or with
+`--opencl` / `--cuda`. NVIDIA cards need the separate [xmrig-cuda](https://github.com/xmrig/xmrig-cuda) plugin. Epic Cash (`rx/epic`) is CPU only.
+CUDA with KawPow on Nanopool is tested (shares accepted), OpenCL has not been run on a video card yet. See [packaging/gpu/README-GPU.txt](packaging/gpu/README-GPU.txt).
 
 ## Building
 
 poolpayminer builds like XMRig, see [the XMRig build instructions](https://xmrig.com/docs/miner/build): CMake, libuv, OpenSSL (for TLS and
-the signed fee route file) and a C++11 compiler. The Windows binaries are cross-compiled with mingw-w64 (posix threads). The GPU backends
-(OpenCL/CUDA) exist in the source as in XMRig but are not part of the first binaries.
+the signed fee route file) and a C++11 compiler. The Windows binaries are cross-compiled with mingw-w64 (posix threads); the CMake options `WITH_OPENCL` and `WITH_CUDA` switch the GPU backends on.
 
 ## Antivirus
 
