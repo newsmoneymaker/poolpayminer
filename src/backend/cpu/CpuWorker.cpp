@@ -31,6 +31,7 @@
 #include "crypto/cn/CryptoNight_test.h"
 #include "crypto/cn/CryptoNight.h"
 #include "crypto/common/Nonce.h"
+#include "crypto/common/Sha256d.h"
 #include "crypto/common/VirtualMemory.h"
 #include "crypto/rx/Rx.h"
 #include "crypto/rx/RxCache.h"
@@ -294,12 +295,23 @@ void xmrig::CpuWorker<N>::start()
 #           ifdef XMRIG_ALGO_RANDOMX
             uint8_t* miner_signature_ptr = m_job.blob() + m_job.nonceOffset() + m_job.nonceSize();
             if (job.algorithm().family() == Algorithm::RANDOM_X) {
+                // Veil: RandomX is fed with the double SHA-256 of the whole 148 byte header (nonce included), not with the header
+                const bool veil = job.isVeil();
+                alignas(16) uint8_t veilInput[32];
+
                 if (first) {
                     first = false;
                     if (job.hasMinerSignature()) {
                         job.generateMinerSignature(m_job.blob(), job.size(), miner_signature_ptr);
                     }
-                    randomx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+
+                    if (veil) {
+                        Sha256d::hash(m_job.blob(), job.size(), veilInput);
+                        randomx_calculate_hash_first(m_vm, tempHash, veilInput, sizeof(veilInput));
+                    }
+                    else {
+                        randomx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+                    }
 
                     if (RandomX_CurrentConfig.Tweak_V2_COMMITMENT) {
                         prev_job_size = job.size();
@@ -316,7 +328,13 @@ void xmrig::CpuWorker<N>::start()
                     job.generateMinerSignature(m_job.blob(), job.size(), miner_signature_ptr);
                 }
 
-                randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
+                if (veil) {
+                    Sha256d::hash(m_job.blob(), job.size(), veilInput);
+                    randomx_calculate_hash_next(m_vm, tempHash, veilInput, sizeof(veilInput), m_hash);
+                }
+                else {
+                    randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
+                }
 
                 if (RandomX_CurrentConfig.Tweak_V2_COMMITMENT) {
                     memcpy(m_commitment, m_hash, RANDOMX_HASH_SIZE);
@@ -353,7 +371,7 @@ void xmrig::CpuWorker<N>::start()
 
             if (valid) {
                 for (size_t i = 0; i < N; ++i) {
-                    const uint64_t value = job.isEpic() ? Job::epicValue(m_hash + (i * 32)) : *reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24);
+                    const uint64_t value = job.bigEndianValue() ? Job::epicValue(m_hash + (i * 32)) : *reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24);
 
 #                   ifdef XMRIG_FEATURE_BENCHMARK
                     if (m_benchSize) {

@@ -1,3 +1,12 @@
+# Veil support (rx/veil)
+
+* New algorithm `rx/veil` (id 0x72151201, alias `randomx/veil`): the RandomX reference configuration (same as `rx/0`) fed with the double
+  SHA-256 of the 148 byte block header; nonce at byte 140; the hash is read as a big endian number (first 8 bytes against the 64 bit job target).
+  Files: `src/crypto/common/Sha256d.h` (new, self-contained SHA-256), `src/backend/cpu/CpuWorker.cpp`, `src/base/net/stratum/Job.{h,cpp}`,
+  `src/base/crypto/Algorithm.{h,cpp}`. CPU only. Stratum is the standard XMRig one, the job carries `algo: "rx/veil"`.
+  Credit: the protocol details (nonce offset, SHA-256d input, big endian value) were taken from the `rx/veil` patch of
+  https://github.com/us77ipis/xmrig-veil (also an XMRig fork, GPLv3); it is reimplemented here on top of XMRig 6.26.0.
+
 # Changes made to XMRig 6.26.0 (poolpayminer, first public version, 2026-09-20)
 
 poolpayminer is a modified version of XMRig 6.26.0 (https://github.com/xmrig/xmrig, GPLv3).

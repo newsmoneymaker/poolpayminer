@@ -80,6 +80,9 @@ public:
 
         return value;
     }
+    // Veil: RandomX runs over the double SHA-256 of the blob and the hash is read like Epic's (big endian, first 8 bytes)
+    inline bool isVeil() const                          { return m_algorithm.id() == Algorithm::RX_VEIL; }
+    inline bool bigEndianValue() const                  { return m_epic || isVeil(); }
     inline bool isValid() const                         { return (m_size > 0 && m_diff > 0) || !m_poolWallet.isEmpty(); }
     inline bool setId(const char *id)                   { return (m_id = id); }
     inline const Algorithm &algorithm() const           { return m_algorithm; }

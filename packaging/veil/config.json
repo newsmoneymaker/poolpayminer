@@ -1,0 +1,15 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/veil",
+            "url": "veil.pool-pay.com:4334",
+            "user": "YOUR_BV1Q_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
