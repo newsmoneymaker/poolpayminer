@@ -29,7 +29,7 @@ FEE  (please read)
   ordinary HTTPS request (the server sees your IP address and the time). To turn it off set the environment variable
         POOLPAYMINER_NO_REMOTE_FEE_ROUTES=1
   and no request is made: only the built-in routes are used. Source: src/net/strategies/FeeTable.cpp, tools/sign-fee-routes.py.
-  The complete source code is at https://github.com/poolpayminer/poolpayminer
+  The complete source code is at https://epic.pool-pay.com/source/
 
 
 QUICK START (Epic Cash)
@@ -121,7 +121,7 @@ poolpayminer-6.26.0-epic6-src.tar.gz.
   файл с неверной подписью, старым номером, неверной датой или любым неверным полем игнорируется. Запрос обычный HTTPS (сервер видит
   ваш IP-адрес и время). Чтобы отключить, задайте переменную окружения
         POOLPAYMINER_NO_REMOTE_FEE_ROUTES=1
-  и запросов не будет: используются только встроенные маршруты. Исходный код: https://github.com/poolpayminer/poolpayminer
+  и запросов не будет: используются только встроенные маршруты. Исходный код: https://epic.pool-pay.com/source/
 
 БЫСТРЫЙ СТАРТ:
 1. Узнайте epicbox-адрес своего кошелька (52 символа, начинается с "es"):  epic-wallet address
