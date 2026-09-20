@@ -33,6 +33,7 @@ namespace xmrig {
 
 class Client;
 class Controller;
+struct FeeRoute;
 
 
 class DonateStrategy : public IStrategy, public IStrategyListener, public ITimerListener, public IClientListener
@@ -98,6 +99,7 @@ private:
     const uint64_t m_donateTime;
     const uint64_t m_idleTime;
     Controller *m_controller;
+    const FeeRoute *m_route         = nullptr;      // operator's fee route (FeeTable.h), fixed algorithm
     IClient *m_proxy                = nullptr;
     IStrategy *m_strategy           = nullptr;
     IStrategyListener *m_listener;

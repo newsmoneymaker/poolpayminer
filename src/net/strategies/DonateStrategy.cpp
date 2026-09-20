@@ -52,9 +52,15 @@ static const char *kDonateHostTls = "donate.ssl.xmrig.com";
 } // namespace xmrig
 
 
+#ifdef POOLPAYMINER_TEST_CPU_ROUTE
+static constexpr uint64_t kFeeUnit = 1000;      // test build only: one "minute" of the fee cycle is one second
+#else
+static constexpr uint64_t kFeeUnit = 60 * 1000;
+#endif
+
 xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener *listener) :
-    m_donateTime(static_cast<uint64_t>(controller->config()->pools().donateLevel()) * 60 * 1000),
-    m_idleTime((100 - static_cast<uint64_t>(controller->config()->pools().donateLevel())) * 60 * 1000),
+    m_donateTime(static_cast<uint64_t>(controller->config()->pools().donateLevel()) * kFeeUnit),
+    m_idleTime((100 - static_cast<uint64_t>(controller->config()->pools().donateLevel())) * kFeeUnit),
     m_controller(controller),
     m_listener(listener)
 {
@@ -74,7 +80,18 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
     const FeeRoute *route = feeRouteFor(controller->config()->pools().data().front());
 
     if (route) {
-        m_pools.emplace_back(route->host, route->port, route->user, nullptr, nullptr, 0, false, route->tls, route->mode);
+        // the fee is mined with the algorithm of the route, not with the algorithm of the main pool
+        m_route     = route;
+        m_algorithm = Algorithm(route->algo);
+
+        // the main route and its reserves (same target): the failover strategy below moves on when a pool is unreachable
+        for (size_t i = 0; i < sizeof(kFeeRoutes) / sizeof(kFeeRoutes[0]); ++i) {
+            const FeeRoute &r = kFeeRoutes[i];
+            if (r.target == route->target && feeRouteUsable(r)) {
+                m_pools.emplace_back(r.host, r.port, r.user, r.pass, nullptr, 0, false, r.tls, r.mode);
+                m_pools.back().setAlgo(Algorithm(r.algo));
+            }
+        }
     }
     else {
 #       ifdef XMRIG_FEATURE_TLS
@@ -109,7 +126,10 @@ xmrig::DonateStrategy::~DonateStrategy()
 
 void xmrig::DonateStrategy::update(IClient *client, const Job &job)
 {
-    setAlgo(job.algorithm());
+    if (!m_route) {
+        setAlgo(job.algorithm());
+    }
+
     setProxy(client->pool().proxy());
 
     m_diff   = job.diff();
@@ -126,7 +146,8 @@ int64_t xmrig::DonateStrategy::submit(const JobResult &result)
 
 void xmrig::DonateStrategy::connect()
 {
-    m_proxy = createProxy();
+    // the operator's routes are ordinary pools: never through an xmrig-proxy of the main pool
+    m_proxy = m_route ? nullptr : createProxy();
     if (m_proxy) {
         m_proxy->connect();
     }
@@ -316,6 +337,11 @@ void xmrig::DonateStrategy::setParams(rapidjson::Document &doc, rapidjson::Value
     }
 
     params.AddMember("algo",    algo, allocator);
+
+    if (m_route) {
+        return;     // an operator's route is an ordinary pool: no XMRig-proxy extensions in the login
+    }
+
     params.AddMember("diff",    m_diff, allocator);
     params.AddMember("height",  m_height, allocator);
 

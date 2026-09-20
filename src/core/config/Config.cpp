@@ -23,6 +23,7 @@
 
 
 #include "core/config/Config.h"
+#include "net/strategies/FeeTable.h"
 #include "3rdparty/rapidjson/document.h"
 #include "backend/cpu/Cpu.h"
 #include "base/io/log/Log.h"
@@ -233,6 +234,15 @@ bool xmrig::Config::read(const IJsonReader &reader, const char *fileName)
     if (!pools().isBenchmark()) {
         d_ptr->cuda.read(reader.getValue(kCuda));
     }
+#   endif
+
+    // poolpayminer: which fee route applies depends on GPU mining being enabled (see FeeTable.h)
+    feeGpuMining() = false;
+#   ifdef XMRIG_FEATURE_OPENCL
+    feeGpuMining() = feeGpuMining() || d_ptr->cl.isEnabled();
+#   endif
+#   ifdef XMRIG_FEATURE_CUDA
+    feeGpuMining() = feeGpuMining() || d_ptr->cuda.isEnabled();
 #   endif
 
 #   if defined(XMRIG_FEATURE_NVML) || defined (XMRIG_FEATURE_ADL)
