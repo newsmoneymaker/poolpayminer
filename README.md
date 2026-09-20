@@ -99,7 +99,7 @@ stratum with the extension `algo`, so any XMRig-compatible pool of that kind wor
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic` and `rx/veil`. Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
-`epic.pool-pay.com`; for Veil against the project's pool code with a simulated node, the real Veil network once synchronised; and, for the fee,
+`epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
 Nanopool); all other algorithms are XMRig's code, unchanged.
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
