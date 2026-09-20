@@ -44,6 +44,8 @@ then "accepted (1/0) ..." (shares accepted by the pool) and "speed ... H/s". Che
 
 Port 3333 is the plain (unencrypted) stratum, the TLS ports are 3334, 8443, 993 and 2053.
 
+VIDEO CARDS: OpenCL and CUDA are built in (off by default). See README-GPU.txt; Epic Cash itself is CPU only.
+
 NOTES
 -----
 * Needs glibc 2.28 or newer (Debian 10, Ubuntu 18.10 and newer). RandomX needs about 2.3 GB of RAM (fast mode); with less use
@@ -88,6 +90,8 @@ XMRig сохранены. Это НЕ официальный XMRig. Исходн
 
 Успех выглядит так: "use pool epic.pool-pay.com:3334 TLSv1.3 ...", "new job ... algo rx/epic", "READY threads ...", затем
 "accepted (1/0) ..." - шары приняты пулом. Статистика: https://epic.pool-pay.com (Worker Statistics).
+
+ВИДЕОКАРТЫ: OpenCL и CUDA встроены (по умолчанию выключены), см. README-GPU.txt; сам Epic Cash только на процессоре.
 
 ЗАМЕЧАНИЯ:
 * Нужен glibc 2.28 или новее (Debian 10, Ubuntu 18.10 и новее). RandomX требует около 2,3 ГБ ОЗУ; при нехватке: "randomx": {"mode": "light"}.
