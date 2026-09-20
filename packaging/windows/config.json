@@ -1,0 +1,22 @@
+{
+    "autosave": false,
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "max-threads-hint": 50
+    },
+    "randomx": {
+        "mode": "auto"
+    },
+    "pools": [
+        {
+            "algo": "rx/epic",
+            "epic": true,
+            "url": "epic.pool-pay.com:3334",
+            "user": "PUT_YOUR_EPICBOX_ADDRESS_HERE+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
