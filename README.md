@@ -64,6 +64,23 @@ What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), 
 frequencies and AES generator keys, as in the Epic node), TLS stratum and a connection that survives networks which silently cut long TCP
 flows (ping every 5 s, immediate reconnect, mining continues on the current job meanwhile).
 
+## Supported algorithms
+
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`. Only **Epic Cash (`rx/epic`)**
+has been tested end to end by the project (against the real Epic node, the pool `epic.pool-pay.com` and, for the fee, Nanopool);
+all other algorithms are XMRig's code, unchanged.
+
+| Family | Algorithms (`--algo`) | Used by |
+|---|---|---|
+| **RandomX** | `rx/0`, `rx/2` (Monero v2), `rx/wow` (Wownero), `rx/arq` (Arqma), `rx/graft` (Graft), `rx/sfx` (Safex Cash), `rx/yada` (YadaCoin), **`rx/epic`** (Epic Cash, with `--epic`) | CPU |
+| **GhostRider** | `ghostrider` (`gr`) | CPU (Raptoreum) |
+| **Argon2** | `argon2/chukwa`, `argon2/chukwav2`, `argon2/wrkz` | CPU |
+| **CryptoNight** | `cn/0`, `cn/1`, `cn/2`, `cn/r`, `cn/fast`, `cn/half`, `cn/xao`, `cn/rto`, `cn/rwz`, `cn/zls`, `cn/double`, `cn/ccx` (Conceal), `cn/upx2` (Uplexa), `cn-lite/0`, `cn-lite/1`, `cn-heavy/0`, `cn-heavy/tube`, `cn-heavy/xhv`, `cn-pico`, `cn-pico/tlo` | CPU |
+| **KawPow** | `kawpow` (Ravencoin) | video cards only (OpenCL/CUDA), **not in the first binaries** |
+
+The released binaries are CPU builds (Windows x64 first). The OpenCL and CUDA backends of XMRig are in the source but are not compiled into
+the first binaries; KawPow needs them.
+
 ## Building
 
 poolpayminer builds like XMRig, see [the XMRig build instructions](https://xmrig.com/docs/miner/build): CMake, libuv, OpenSSL (for TLS and
