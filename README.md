@@ -67,15 +67,45 @@ What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), 
 frequencies and AES generator keys, as in the Epic node), TLS stratum and a connection that survives networks which silently cut long TCP
 flows (ping every 5 s, immediate reconnect, mining continues on the current job meanwhile).
 
+## Veil (VEIL) quick start
+
+Veil's RandomX proof of work is the reference RandomX (`rx/0` parameters) run over the **double SHA-256 of the 148 byte block header**
+(nonce at byte 140), and the hash is compared as a big endian number. poolpayminer implements it as the algorithm `rx/veil`, CPU only.
+The pool `veil.pool-pay.com` (source: [veil-nodejs-pool](https://github.com/newsmoneymaker/veil-nodejs-pool)) speaks the usual XMRig
+stratum with the extension `algo`, so any XMRig-compatible pool of that kind works.
+
+1. Get a Veil **basecoin** address (`bv1q...`, 42 characters): in the Veil wallet console `getnewbasecoinaddress` (stealth `sv1...` addresses are not accepted).
+2. `config.json`:
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/veil",
+            "url": "veil.pool-pay.com:4334",
+            "user": "YOUR_BV1Q_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/veil --tls -o veil.pool-pay.com:4334 -u ADDRESS+rig1 -p x -k`.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`. Only **Epic Cash (`rx/epic`)**
-has been tested end to end by the project (against the real Epic node, the pool `epic.pool-pay.com` and, for the fee, Nanopool);
-all other algorithms are XMRig's code, unchanged.
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic` and `rx/veil`. Only
+**Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
+`epic.pool-pay.com`; for Veil against the project's pool code with a simulated node, the real Veil network once synchronised; and, for the fee,
+Nanopool); all other algorithms are XMRig's code, unchanged.
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
 | **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with Wownero's instruction frequencies and AES keys, as in the Epic node | RandomX | CPU |
+| **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
 | `rx/wow` | Wownero (WOW) | RandomX | CPU |
