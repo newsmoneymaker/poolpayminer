@@ -1,0 +1,87 @@
+name: Windows x64 build
+
+# Builds poolpayminer for Windows x64 with MSVC on GitHub's runners. A push to main builds and stores the result as an artifact;
+# a tag "v*" also publishes it as a GitHub Release (zip + SHA256SUMS.txt). If the build fails, the logs are pushed to the branch
+# "ci-logs" so that they can be read without logging in.
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows-x64:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencies (libuv, OpenSSL, hwloc prebuilt by XMRig)
+        shell: pwsh
+        run: git clone --depth 1 --branch v25.06.16 https://github.com/xmrig/xmrig-deps.git "$env:RUNNER_TEMP\xmrig-deps"
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
+            "-DXMRIG_DEPS=$env:RUNNER_TEMP\xmrig-deps\msvc2022\x64" `
+            -DWITH_TLS=ON -DWITH_HTTP=ON -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_NVML=OFF -DWITH_ADL=OFF 2>&1 | Tee-Object -FilePath cmake.log
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --target xmrig -- /m 2>&1 | Tee-Object -FilePath build.log
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $d = "dist\poolpayminer-win64"
+          New-Item -ItemType Directory $d -Force | Out-Null
+          Copy-Item build\Release\xmrig.exe "$d\poolpayminer.exe"
+          Copy-Item LICENSE, CHANGES.md, THIRD-PARTY-NOTICES.txt $d
+          Copy-Item packaging\windows\* $d
+          Compress-Archive -Path $d -DestinationPath dist\poolpayminer-win64-msvc.zip
+          $h = (Get-FileHash dist\poolpayminer-win64-msvc.zip -Algorithm SHA256).Hash.ToLower()
+          "$h  poolpayminer-win64-msvc.zip" | Out-File dist\SHA256SUMS.txt -Encoding ascii
+          Get-Content dist\SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: poolpayminer-win64-msvc
+          path: |
+            dist/poolpayminer-win64-msvc.zip
+            dist/SHA256SUMS.txt
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/poolpayminer-win64-msvc.zip
+            dist/SHA256SUMS.txt
+          body: |
+            poolpayminer for Windows x64, compiled by GitHub Actions from this tag (MSVC). CPU mining; no OpenCL/CUDA in this build.
+            **Fee 1%** (1 minute in about 100): CPU -> Monero (RandomX) on Nanopool, GPU -> Ravencoin (KawPow) on Nanopool, to the operator's
+            wallets; see the README. Antivirus programs may flag any XMRig-based miner; the file is not signed.
+            Check the download: `certutil -hashfile poolpayminer-win64-msvc.zip SHA256` and compare with SHA256SUMS.txt.
+
+      - name: Publish build log (on failure)
+        if: failure()
+        shell: pwsh
+        run: |
+          $keep = "$env:RUNNER_TEMP\ci-logs"
+          New-Item -ItemType Directory $keep -Force | Out-Null
+          foreach ($f in 'cmake.log', 'build.log') { if (Test-Path $f) { Get-Content $f -Tail 4000 | Set-Content "$keep\$f" } }
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan ci-logs
+          git rm -rf . -q
+          Copy-Item "$keep\*" .
+          git add -A
+          git commit -q -m "build log of run ${{ github.run_id }} ($env:GITHUB_SHA)"
+          git push -f origin ci-logs

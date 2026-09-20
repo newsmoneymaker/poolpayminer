@@ -5,6 +5,9 @@ affiliated with the XMRig developers. It keeps XMRig's algorithms and adds the *
 variant (`rx/epic`), so that the miner can mine on Epic Cash pools such as `epic.pool-pay.com`. The original XMRig README is kept in
 [README-XMRIG.md](README-XMRIG.md).
 
+**CPU miner for Epic Cash (EPIC, RandomX `rx/epic`), Monero (XMR, RandomX `rx/0`), Wownero, Raptoreum (GhostRider), Argon2 coins (Chukwa,
+WRKZ), CryptoNight coins (Conceal, Uplexa, Haven and others).** Windows x64 first; pool: [epic.pool-pay.com](https://epic.pool-pay.com).
+
 License: GNU GPL v3 (see [LICENSE](LICENSE)). All changes to XMRig are listed in [CHANGES.md](CHANGES.md); third-party licenses (including
 OpenSSL) are in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
 
@@ -70,13 +73,28 @@ poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/cry
 has been tested end to end by the project (against the real Epic node, the pool `epic.pool-pay.com` and, for the fee, Nanopool);
 all other algorithms are XMRig's code, unchanged.
 
-| Family | Algorithms (`--algo`) | Used by |
-|---|---|---|
-| **RandomX** | `rx/0`, `rx/2` (Monero v2), `rx/wow` (Wownero), `rx/arq` (Arqma), `rx/graft` (Graft), `rx/sfx` (Safex Cash), `rx/yada` (YadaCoin), **`rx/epic`** (Epic Cash, with `--epic`) | CPU |
-| **GhostRider** | `ghostrider` (`gr`) | CPU (Raptoreum) |
-| **Argon2** | `argon2/chukwa`, `argon2/chukwav2`, `argon2/wrkz` | CPU |
-| **CryptoNight** | `cn/0`, `cn/1`, `cn/2`, `cn/r`, `cn/fast`, `cn/half`, `cn/xao`, `cn/rto`, `cn/rwz`, `cn/zls`, `cn/double`, `cn/ccx` (Conceal), `cn/upx2` (Uplexa), `cn-lite/0`, `cn-lite/1`, `cn-heavy/0`, `cn-heavy/tube`, `cn-heavy/xhv`, `cn-pico`, `cn-pico/tlo` | CPU |
-| **KawPow** | `kawpow` (Ravencoin) | video cards only (OpenCL/CUDA), **not in the first binaries** |
+| Algorithm (`--algo`) | Coin | Family | Runs on |
+|---|---|---|---|
+| **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with Wownero's instruction frequencies and AES keys, as in the Epic node | RandomX | CPU |
+| `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
+| `rx/2` | Monero, RandomX v2 | RandomX | CPU |
+| `rx/wow` | Wownero (WOW) | RandomX | CPU |
+| `rx/arq` | Arqma (ARQ) | RandomX | CPU |
+| `rx/graft` | Graft (GRFT) | RandomX | CPU |
+| `rx/sfx` | Safex Cash (SFX) | RandomX | CPU |
+| `rx/yada` | YadaCoin (YDA) | RandomX | CPU |
+| `ghostrider` (`gr`) | Raptoreum (RTM) | GhostRider | CPU |
+| `argon2/chukwa`, `argon2/chukwav2` | Chukwa (Turtlecoin-family Argon2id coins) | Argon2 | CPU |
+| `argon2/wrkz` | WRKZ (Wrkzcoin) | Argon2 | CPU |
+| `cn/ccx` | Conceal (CCX) | CryptoNight | CPU |
+| `cn/upx2` | Uplexa (UPX2) | CryptoNight | CPU |
+| `cn-heavy/xhv` | Haven Protocol (XHV) | CryptoNight-Heavy | CPU |
+| `cn-heavy/tube` | Bittube (TUBE) | CryptoNight-Heavy | CPU |
+| `cn/half` | Masari, Torque | CryptoNight | CPU |
+| `cn/double` | X-CASH | CryptoNight | CPU |
+| `cn/zls`, `cn/rto`, `cn/xao`, `cn/rwz` | Zelerius, Arto, Alloy, Graft-era variants | CryptoNight | CPU |
+| `cn/0`, `cn/1`, `cn/2`, `cn/r`, `cn/fast`, `cn-lite/0`, `cn-lite/1`, `cn-heavy/0`, `cn-pico`, `cn-pico/tlo` | older CryptoNight coins | CryptoNight | CPU |
+| `kawpow` | Ravencoin (RVN) | KawPow | video cards only (OpenCL/CUDA), **not in the first binaries** |
 
 The released binaries are CPU builds (Windows x64 first). The OpenCL and CUDA backends of XMRig are in the source but are not compiled into
 the first binaries; KawPow needs them.
@@ -91,3 +109,7 @@ the signed fee route file) and a C++11 compiler. The Windows binaries are cross-
 
 Any XMRig-based miner is flagged by many antivirus programs as a miner ("riskware"). The binaries are not signed. Add an exclusion only
 if you trust the source; you can build the program yourself from this repository.
+
+---
+Keywords: RandomX miner, Epic Cash miner, EPIC mining, rx/epic, Monero RandomX CPU miner, Wownero, GhostRider Raptoreum CPU miner, Argon2 Chukwa, CryptoNight,
+XMRig fork, Windows miner, epic.pool-pay.com.
