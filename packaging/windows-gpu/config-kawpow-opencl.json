@@ -1,0 +1,16 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": false },
+    "opencl": { "enabled": true },
+    "cuda": { "enabled": false },
+    "pools": [
+        {
+            "algo": "kawpow",
+            "url": "rvn-eu1.nanopool.org:10443",
+            "user": "YOUR_RAVENCOIN_ADDRESS.rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
