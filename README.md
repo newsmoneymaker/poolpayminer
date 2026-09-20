@@ -1,38 +1,76 @@
-# XMRig
+# poolpayminer
 
-[![Github All Releases](https://img.shields.io/github/downloads/xmrig/xmrig/total.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub release](https://img.shields.io/github/release/xmrig/xmrig/all.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub license](https://img.shields.io/github/license/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/blob/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/network)
+**poolpayminer is a modified version of [XMRig](https://github.com/xmrig/xmrig) 6.26.0. It is not the official XMRig** and is not
+affiliated with the XMRig developers. It keeps XMRig's algorithms and adds the **Epic Cash** stratum protocol with Epic's own RandomX
+variant (`rx/epic`), so that the miner can mine on Epic Cash pools such as `epic.pool-pay.com`. The original XMRig README is kept in
+[README-XMRIG.md](README-XMRIG.md).
 
-XMRig is a high performance, open source, cross platform RandomX, KawPow, CryptoNight and [GhostRider](https://github.com/xmrig/xmrig/tree/master/src/crypto/ghostrider#readme) unified CPU/GPU miner and [RandomX benchmark](https://xmrig.com/benchmark). Official binaries are available for Windows, Linux, macOS and FreeBSD.
+License: GNU GPL v3 (see [LICENSE](LICENSE)). All changes to XMRig are listed in [CHANGES.md](CHANGES.md); third-party licenses (including
+OpenSSL) are in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
 
-## Mining backends
-- **CPU** (x86/x64/ARMv7/ARMv8/RISC-V)
-- **OpenCL** for AMD GPUs.
-- **CUDA** for NVIDIA GPUs via external [CUDA plugin](https://github.com/xmrig/xmrig-cuda).
+## FEE: please read
 
-## Download
-* **[Binary releases](https://github.com/xmrig/xmrig/releases)**
-* **[Build from source](https://xmrig.com/docs/miner/build)**
+poolpayminer takes a **fee of 1%** of the mining time (1 minute in about every 100 minutes) for the operator of the project, whichever
+pool and coin you mine yourself. The other 99% of the time the miner works for you. The level is fixed in the program.
 
-## Usage
-The preferred way to configure the miner is the [JSON config file](https://xmrig.com/docs/miner/config) as it is more flexible and human friendly. The [command line interface](https://xmrig.com/docs/miner/command-line-options) does not cover all features, such as mining profiles for different algorithms. Important options can be changed during runtime without miner restart by editing the config file or executing [API](https://xmrig.com/docs/miner/api) calls.
+| What mines | What is mined for the fee |
+|---|---|
+| CPU (the default) | Monero, RandomX (`rx/0`), on Nanopool, to the operator's wallet |
+| GPU (OpenCL or CUDA enabled) | Ravencoin, KawPow, on Nanopool, to the operator's wallet |
 
-* **[Wizard](https://xmrig.com/wizard)** helps you create initial configuration for the miner.
-* **[Workers](http://workers.xmrig.info)** helps manage your miners via HTTP API.
+* This holds for every main pool, Epic Cash pools included. For the fee minute the miner switches to the algorithm of the fee (the RandomX
+  dataset is initialised again, a few seconds) and back.
+* The start-up banner tells where the fee goes, for example
+  `* FEE          1% of the time is mined for Monero (RandomX) on Nanopool, the pool operator's wallet`.
+* The routes (pool hosts, wallets, algorithms) are in [`src/net/strategies/FeeTable.cpp`](src/net/strategies/FeeTable.cpp). Each route has
+  two reserve hosts; the miner switches to the next host when a pool cannot be reached.
+* **Remote updates of the routes.** So that the project can react when a pool disappears, a wallet is lost or a coin changes its algorithm,
+  the miner requests `https://epic.pool-pay.com/fee-routes.json` at start and every 4 hours. The file is signed with the operator's Ed25519
+  key (the public key is in `FeeTable.cpp`, the signing tool is [`tools/sign-fee-routes.py`](tools/sign-fee-routes.py)) and may change the
+  pool, port, TLS, login and algorithm of a route. It **cannot change the fee level**, and a file with a wrong signature, an old
+  sequence number, an invalid expiry date or any invalid field is ignored. The request is an ordinary HTTPS request (the server sees your
+  IP address and the time, nothing else). Set the environment variable `POOLPAYMINER_NO_REMOTE_FEE_ROUTES=1` and no request is made: only
+  the built-in routes are used.
 
-## Donations
-* Default donation 1% (1 minute in 100 minutes) can be increased via option `donate-level` or disabled in source code.
-* XMR: `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`
+## Epic Cash quick start
 
-## Developers
-* **[xmrig](https://github.com/xmrig)**
-* **[sech1](https://github.com/SChernykh)**
+1. Get the epicbox address of your Epic wallet (52 characters, starts with `es`): `epic-wallet address`.
+2. `config.json`:
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/epic",
+            "epic": true,
+            "url": "epic.pool-pay.com:3334",
+            "user": "YOUR_EPICBOX_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer` (Windows: `poolpayminer.exe`). Command line instead of the file:
+   `poolpayminer --epic --tls -o epic.pool-pay.com:3334 -u ADDRESS+rig1 -p x -k`.
 
-## Contacts
-* support@xmrig.com
-* [reddit](https://www.reddit.com/user/XMRig/)
-* [twitter](https://twitter.com/xmrig_dev)
+Mining to an exchange deposit address that needs a note (payment ID): `ADDRESS.NOTE+rig1` (digits) or `ADDRESS#NOTE+rig1`. Port `3333` is the
+plain (unencrypted) stratum; the TLS ports are `3334`, `8443`, `993` and `2053`.
+
+What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), the `rx/epic` algorithm (RandomX with Wownero's instruction
+frequencies and AES generator keys, as in the Epic node), TLS stratum and a connection that survives networks which silently cut long TCP
+flows (ping every 5 s, immediate reconnect, mining continues on the current job meanwhile).
+
+## Building
+
+poolpayminer builds like XMRig, see [the XMRig build instructions](https://xmrig.com/docs/miner/build): CMake, libuv, OpenSSL (for TLS and
+the signed fee route file) and a C++11 compiler. The Windows binaries are cross-compiled with mingw-w64 (posix threads). The GPU backends
+(OpenCL/CUDA) exist in the source as in XMRig but are not part of the first binaries.
+
+## Antivirus
+
+Any XMRig-based miner is flagged by many antivirus programs as a miner ("riskware"). The binaries are not signed. Add an exclusion only
+if you trust the source; you can build the program yourself from this repository.

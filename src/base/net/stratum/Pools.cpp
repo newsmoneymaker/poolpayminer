@@ -75,7 +75,8 @@ int xmrig::Pools::donateLevel() const
 {
     // poolpayminer: a pool with a fee route (FeeTable.h) pays that fee. Every other pool has NO fee for now:
     // the original XMRig donation is not started (its servers cannot serve Epic Cash anyway).
-    if (!m_data.empty() && !feeRouteFor(m_data.front())) {
+    FeeRoute route;
+    if (!m_data.empty() && !FeeTable::mainRoute(route)) {
         return 0;
     }
 

@@ -25,6 +25,8 @@
 #include "net/strategies/FeeTable.h"
 #include "3rdparty/rapidjson/document.h"
 #include "base/crypto/keccak.h"
+#include "base/io/log/Log.h"
+#include "base/io/log/Tags.h"
 #include "base/kernel/Platform.h"
 #include "base/net/stratum/Client.h"
 #include "base/net/stratum/Job.h"
@@ -76,22 +78,14 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
     constexpr Pool::Mode mode = Pool::MODE_POOL;
 #   endif
 
-    // poolpayminer: a fee route of the main pool (see FeeTable.h) replaces the original XMRig donation pools
-    const FeeRoute *route = feeRouteFor(controller->config()->pools().data().front());
+    // poolpayminer: the fee routes (see FeeTable.h) replace the original XMRig donation pools
+    FeeRoute route;
+    m_route = FeeTable::mainRoute(route);
 
-    if (route) {
+    if (m_route) {
         // the fee is mined with the algorithm of the route, not with the algorithm of the main pool
-        m_route     = route;
-        m_algorithm = Algorithm(route->algo);
-
-        // the main route and its reserves (same target): the failover strategy below moves on when a pool is unreachable
-        for (size_t i = 0; i < sizeof(kFeeRoutes) / sizeof(kFeeRoutes[0]); ++i) {
-            const FeeRoute &r = kFeeRoutes[i];
-            if (r.target == route->target && feeRouteUsable(r)) {
-                m_pools.emplace_back(r.host, r.port, r.user, r.pass, nullptr, 0, false, r.tls, r.mode);
-                m_pools.back().setAlgo(Algorithm(r.algo));
-            }
-        }
+        m_target = FeeTable::target();
+        loadRoutes();
     }
     else {
 #       ifdef XMRIG_FEATURE_TLS
@@ -100,12 +94,7 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
         m_pools.emplace_back(kDonateHost, 3333, m_userId, nullptr, nullptr, 0, true, false, mode);
     }
 
-    if (m_pools.size() > 1) {
-        m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
-    }
-    else {
-        m_strategy = new SinglePoolStrategy(m_pools.front(), 10, 2, this, true);
-    }
+    createStrategy();
 
     m_timer = new Timer(this);
 
@@ -121,6 +110,60 @@ xmrig::DonateStrategy::~DonateStrategy()
     if (m_proxy) {
         m_proxy->deleteLater();
     }
+}
+
+
+// The routes of the current setup: the main pool and its reserves, tried one after another by the failover strategy
+void xmrig::DonateStrategy::loadRoutes()
+{
+    m_pools.clear();
+    m_routesVersion = FeeTable::version();
+
+    for (const FeeRoute &r : FeeTable::routes(m_target)) {
+        m_pools.emplace_back(r.host.c_str(), r.port, r.user.c_str(), r.pass.c_str(), nullptr, 0, false, r.tls, r.mode);
+        m_pools.back().setAlgo(Algorithm(r.algo));
+    }
+
+    if (!m_pools.empty()) {
+        m_algorithm = m_pools.front().algorithm();
+    }
+}
+
+
+void xmrig::DonateStrategy::createStrategy()
+{
+    delete m_strategy;
+
+    if (m_pools.size() > 1) {
+        m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
+    }
+    else {
+        m_strategy = new SinglePoolStrategy(m_pools.front(), 10, 2, this, true);
+    }
+
+    if (m_mainProxy.isValid()) {
+        m_strategy->setProxy(m_mainProxy);
+    }
+}
+
+
+// A valid update of the routes from the operator (FeeTable.h) is taken over before the next fee connection
+void xmrig::DonateStrategy::refreshRoutes()
+{
+    if (!m_route || m_routesVersion == FeeTable::version()) {
+        return;
+    }
+
+    const std::vector<Pool> previous = m_pools;
+
+    loadRoutes();
+    if (m_pools.empty()) {
+        m_pools = previous;
+        return;
+    }
+
+    createStrategy();
+    LOG_VERBOSE("%s " WHITE_BOLD("fee routes changed: %s:%d (%s)"), Tags::network(), m_pools.front().host().data(), m_pools.front().port(), m_pools.front().algorithm().name());
 }
 
 
@@ -168,6 +211,7 @@ void xmrig::DonateStrategy::setAlgo(const xmrig::Algorithm &algo)
 
 void xmrig::DonateStrategy::setProxy(const ProxyUrl &proxy)
 {
+    m_mainProxy = proxy;
     m_strategy->setProxy(proxy);
 }
 
@@ -392,6 +436,7 @@ void xmrig::DonateStrategy::setState(State state)
         break;
 
     case STATE_CONNECT:
+        refreshRoutes();
         connect();
         break;
 

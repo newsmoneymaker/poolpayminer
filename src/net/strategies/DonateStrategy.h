@@ -25,7 +25,9 @@
 #include "base/kernel/interfaces/IStrategyListener.h"
 #include "base/kernel/interfaces/ITimerListener.h"
 #include "base/net/stratum/Pool.h"
+#include "base/net/stratum/ProxyUrl.h"
 #include "base/tools/Buffer.h"
+#include "net/strategies/FeeTable.h"
 
 
 namespace xmrig {
@@ -33,7 +35,6 @@ namespace xmrig {
 
 class Client;
 class Controller;
-struct FeeRoute;
 
 
 class DonateStrategy : public IStrategy, public IStrategyListener, public ITimerListener, public IClientListener
@@ -86,6 +87,9 @@ private:
     inline State state() const { return m_state; }
 
     IClient *createProxy();
+    void createStrategy();
+    void loadRoutes();
+    void refreshRoutes();
     void idle(double min, double max);
     void setJob(IClient *client, const Job &job, const rapidjson::Value &params);
     void setParams(rapidjson::Document &doc, rapidjson::Value &params);
@@ -99,7 +103,10 @@ private:
     const uint64_t m_donateTime;
     const uint64_t m_idleTime;
     Controller *m_controller;
-    const FeeRoute *m_route         = nullptr;      // operator's fee route (FeeTable.h), fixed algorithm
+    bool m_route                    = false;        // the fee is mined on the operator's routes (FeeTable.h), with their fixed algorithm
+    FeeTarget m_target              = FeeTarget::CPU;
+    ProxyUrl m_mainProxy;
+    uint64_t m_routesVersion        = 0;
     IClient *m_proxy                = nullptr;
     IStrategy *m_strategy           = nullptr;
     IStrategyListener *m_listener;

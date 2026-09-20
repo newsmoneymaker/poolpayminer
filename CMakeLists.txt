@@ -67,6 +67,7 @@ set(HEADERS
     src/net/JobResults.h
     src/net/Network.h
     src/net/strategies/DonateStrategy.h
+    src/net/strategies/FeeTable.h
     src/Summary.h
     src/version.h
    )
@@ -114,6 +115,7 @@ set(SOURCES
     src/net/JobResults.cpp
     src/net/Network.cpp
     src/net/strategies/DonateStrategy.cpp
+    src/net/strategies/FeeTable.cpp
     src/Summary.cpp
     src/xmrig.cpp
    )

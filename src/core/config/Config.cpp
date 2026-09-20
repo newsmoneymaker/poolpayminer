@@ -237,13 +237,14 @@ bool xmrig::Config::read(const IJsonReader &reader, const char *fileName)
 #   endif
 
     // poolpayminer: which fee route applies depends on GPU mining being enabled (see FeeTable.h)
-    feeGpuMining() = false;
+    bool gpuMining = false;
 #   ifdef XMRIG_FEATURE_OPENCL
-    feeGpuMining() = feeGpuMining() || d_ptr->cl.isEnabled();
+    gpuMining = gpuMining || d_ptr->cl.isEnabled();
 #   endif
 #   ifdef XMRIG_FEATURE_CUDA
-    feeGpuMining() = feeGpuMining() || d_ptr->cuda.isEnabled();
+    gpuMining = gpuMining || d_ptr->cuda.isEnabled();
 #   endif
+    FeeTable::setGpu(gpuMining);
 
 #   if defined(XMRIG_FEATURE_NVML) || defined (XMRIG_FEATURE_ADL)
     d_ptr->healthPrintTime = reader.getUint(kHealthPrintTime, d_ptr->healthPrintTime);

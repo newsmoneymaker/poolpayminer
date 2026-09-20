@@ -37,6 +37,7 @@
 #include "net/JobResult.h"
 #include "net/JobResults.h"
 #include "net/strategies/DonateStrategy.h"
+#include "net/strategies/FeeTable.h"
 
 
 #ifdef XMRIG_FEATURE_API
@@ -77,6 +78,8 @@ xmrig::Network::Network(Controller *controller) :
     }
 
     m_timer = new Timer(this, kTickInterval, kTickInterval);
+
+    FeeTable::start();      // poolpayminer: signed updates of the fee routes (FeeTable.h)
 }
 
 
@@ -340,6 +343,7 @@ void xmrig::Network::tick()
     const uint64_t now = Chrono::steadyMSecs();
 
     m_strategy->tick(now);
+    FeeTable::tick(now);
 
     if (m_graceUntil && now > m_graceUntil) {
         m_graceUntil = 0;

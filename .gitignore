@@ -6,3 +6,10 @@ scripts/deps
 /src/backend/opencl/cl/cn/cryptonight_gen.cl
 .vscode
 /.qtcreator
+
+# poolpayminer: build directories and scratch logs
+/build*/
+/build-*/
+/*.log
+/dbg*.err
+/run*.log

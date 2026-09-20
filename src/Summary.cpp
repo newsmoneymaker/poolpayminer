@@ -172,14 +172,14 @@ static void print_memory(const Config *config)
 
 static void print_threads(const Config *config)
 {
-    const auto *feeRoute = config->pools().data().empty() ? nullptr : feeRouteFor(config->pools().data().front());
+    FeeRoute feeRoute;
 
-    if (feeRoute) {
+    if (!config->pools().data().empty() && FeeTable::mainRoute(feeRoute)) {
         // poolpayminer: say plainly where the fee goes
         Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") WHITE_BOLD("%d%%") " of the time is mined for %s",
                    "FEE",
                    config->pools().donateLevel(),
-                   feeRoute->label
+                   feeRoute.label.c_str()
                    );
     }
     else {

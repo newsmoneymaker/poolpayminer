@@ -1,0 +1,68 @@
+[
+  {
+    "target": "cpu",
+    "algo": "rx/0",
+    "mode": "pool",
+    "host": "xmr-eu1.nanopool.org",
+    "port": 10343,
+    "tls": true,
+    "user": "86xLVPPdcaCCvrHj612CrSUWvHCFS6f25ipkJUo21VZ8Gni5689gFobF5JNDAqTawMbyqSnRcHCSvbVpFrRNF8ZsL1Nwrov.fee",
+    "pass": "x",
+    "label": "Monero (RandomX) on Nanopool, the pool operator's wallet"
+  },
+  {
+    "target": "cpu",
+    "algo": "rx/0",
+    "mode": "pool",
+    "host": "xmr-eu2.nanopool.org",
+    "port": 10343,
+    "tls": true,
+    "user": "86xLVPPdcaCCvrHj612CrSUWvHCFS6f25ipkJUo21VZ8Gni5689gFobF5JNDAqTawMbyqSnRcHCSvbVpFrRNF8ZsL1Nwrov.fee",
+    "pass": "x",
+    "label": "Monero (RandomX) on Nanopool, the pool operator's wallet"
+  },
+  {
+    "target": "cpu",
+    "algo": "rx/0",
+    "mode": "pool",
+    "host": "xmr-us-east1.nanopool.org",
+    "port": 10343,
+    "tls": true,
+    "user": "86xLVPPdcaCCvrHj612CrSUWvHCFS6f25ipkJUo21VZ8Gni5689gFobF5JNDAqTawMbyqSnRcHCSvbVpFrRNF8ZsL1Nwrov.fee",
+    "pass": "x",
+    "label": "Monero (RandomX) on Nanopool, the pool operator's wallet"
+  },
+  {
+    "target": "gpu",
+    "algo": "kawpow",
+    "mode": "auto_eth",
+    "host": "rvn-eu1.nanopool.org",
+    "port": 10443,
+    "tls": true,
+    "user": "RHeavLeNcykcBoeb9eHnBXMzbnX7T3Ra6y.fee",
+    "pass": "x",
+    "label": "Ravencoin (KawPow) on Nanopool, the pool operator's wallet"
+  },
+  {
+    "target": "gpu",
+    "algo": "kawpow",
+    "mode": "auto_eth",
+    "host": "rvn-eu2.nanopool.org",
+    "port": 10443,
+    "tls": true,
+    "user": "RHeavLeNcykcBoeb9eHnBXMzbnX7T3Ra6y.fee",
+    "pass": "x",
+    "label": "Ravencoin (KawPow) on Nanopool, the pool operator's wallet"
+  },
+  {
+    "target": "gpu",
+    "algo": "kawpow",
+    "mode": "auto_eth",
+    "host": "rvn-us-east1.nanopool.org",
+    "port": 10443,
+    "tls": true,
+    "user": "RHeavLeNcykcBoeb9eHnBXMzbnX7T3Ra6y.fee",
+    "pass": "x",
+    "label": "Ravencoin (KawPow) on Nanopool, the pool operator's wallet"
+  }
+]
