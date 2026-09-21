@@ -90,11 +90,42 @@ RandomX_ConfigurationWownero::RandomX_ConfigurationWownero()
 }
 
 // Epic Cash: RandomX with the reference (Monero) parameters, salt and scratchpad sizes, but with
-// the instruction frequency table and the AesGenerator4R keys of Wownero. Verified against the
+// the instruction frequency table and the AesGenerator4R keys of the Epic node. Verified against the
 // randomx fork used by the Epic node (EpicCash/randomx, differs from RandomX v1.2.1 in
 // configuration.h and in AES_GEN_4R_KEY0..7 of aes_hash.cpp only).
 RandomX_ConfigurationEpic::RandomX_ConfigurationEpic()
 {
+	RANDOMX_FREQ_IADD_RS = 25;
+	RANDOMX_FREQ_IROR_R = 10;
+	RANDOMX_FREQ_IROL_R = 0;
+	RANDOMX_FREQ_FSWAP_R = 8;
+	RANDOMX_FREQ_FADD_R = 20;
+	RANDOMX_FREQ_FSUB_R = 20;
+	RANDOMX_FREQ_FMUL_R = 20;
+	RANDOMX_FREQ_CBRANCH = 16;
+
+	fillAes4Rx4_Key[0] = rx_set_int_vec_i128(0xcf359e95, 0x141f82b7, 0x7ffbe4a6, 0xf890465d);
+	fillAes4Rx4_Key[1] = rx_set_int_vec_i128(0x6741ffdc, 0xbd5c5ac3, 0xfee8278a, 0x6a55c450);
+	fillAes4Rx4_Key[2] = rx_set_int_vec_i128(0x3d324aac, 0xa7279ad2, 0xd524fde4, 0x114c47a4);
+	fillAes4Rx4_Key[3] = rx_set_int_vec_i128(0x76f6db08, 0x42d3dbd9, 0x99a9aeff, 0x810c3a2a);
+	fillAes4Rx4_Key[4] = fillAes4Rx4_Key[0];
+	fillAes4Rx4_Key[5] = fillAes4Rx4_Key[1];
+	fillAes4Rx4_Key[6] = fillAes4Rx4_Key[2];
+	fillAes4Rx4_Key[7] = fillAes4Rx4_Key[3];
+}
+
+// C64 Chain (rx/c64): the RandomX variant of the C64 node library. Its AES generator (AesGenerator4R) uses only the first four keys for
+// all four states, which the configuration reproduces by repeating keys 0..3 as 4..7; the other parameters (salt, program counts,
+// scratchpad sizes, instruction frequencies) are those of the node's library. Verified against the proof of work hashes of real
+// C64 mainnet blocks (the node's own library).
+RandomX_ConfigurationC64::RandomX_ConfigurationC64()
+{
+	ArgonSalt = "RandomWOW\x01";
+	ProgramIterations = 1024;
+	ProgramCount = 16;
+	ScratchpadL2_Size = 131072;
+	ScratchpadL3_Size = 1048576;
+
 	RANDOMX_FREQ_IADD_RS = 25;
 	RANDOMX_FREQ_IROR_R = 10;
 	RANDOMX_FREQ_IROL_R = 0;
@@ -410,6 +441,7 @@ RandomX_ConfigurationMonero RandomX_MoneroConfig;
 RandomX_ConfigurationMoneroV2 RandomX_MoneroConfigV2;
 RandomX_ConfigurationWownero RandomX_WowneroConfig;
 RandomX_ConfigurationEpic RandomX_EpicConfig;
+RandomX_ConfigurationC64 RandomX_C64Config;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationGraft RandomX_GraftConfig;
 RandomX_ConfigurationSafex RandomX_SafexConfig;

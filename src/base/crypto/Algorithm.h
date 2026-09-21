@@ -79,7 +79,8 @@ public:
         RX_GRAFT        = 0x72151267,   // "rx/graft"         RandomGRAFT (Graft).
         RX_SFX          = 0x72151273,   // "rx/sfx"           RandomSFX (Safex Cash).
         RX_YADA         = 0x72151279,   // "rx/yada"          RandomYada (YadaCoin).
-        RX_EPIC         = 0x72151257,   // "rx/epic"          RandomX with Wownero instruction frequencies (Epic Cash).
+        RX_EPIC         = 0x72151257,   // "rx/epic"          RandomX with the instruction frequencies of the Epic node (Epic Cash).
+        RX_C64          = 0x72151264,   // "rx/c64"           RandomX variant of C64 Chain.
         RX_VEIL         = 0x72151201,   // "rx/veil"          RandomX (reference configuration) over the double SHA-256 of the block header (Veil).
         AR2_CHUKWA      = 0x61130000,   // "argon2/chukwa"    Argon2id (Chukwa).
         AR2_CHUKWA_V2   = 0x61140000,   // "argon2/chukwav2"  Argon2id (Chukwa v2).
@@ -149,6 +150,7 @@ public:
     static const char *kRX_SFX;
     static const char *kRX_EPIC;
     static const char *kRX_VEIL;
+    static const char *kRX_C64;
     static const char *kRX_YADA;
 #   endif
 

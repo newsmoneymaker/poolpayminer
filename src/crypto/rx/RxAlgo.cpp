@@ -41,6 +41,9 @@ const RandomX_ConfigurationBase *xmrig::RxAlgo::base(Algorithm::Id algorithm)
     case Algorithm::RX_EPIC:
         return &RandomX_EpicConfig;
 
+    case Algorithm::RX_C64:
+        return &RandomX_C64Config;
+
     case Algorithm::RX_ARQ:
         return &RandomX_ArqmaConfig;
 
