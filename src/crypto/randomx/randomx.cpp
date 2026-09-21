@@ -46,6 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "backend/cpu/Cpu.h"
 #include "crypto/common/VirtualMemory.h"
 #include <mutex>
+#include <cstdlib>
+#include "crypto/randomx/xla/xla_hash.h"
 
 #include <cassert>
 
@@ -154,6 +156,29 @@ RandomX_ConfigurationScash::RandomX_ConfigurationScash()
 	Tweak_V2_COMMITMENT = 1;
 }
 
+// Scala (XLA): Panthera / DefyX, the node's own variant of RandomX (external/randomx of the Scala node, configuration.h).
+// The input hash is blake2b + yespower + K12 (xla/xla_hash.h). The frequencies of the instructions are the stock ones
+// except for IADD_RS 25 and CBRANCH 16 (the node's list is checked in configuration.h: every other value is the stock one).
+RandomX_ConfigurationXla::RandomX_ConfigurationXla()
+{
+	ArgonMemory       = 131072;
+	ArgonIterations   = 2;
+	ArgonSalt         = "DefyXScala\x13";
+	CacheAccesses     = 2;
+	DatasetBaseSize   = 33554432;
+	ScratchpadL1_Size = 65536;
+	ScratchpadL2_Size = 131072;
+	ScratchpadL3_Size = 262144;
+	ProgramSize       = 64;
+	ProgramIterations = 1024;
+	ProgramCount      = 4;
+
+	RANDOMX_FREQ_IADD_RS = 25;
+	RANDOMX_FREQ_CBRANCH = 16;
+
+	XlaHash = 1;
+}
+
 RandomX_ConfigurationArqma::RandomX_ConfigurationArqma()
 {
 	ArgonIterations = 1;
@@ -230,7 +255,12 @@ RandomX_ConfigurationBase::RandomX_ConfigurationBase()
 	, Tweak_V2_AES(0)
 	, Tweak_V2_PREFETCH(0)
 	, Tweak_V2_COMMITMENT(0)
+	, XlaHash(0)
 {
+	ArgonMemory     = 262144;
+	CacheAccesses   = 8;
+	DatasetBaseSize = 2147483648;
+
 	fillAes4Rx4_Key[0] = rx_set_int_vec_i128(0x99e5d23f, 0x2f546d2b, 0xd1833ddb, 0x6421aadd);
 	fillAes4Rx4_Key[1] = rx_set_int_vec_i128(0xa5dfcde5, 0x06f79d53, 0xb6913f55, 0xb20e3450);
 	fillAes4Rx4_Key[2] = rx_set_int_vec_i128(0x171c02bf, 0x0aa4679f, 0x515e7baf, 0x5c3ed904);
@@ -293,16 +323,47 @@ void RandomX_ConfigurationBase::Apply()
 	AddressMask_Calculated[2] = ScratchpadL1Mask_Calculated;
 	AddressMask_Calculated[3] = ScratchpadL1Mask_Calculated;
 
+	CacheLineAlignMask_Calculated = (DatasetBaseSize - 1) & ~(RANDOMX_DATASET_ITEM_SIZE - 1);
+
 	ScratchpadL3Mask_Calculated = (((ScratchpadL3_Size / sizeof(uint64_t)) - 1) * 8);
 	ScratchpadL3Mask64_Calculated = ((ScratchpadL3_Size / sizeof(uint64_t)) / 8 - 1) * 64;
 
 #if defined(XMRIG_FEATURE_ASM) && (defined(_M_X64) || defined(__x86_64__))
 	*(uint32_t*)(codeSshPrefetchTweaked + 3) = ArgonMemory * 16 - 1;
-	// Not needed right now because all variants use default dataset base size
-	//const uint32_t DatasetBaseMask = DatasetBaseSize - RANDOMX_DATASET_ITEM_SIZE;
-	//*(uint32_t*)(codeReadDatasetTweaked + 9) = DatasetBaseMask;
-	//*(uint32_t*)(codeReadDatasetTweaked + 24) = DatasetBaseMask;
-	//*(uint32_t*)(codeReadDatasetLightSshInitTweaked + 59) = DatasetBaseMask;
+
+	// The dataset read code of the static assembly carries the dataset mask of the stock 2 GiB dataset as a 32 bit immediate;
+	// copies with the mask of this configuration are what the JIT emits (Scala's dataset base is 32 MiB)
+	{
+		const uint32_t DatasetBaseMask = DatasetBaseSize - RANDOMX_DATASET_ITEM_SIZE;
+		auto addr = [](void (*func)()) {
+			const uint8_t* p = reinterpret_cast<const uint8_t*>(func);
+#			if defined(_MSC_VER)
+			if (p[0] == 0xE9) {
+				p += *(const int32_t*)(p + 1) + 5;
+			}
+#			endif
+			return p;
+		};
+		// (the light mode init code has the mask divided by 64: it is a block number)
+		auto tweak = [](const uint8_t* from, const uint8_t* to, uint8_t* dst, size_t capacity, uint32_t oldValue, uint32_t newValue) {
+			const size_t n = to - from;
+			if (n > capacity) {
+				abort();
+			}
+			memset(dst, 0, capacity);
+			memcpy(dst, from, n);
+			for (size_t i = 0; i + 4 <= n; ++i) {
+				uint32_t v;
+				memcpy(&v, dst + i, 4);
+				if (v == oldValue) {
+					memcpy(dst + i, &newValue, 4);
+				}
+			}
+		};
+		tweak(addr(randomx_program_read_dataset), addr(randomx_program_read_dataset_v2), codeReadDatasetTweaked, sizeof(codeReadDatasetTweaked), 2147483584U, DatasetBaseMask);
+		tweak(addr(randomx_program_read_dataset_v2), addr(randomx_program_read_dataset_sshash_init), codeReadDatasetV2Tweaked, sizeof(codeReadDatasetV2Tweaked), 2147483584U, DatasetBaseMask);
+		tweak(addr(randomx_program_read_dataset_sshash_init), addr(randomx_program_read_dataset_sshash_fin), codeReadDatasetLightSshInitTweaked, sizeof(codeReadDatasetLightSshInitTweaked), 2147483584U / 64, DatasetBaseMask / 64);
+	}
 
 	const bool hasBMI2 = xmrig::Cpu::info()->hasBMI2();
 
@@ -452,6 +513,7 @@ RandomX_ConfigurationWownero RandomX_WowneroConfig;
 RandomX_ConfigurationEpic RandomX_EpicConfig;
 RandomX_ConfigurationC64 RandomX_C64Config;
 RandomX_ConfigurationScash RandomX_ScashConfig;
+RandomX_ConfigurationXla RandomX_XlaConfig;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationGraft RandomX_GraftConfig;
 RandomX_ConfigurationSafex RandomX_SafexConfig;
@@ -668,6 +730,7 @@ extern "C" {
 		assert(output != nullptr);
 		alignas(16) uint64_t tempHash[8];
 		rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), input, inputSize);
+		if (RandomX_CurrentConfig.XlaHash) rx_xla_finish_input_hash(tempHash);
 		machine->initScratchpad(&tempHash);
 		machine->resetRoundingMode();
 		for (uint32_t chain = 0; chain < RandomX_CurrentConfig.ProgramCount - 1; ++chain) {
@@ -680,6 +743,7 @@ extern "C" {
 
 	void randomx_calculate_hash_first(randomx_vm* machine, uint64_t (&tempHash)[8], const void* input, size_t inputSize) {
 		rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), input, inputSize);
+		if (RandomX_CurrentConfig.XlaHash) rx_xla_finish_input_hash(tempHash);
 		machine->initScratchpad(tempHash);
 	}
 
@@ -695,6 +759,7 @@ extern "C" {
 
 		// Finish current hash and fill the scratchpad for the next hash at the same time
 		rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), nextInput, nextInputSize);
+		if (RandomX_CurrentConfig.XlaHash) rx_xla_finish_input_hash(tempHash);
 		machine->hashAndFill(output, tempHash);
 	}
 

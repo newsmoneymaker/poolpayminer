@@ -734,7 +734,7 @@ namespace randomx {
 	template<size_t N>
 	void JitCompilerRV64::generateSuperscalarHash(SuperscalarProgram(&programs)[N]) {
 		if (vectorCode) {
-			entryDataInitVector = generateDatasetInitVectorRV64(vectorCode, programs, RandomX_ConfigurationBase::CacheAccesses);
+			entryDataInitVector = generateDatasetInitVectorRV64(vectorCode, programs, RandomX_CurrentConfig.CacheAccesses);
 			// No return here because we also need the scalar dataset init function for the light mode
 		}
 
@@ -744,7 +744,7 @@ namespace randomx {
 
 		std::pair<uint32_t, uint32_t> lastLiteral{ 0xFFFFFFFFUL, 0xFFFFFFFFUL };
 
-		for (int j = RandomX_ConfigurationBase::CacheAccesses - 1; (j >= 0) && (lastLiteral.first == 0xFFFFFFFFUL); --j) {
+		for (int j = RandomX_CurrentConfig.CacheAccesses - 1; (j >= 0) && (lastLiteral.first == 0xFFFFFFFFUL); --j) {
 			SuperscalarProgram& prog = programs[j];
 			for (int i = prog.getSize() - 1; i >= 0; --i) {
 				if (prog(i).opcode == static_cast<uint8_t>(SuperscalarInstructionType::IMUL_RCP)) {
@@ -755,14 +755,14 @@ namespace randomx {
 			}
 		}
 
-		for (unsigned j = 0; j < RandomX_ConfigurationBase::CacheAccesses; ++j) {
+		for (unsigned j = 0; j < RandomX_CurrentConfig.CacheAccesses; ++j) {
 			SuperscalarProgram& prog = programs[j];
 			for (unsigned i = 0; i < prog.getSize(); ++i) {
 				Instruction instr = prog(i);
 				generateSuperscalarCode(state, instr, (j == lastLiteral.first) && (i == lastLiteral.second));
 			}
 			state.emit(codeSshLoad, sizeSshLoad);
-			if (j < RandomX_ConfigurationBase::CacheAccesses - 1) {
+			if (j < RandomX_CurrentConfig.CacheAccesses - 1) {
 				int32_t fixPos = state.codePos;
 				state.emit(codeSshPrefetch, sizeSshPrefetch);
 				//and x7, x{addrReg}, x7

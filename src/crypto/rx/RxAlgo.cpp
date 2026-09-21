@@ -44,6 +44,9 @@ const RandomX_ConfigurationBase *xmrig::RxAlgo::base(Algorithm::Id algorithm)
     case Algorithm::RX_C64:
         return &RandomX_C64Config;
 
+    case Algorithm::RX_XLA:
+        return &RandomX_XlaConfig;
+
     case Algorithm::RX_SCASH:
         return &RandomX_ScashConfig;
 
