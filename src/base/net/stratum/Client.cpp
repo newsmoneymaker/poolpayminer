@@ -306,7 +306,7 @@ void xmrig::Client::deleteLater()
 void xmrig::Client::tick(uint64_t now)
 {
     if (m_state == ConnectedState) {
-        if (m_pool.mode() == Pool::MODE_EPIC && epicWatch(now)) {
+        if (m_pool.isResilient() && epicWatch(now)) {
             return;
         }
 
@@ -341,7 +341,7 @@ void xmrig::Client::onResolved(const DnsRecords &records, int status, const char
     }
 
     if (status < 0 && records.isEmpty()) {
-        if (m_pool.mode() == Pool::MODE_EPIC && m_failures >= 0) {
+        if (m_pool.isResilient() && m_failures >= 0) {
             LOG_VERBOSE("%s " YELLOW("DNS error: ") "%s", tag(), error);
         }
         else if (!isQuiet()) {
@@ -1132,7 +1132,7 @@ void xmrig::Client::ping()
 void xmrig::Client::read(ssize_t nread, const uv_buf_t *buf)
 {
     const auto size = static_cast<size_t>(nread);
-    const bool epic = m_pool.mode() == Pool::MODE_EPIC;
+    const bool epic = m_pool.isResilient();
 
     if (nread < 0) {
         if (epic) {
@@ -1210,7 +1210,7 @@ void xmrig::Client::reconnect()
 
     setState(ReconnectingState);
 
-    if (m_pool.mode() == Pool::MODE_EPIC) {
+    if (m_pool.isResilient()) {
         const uint64_t now = Chrono::steadyMSecs();
 
         if (m_planned) {
@@ -1232,9 +1232,19 @@ void xmrig::Client::reconnect()
 }
 
 
+// Does the pool answer a ping? Then every answer is proof that the link is alive, and a link that stays silent is dead.
+// Epic pools and the pool of Veil (rx/veil) do, and so does every pool that announced the "keepalive" extension. For any
+// other pool nothing is known about how it reacts to a ping (it may say nothing for minutes between jobs), so it is not
+// pinged and is not declared dead: it only gets the quiet reconnect and the grace period.
+bool xmrig::Client::pingable() const
+{
+    return m_pool.mode() == Pool::MODE_EPIC || m_pool.algorithm() == Algorithm::RX_VEIL || has<EXT_KEEPALIVE>();
+}
+
+
 bool xmrig::Client::epicWatch(uint64_t now)
 {
-    if (now > m_lastRx + kEpicDeadTimeout) {
+    if (pingable() && now > m_lastRx + kEpicDeadTimeout) {
         LOG_VERBOSE("%s " YELLOW("no data from the pool for %d s, renewing the connection"), tag(), static_cast<int>((now - m_lastRx) / 1000));
 
         epicLearn(m_lastRx > m_connectedAt ? m_lastRx - m_connectedAt : 0);
@@ -1322,7 +1332,7 @@ void xmrig::Client::startTimeout()
 {
     m_expire = 0;
 
-    if (m_pool.mode() == Pool::MODE_EPIC) {
+    if (pingable()) {
         // always ping: the answers are what tells a live link from one that was silently cut
         m_keepAlive = Chrono::steadyMSecs() + kEpicPingInterval;
         return;

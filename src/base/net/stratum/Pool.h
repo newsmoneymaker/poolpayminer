@@ -113,6 +113,12 @@ public:
     inline const Url &daemon() const                    { return m_daemon; }
     inline int keepAlive() const                        { return m_keepAlive; }
     inline Mode mode() const                            { return m_mode; }
+
+    // A connection that dies is renewed at once and quietly, and mining goes on with the current job meanwhile (see
+    // Client::epicWatch and Network::onPause): some networks silently cut long-lived TCP flows and a person must not be
+    // bothered by that. True for every pool and every algorithm. (Pinging the pool and declaring a silent link dead
+    // is a separate matter, see Client::pingable().)
+    inline bool isResilient() const                     { return true; }
     inline uint16_t port() const                        { return m_url.port(); }
     inline int zmq_port() const                         { return m_zmqPort; }
     inline uint64_t pollInterval() const                { return m_pollInterval; }

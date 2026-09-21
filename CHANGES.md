@@ -1,3 +1,14 @@
+# Quiet reconnects for every pool and algorithm (1.1.2)
+
+* A connection that dies (some networks reset or silently drop long-lived TCP flows) is renewed at once and quietly for **every pool and every
+  algorithm**, not only for Epic: no "read error", no "no active pools, stop mining" line, mining goes on with the current job meanwhile (up to 60 s).
+  The messages are shown with `--verbose`. Code: `Pool::isResilient()`, `Client::read/reconnect/tick`, `Network::onPause/onActive`.
+* Pinging the pool every 5 s and renewing a link that has been silent for 20 s is done only for pools that are known to answer a ping: Epic
+  pools, Veil (`rx/veil`) and every pool that announces the `keepalive` extension (`Client::pingable()`). Any other pool is not pinged and not
+  declared dead (it may say nothing for minutes between jobs); it only gets the quiet reconnect.
+* Tested against a proxy that reset the connection every 25 s and against one that silently dropped all traffic: the miner reconnected each time
+  within a second, printed no error lines, and shares kept being accepted.
+
 # Windows 7 compatibility (1.1.1)
 
 * The Windows builds are linked with libuv 1.48.0. That version calls `GetSystemTimePreciseAsFileTime` (Windows 8 and newer) directly, so the

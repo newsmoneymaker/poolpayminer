@@ -88,7 +88,7 @@ private:
     IStrategy *m_strategy   = nullptr;
     NetworkState *m_state   = nullptr;
     Timer *m_timer          = nullptr;
-    bool m_epic             = false;    // the main pool speaks the Epic stratum
+    bool m_resilient        = false;    // a lost connection is renewed quietly, mining goes on meanwhile (every pool)
     bool m_quietJob         = false;    // the next job is the one we already had, delivered again after a reconnect
     uint64_t m_graceUntil   = 0;        // Epic: connection is being renewed, mining goes on until this moment
     uint64_t m_height       = 0;        // height of the last job of the main pool
