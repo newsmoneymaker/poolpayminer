@@ -155,6 +155,11 @@ xmrig::Pool::Pool(const rapidjson::Value &object) :
         m_mode      = MODE_EPIC;
         m_algorithm = Algorithm::RX_EPIC;
     }
+    else if (m_algorithm == Algorithm::RX_EPIC) {
+        // "-a rx/epic" without --epic: rx/epic exists only for Epic Cash and its node speaks Epic's own stratum, the usual
+        // XMRig protocol would log in and never get a job (a very easy mistake: the connection looks fine and nothing happens)
+        m_mode = MODE_EPIC;
+    }
 }
 
 

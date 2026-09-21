@@ -59,6 +59,7 @@ pool and coin you mine yourself. The other 99% of the time the miner works for y
 ```
 3. Start `poolpayminer` (Windows: `poolpayminer.exe`). Command line instead of the file:
    `poolpayminer --epic --tls -o epic.pool-pay.com:3334 -u ADDRESS+rig1 -p x -k`.
+   (Since 1.1.3 `-a rx/epic` alone also switches on the Epic protocol; older versions need `--epic`.)
 
 Mining to an exchange deposit address that needs a note (payment ID): `ADDRESS.NOTE+rig1` (digits) or `ADDRESS#NOTE+rig1`. Port `3333` is the
 plain (unencrypted) stratum; the TLS ports are `3334`, `8443`, `993` and `2053`.
