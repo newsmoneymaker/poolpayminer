@@ -1,3 +1,11 @@
+# Errors of a pool that was never reachable are shown; -a rx/epic implies --epic (1.1.3)
+
+* The quiet handling of lost connections (1.1.2) now applies only to a pool in which the miner has already logged in once. The errors of a pool that was
+  never reachable (`connect error`, `DNS error`, `read error`) are shown again; before, a wrong address or a closed port left the window silent.
+  Code: `Client::m_confirmed`.
+* `-a rx/epic` (or `"algo": "rx/epic"`) switches on the Epic stratum by itself. Without `--epic` the miner used the usual XMRig protocol against the Epic
+  node: the login went through, no job ever arrived, the connection was closed after 9 s and reopened, and nothing was printed. Code: `Pool::Pool(json)`.
+
 # Quiet reconnects for every pool and algorithm (1.1.2)
 
 * A connection that dies (some networks reset or silently drop long-lived TCP flows) is renewed at once and quietly for **every pool and every

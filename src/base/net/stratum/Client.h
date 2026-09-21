@@ -162,6 +162,8 @@ private:
     uint64_t m_deaths[2]        = {};      // Epic: lifetimes (ms) of the last two connections that died on their own
     uint64_t m_rotate           = 0;       // Epic: renew the connection after this many ms (0 = never)
     bool m_planned              = false;   // Epic: the connection is being closed on purpose
+    bool m_confirmed            = false;   // a login on this pool was accepted at least once: only then are lost connections handled quietly,
+                                           // the errors of a pool that was never reachable (typo, closed port) must be shown
     uintptr_t m_key             = 0;
     uv_tcp_t *m_socket          = nullptr;
 

@@ -341,7 +341,7 @@ void xmrig::Client::onResolved(const DnsRecords &records, int status, const char
     }
 
     if (status < 0 && records.isEmpty()) {
-        if (m_pool.isResilient() && m_failures >= 0) {
+        if (m_pool.isResilient() && m_confirmed) {
             LOG_VERBOSE("%s " YELLOW("DNS error: ") "%s", tag(), error);
         }
         else if (!isQuiet()) {
@@ -879,7 +879,8 @@ void xmrig::Client::parseResponse(int64_t id, const rapidjson::Value &result, co
             return;
         }
 
-        m_failures = 0;
+        m_failures  = 0;
+        m_confirmed = true;
         m_listener->onLoginSuccess(this);
 
         if (m_job.isValid()) {
@@ -1094,8 +1095,9 @@ void xmrig::Client::parseEpicResponse(int64_t id, const rapidjson::Value &result
     if (id == 1) {
         // login accepted. The node does not push a job on login: ask for one, the following jobs are pushed
         setRpcId("epic");
-        m_failures = 0;
-        m_jobs     = 0;
+        m_failures  = 0;
+        m_confirmed = true;
+        m_jobs      = 0;
         m_listener->onLoginSuccess(this);
         requestEpicJob();
 
@@ -1135,7 +1137,7 @@ void xmrig::Client::read(ssize_t nread, const uv_buf_t *buf)
     const bool epic = m_pool.isResilient();
 
     if (nread < 0) {
-        if (epic) {
+        if (epic && m_confirmed) {
             // The link is renewed at once and mining goes on with the current job, see Network::onPause: worth a line
             // only when the person asked for verbose output. A pool that stays unreachable is reported by Network.
             if (!m_planned) {
@@ -1393,7 +1395,7 @@ void xmrig::Client::onConnect(uv_connect_t *req, int status)
     }
 
     if (status < 0) {
-        if (client->m_pool.mode() == Pool::MODE_EPIC && client->m_failures >= 0) {
+        if (client->m_pool.isResilient() && client->m_confirmed) {
             // We were logged in before: the pool restarts or the network hiccups, the miner keeps working on its job
             // (see Network::onPause). If the pool stays away for a minute Network says so.
             LOG_VERBOSE("%s %s " YELLOW("connect error: ") "%s", client->tag(), client->ip().data(), uv_strerror(status));
