@@ -1,3 +1,10 @@
+# The algorithm rx/c64 for C64 Chain (1.1.4)
+
+* New algorithm `rx/c64` (`Algorithm::RX_C64`, alias `randomx/c64`, `randomc64`): the RandomX variant of the C64 Chain node (parameters and AES generator keys as in the node's library;
+  checked against the node's own library and the proof of work of real C64 mainnet blocks, and by mining real shares against a pool that validates with the node's library).
+  Configuration: `RandomX_ConfigurationC64`.
+* `packaging/c64/config.json`: ready config for c64.pool-pay.com.
+
 # Errors of a pool that was never reachable are shown; -a rx/epic implies --epic (1.1.3)
 
 * The quiet handling of lost connections (1.1.2) now applies only to a pool in which the miner has already logged in once. The errors of a pool that was
@@ -66,7 +73,7 @@ Files changed relative to the original (git diff --stat b2ca724..HEAD):
 
 Summary:
 - Epic Cash stratum protocol (RandomX) as an extra pool mode: --epic / "epic": true.
-- New RandomX variant rx/epic = RandomX with Wownero instruction frequencies and AES generator keys, as used by the Epic node.
+- New RandomX variant rx/epic = RandomX with the instruction frequencies and AES generator keys of the Epic node.
 - Fee route table (net/strategies/FeeTable.h): with an Epic pool as main pool, 1% of the time (1 minute in 100) is mined for the pool operator; the banner says so. For every other pool the fee is 0%: the original XMRig donation is not started.
 - A job with all difficulties 0 (sent by the node right after a new block) is ignored instead of reconnecting.
 - New name, new icon (res/app.ico), --epic in the usage text, EPIC_DEBUG diagnostics.
