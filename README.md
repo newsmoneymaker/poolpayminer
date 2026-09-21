@@ -64,8 +64,11 @@ Mining to an exchange deposit address that needs a note (payment ID): `ADDRESS.N
 plain (unencrypted) stratum; the TLS ports are `3334`, `8443`, `993` and `2053`.
 
 What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), the `rx/epic` algorithm (RandomX with Wownero's instruction
-frequencies and AES generator keys, as in the Epic node), TLS stratum and a connection that survives networks which silently cut long TCP
-flows (ping every 5 s, immediate reconnect, mining continues on the current job meanwhile).
+frequencies and AES generator keys, as in the Epic node) and TLS stratum.
+
+For **every pool and algorithm** the miner also survives networks which silently cut long TCP flows: a lost connection is renewed at once and
+quietly (no error lines unless `--verbose`), mining continues on the current job meanwhile; pools that answer a ping (Epic, Veil, pools with the
+`keepalive` extension) are pinged every 5 s so that a silently dead link is noticed within 20 s.
 
 ## Veil (VEIL) quick start
 

@@ -124,6 +124,7 @@ private:
     void parse(char *line, size_t len);
     void parseExtensions(const rapidjson::Value &result);
     void parseResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error);
+    bool pingable() const;
     bool epicWatch(uint64_t now);
     void epicLearn(uint64_t age);
     void ping();

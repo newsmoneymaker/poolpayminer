@@ -134,7 +134,7 @@ void xmrig::Network::onActive(IStrategy *strategy, IClient *client)
     }
 #   endif
 
-    m_epic = pool.mode() == Pool::MODE_EPIC;
+    m_resilient = pool.isResilient();
 
     if (m_graceUntil) {
         // The connection was renewed while the miner kept working: nothing the person has to know, see onPause()
@@ -230,7 +230,7 @@ void xmrig::Network::onPause(IStrategy *strategy)
     }
 
     if (!m_strategy->isActive()) {
-        if (m_epic) {
+        if (m_resilient) {
             // The Epic client renews its connection within a second (some networks cut long-lived flows). Keep hashing the
             // current job meanwhile; tick() stops the miner if the pool stays away for longer than kEpicGrace.
             if (!m_graceUntil) {
