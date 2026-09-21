@@ -46,6 +46,12 @@ if (WITH_RANDOMX)
         src/crypto/randomx/vm_compiled.cpp
         src/crypto/randomx/vm_interpreted_light.cpp
         src/crypto/randomx/vm_interpreted.cpp
+        src/crypto/randomx/xla/xla_hash.c
+        src/crypto/randomx/xla/yespower/yespower-opt.c
+        src/crypto/randomx/xla/yespower/sha256.c
+        src/crypto/randomx/xla/k12/KangarooTwelve.c
+        src/crypto/randomx/xla/k12/KeccakP-1600-reference.c
+        src/crypto/randomx/xla/k12/KeccakSpongeWidth1600.c
         src/crypto/rx/Rx.cpp
         src/crypto/rx/RxAlgo.cpp
         src/crypto/rx/RxBasicStorage.cpp

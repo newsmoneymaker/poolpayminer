@@ -352,10 +352,10 @@ namespace randomx {
 		generateProgramPrologue(prog, pcfg);
 
 		if (RandomX_CurrentConfig.Tweak_V2_PREFETCH) {
-			emit(codeReadDatasetV2, readDatasetV2Size, code, codePos);
+			emit(RandomX_CurrentConfig.codeReadDatasetV2Tweaked, readDatasetV2Size, code, codePos);
 		}
 		else {
-			emit(codeReadDataset, readDatasetSize, code, codePos);
+			emit(RandomX_CurrentConfig.codeReadDatasetTweaked, readDatasetSize, code, codePos);
 		}
 
 		generateProgramEpilogue(prog, pcfg);
@@ -363,7 +363,7 @@ namespace randomx {
 
 	void JitCompilerX86::generateProgramLight(Program& prog, ProgramConfiguration& pcfg, uint32_t datasetOffset) {
 		generateProgramPrologue(prog, pcfg);
-		emit(codeReadDatasetLightSshInit, readDatasetLightInitSize, code, codePos);
+		emit(RandomX_CurrentConfig.codeReadDatasetLightSshInitTweaked, readDatasetLightInitSize, code, codePos);
 		*(uint32_t*)(code + codePos) = 0xc381;
 		codePos += 2;
 		emit32(datasetOffset / CacheLineSize, code, codePos);

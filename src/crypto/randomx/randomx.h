@@ -67,17 +67,19 @@ struct RandomX_ConfigurationBase
 	// Common parameters for all RandomX variants
 	enum Params : uint64_t
 	{
-		ArgonMemory = 262144,
-		CacheAccesses = 8,
 		SuperscalarMaxLatency = 170,
-		DatasetBaseSize = 2147483648,
 		DatasetExtraSize = 33554368,
 		JumpBits = 8,
 		JumpOffset = 8,
-		CacheLineAlignMask_Calculated = (DatasetBaseSize - 1) & ~(RANDOMX_DATASET_ITEM_SIZE - 1),
 		DatasetExtraItems_Calculated = DatasetExtraSize / RANDOMX_DATASET_ITEM_SIZE,
 		ConditionMask_Calculated = ((1 << JumpBits) - 1) << JumpOffset,
 	};
+
+	// poolpayminer: these three are members (they are constants in stock RandomX) because Scala's variant of RandomX
+	// (Panthera / DefyX) has a 128 MiB cache, 2 cache accesses per dataset item and a 32 MiB dataset base
+	uint32_t ArgonMemory;
+	uint32_t CacheAccesses;
+	uint32_t DatasetBaseSize;
 
 	uint32_t ArgonIterations;
 	uint32_t ArgonLanes;
@@ -129,11 +131,18 @@ struct RandomX_ConfigurationBase
 	uint32_t Tweak_V2_AES : 1;
 	uint32_t Tweak_V2_PREFETCH : 1;
 	uint32_t Tweak_V2_COMMITMENT : 1;
+	uint32_t XlaHash : 1;                // Scala: the blake2b of the input is followed by yespower and K12 (xla/xla_hash.h)
 
 	uint8_t codeSshPrefetchTweaked[20];
 	uint8_t codePrefetchScratchpadTweaked[28];
 	uint32_t codePrefetchScratchpadTweakedSize;
 
+	// x86 JIT: the dataset read code of the static assembly with the dataset mask of this configuration (see Apply())
+	uint8_t codeReadDatasetTweaked[80];
+	uint8_t codeReadDatasetV2Tweaked[80];
+	uint8_t codeReadDatasetLightSshInitTweaked[144];
+
+	uint32_t CacheLineAlignMask_Calculated;
 	uint32_t AddressMask_Calculated[4];
 	uint32_t ScratchpadL3Mask_Calculated;
 	uint32_t ScratchpadL3Mask64_Calculated;
@@ -153,6 +162,7 @@ struct RandomX_ConfigurationWownero : public RandomX_ConfigurationBase { RandomX
 struct RandomX_ConfigurationEpic : public RandomX_ConfigurationBase { RandomX_ConfigurationEpic(); };
 struct RandomX_ConfigurationC64 : public RandomX_ConfigurationBase { RandomX_ConfigurationC64(); };
 struct RandomX_ConfigurationScash : public RandomX_ConfigurationBase { RandomX_ConfigurationScash(); };
+struct RandomX_ConfigurationXla : public RandomX_ConfigurationBase { RandomX_ConfigurationXla(); };
 struct RandomX_ConfigurationArqma : public RandomX_ConfigurationBase { RandomX_ConfigurationArqma(); };
 struct RandomX_ConfigurationGraft : public RandomX_ConfigurationBase { RandomX_ConfigurationGraft(); };
 struct RandomX_ConfigurationSafex : public RandomX_ConfigurationBase { RandomX_ConfigurationSafex(); };
@@ -164,6 +174,7 @@ extern RandomX_ConfigurationWownero RandomX_WowneroConfig;
 extern RandomX_ConfigurationEpic RandomX_EpicConfig;
 extern RandomX_ConfigurationC64 RandomX_C64Config;
 extern RandomX_ConfigurationScash RandomX_ScashConfig;
+extern RandomX_ConfigurationXla RandomX_XlaConfig;
 extern RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 extern RandomX_ConfigurationGraft RandomX_GraftConfig;
 extern RandomX_ConfigurationSafex RandomX_SafexConfig;

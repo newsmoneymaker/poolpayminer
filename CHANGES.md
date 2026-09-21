@@ -1,3 +1,14 @@
+# The algorithm rx/xla for Scala (1.1.6)
+
+* New algorithm `rx/xla` (`Algorithm::RX_XLA`, aliases `randomx/xla`, `panthera`): Scala's variant of RandomX ("Panthera" / DefyX). Configuration `RandomX_ConfigurationXla`: Argon2 salt
+  `DefyXScala\x13`, 128 MiB cache with 2 accesses, 32 MiB dataset base, scratchpads 64 KiB / 128 KiB / 256 KiB, 64 instruction programs, 1024 iterations, 4 programs per hash. The
+  input of every hash is `blake2b` followed by yespower 1.0 (N = 2048, r = 8) and KangarooTwelve (`src/crypto/randomx/xla`, the sources of the node's library).
+  Checked against the node's own library: the hashes of the miner and of the library are equal for the same job, and blocks built by the pool and found by this miner are accepted by a mock node that
+  verifies with the library.
+* RandomX changes needed for that: `ArgonMemory`, `CacheAccesses` and `DatasetBaseSize` are members of the configuration (constants before), the x86 JIT emits copies of the dataset read code
+  with the dataset mask of the configuration (`codeReadDatasetTweaked` and the like, made in `Apply()`), `CacheLineAlignMask` is taken from the current configuration.
+* `packaging/xla/config.json`: ready config for scala.pool-pay.com.
+
 # The algorithm rx/scash for Satoshi Cash (1.1.5)
 
 * New algorithm `rx/scash` (`Algorithm::RX_SCASH`, alias `randomx/scash`, `randomscash`): Satoshi Cash (SCASH) proof of work, RandomX 1.2.1 with the Argon2 salt

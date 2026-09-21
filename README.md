@@ -151,9 +151,35 @@ poolpayminer knows the Satoshi Cash algorithm `rx/scash` (RandomX with a commitm
 ```
 3. Start `poolpayminer`. Command line: `poolpayminer -a rx/scash --tls -o scash.pool-pay.com:5051 -u ADDRESS+rig1 -p x -k`.
 
+## Scala (XLA) quick start
+
+poolpayminer knows the Scala algorithm `rx/xla` (Panthera, a RandomX variant with yespower and KangarooTwelve). The pool `scala.pool-pay.com` (source:
+[scala-nodejs-pool](https://github.com/newsmoneymaker/scala-nodejs-pool)) speaks the usual XMRig stratum with the extension `algo`.
+
+1. Get a Scala address (`Ss...` / `Sv...`, 97 characters) from the Scala wallet (`address`).
+2. `config.json` (also `config-xla.json` in the package):
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/xla",
+            "url": "scala.pool-pay.com:9701",
+            "user": "YOUR_SCALA_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/xla --tls -o scala.pool-pay.com:9701 -u ADDRESS+rig1 -p x -k`.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64` and `rx/scash`. Only
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`. Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
 `epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
 Nanopool); all other algorithms are XMRig's code, unchanged.
@@ -164,6 +190,7 @@ Nanopool); all other algorithms are XMRig's code, unchanged.
 | **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
 | **`rx/scash`** | **Satoshi Cash (SCASH)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target | RandomX | CPU |
+| **`rx/xla`** | **Scala (XLA)**: Panthera, RandomX variant with its own parameters and blake2b + yespower + KangarooTwelve as the input hash | RandomX | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
 | `rx/wow` | Wownero (WOW) | RandomX | CPU |
