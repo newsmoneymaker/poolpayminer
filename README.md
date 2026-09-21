@@ -177,6 +177,12 @@ poolpayminer knows the Scala algorithm `rx/xla` (Panthera, a RandomX variant wit
 ```
 3. Start `poolpayminer`. Command line: `poolpayminer -a rx/xla --tls -o scala.pool-pay.com:9701 -u ADDRESS+rig1 -p x -k`.
 
+**Power saving for Scala ("Diardi rest").** In the Scala network every block whose height is divisible by 4 can only be mined by the allow-listed "Diardi" miners of the Scala team (a rule of
+the network), so about a third of the time every miner's hashing is wasted. poolpayminer is the miner that knows this: the pool marks such a block, the miner switches its CPU to rest instead of burning
+electricity for nothing (about 35% less power and heat on average, with the same earnings), says so in its window, says so in its window (`Scala: resting while block N is found ...`) and resumes by itself when the block is found (usually within
+a couple of minutes). While it rests the hashrate shown by the miner is 0: this is not a fault, and the pool's hashrate figure is an average that is lower by the resting part. `--no-diardi-pause` (or
+`"diardi-pause": false` in `config.json`) keeps the miner hashing all the time. A miner that does not know the rule keeps hashing for nothing during those blocks.
+
 ## Supported algorithms
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`. Only

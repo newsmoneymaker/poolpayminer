@@ -335,6 +335,25 @@ void xmrig::Network::setJob(IClient *client, const Job &job, bool donate)
     }
 
     m_controller->miner()->setJob(job, donate);
+
+    // Scala: every block whose height is divisible by 4 can only be mined by the allow-listed "Diardi" miners of the Scala team (a rule of the
+    // network). The pool marks the job; hashing for it is useless, so the miner rests until the next job (unless --no-diardi-pause).
+    if (!donate) {
+        if (job.isDiardi() && m_controller->config()->pools().diardiPause()) {
+            m_controller->miner()->pause();
+
+            if (!m_diardiPaused) {
+                m_diardiPaused = true;
+                LOG_NOTICE("%s " YELLOW_BOLD("Scala: resting") " while block " WHITE_BOLD("%" PRIu64) " is found: every 4th block belongs to the allow-listed Diardi miners of the Scala team"
+                           " (a rule of the network, nobody else can mine it, it is not a fault of the miner or of the pool). The hashrate drops to 0 for a couple of minutes and mining resumes by itself."
+                           " Use " WHITE_BOLD("--no-diardi-pause") " to keep hashing.", Tags::network(), job.height());
+            }
+        }
+        else if (m_diardiPaused) {
+            m_diardiPaused = false;
+            LOG_NOTICE("%s " GREEN_BOLD("Scala: the Diardi block was found, mining resumes") " (height " WHITE_BOLD("%" PRIu64) ")", Tags::network(), job.height());
+        }
+    }
 }
 
 

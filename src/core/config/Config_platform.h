@@ -54,6 +54,7 @@ static const option options[] = {
     { "log-file",              1, nullptr, IConfig::LogFileKey            },
     { "nicehash",              0, nullptr, IConfig::NicehashKey           },
     { "no-color",              0, nullptr, IConfig::ColorKey              },
+    { "no-diardi-pause",       0, nullptr, IConfig::DiardiPauseKey        },
     { "no-huge-pages",         0, nullptr, IConfig::HugePagesKey          },
     { "no-hugepages",          0, nullptr, IConfig::HugePagesKey          },
     { "hugepage-size",         1, nullptr, IConfig::HugePageSizeKey       },

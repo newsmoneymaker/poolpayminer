@@ -87,6 +87,7 @@ R"===(
     },
     "donate-level": 1,
     "donate-over-proxy": 1,
+    "diardi-pause": true,
     "log-file": null,
     "pools": [
         {

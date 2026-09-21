@@ -7,6 +7,10 @@
   verifies with the library.
 * RandomX changes needed for that: `ArgonMemory`, `CacheAccesses` and `DatasetBaseSize` are members of the configuration (constants before), the x86 JIT emits copies of the dataset read code
   with the dataset mask of the configuration (`codeReadDatasetTweaked` and the like, made in `Apply()`), `CacheLineAlignMask` is taken from the current configuration.
+* Power saving for Scala: the miner rests at "Diardi" blocks (`--no-diardi-pause`, config `"diardi-pause": false` to switch it off): every block whose height is divisible by 4 can only be mined by the allow-listed
+  miners of the Scala team, so hashing for it is useless. The pool marks such a job (`"diardi": true`, `Job::isDiardi()`); the miner pauses (`Network::setJob`), says why in its window
+  ("Scala: resting while block N is found ...") and resumes by itself with the next job ("Scala: the Diardi block was found, mining resumes"). The hashrate shown by the miner drops to 0 meanwhile,
+  the fee (donation) rounds are not affected. Without the flag from the pool nothing changes.
 * `packaging/xla/config.json`: ready config for scala.pool-pay.com.
 
 # The algorithm rx/scash for Satoshi Cash (1.1.5)

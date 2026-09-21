@@ -82,6 +82,8 @@ public:
     }
     // Veil: RandomX runs over the double SHA-256 of the blob and the hash is read like Epic's (big endian, first 8 bytes)
     inline bool isVeil() const                          { return m_algorithm.id() == Algorithm::RX_VEIL; }
+    inline bool isDiardi() const                        { return m_diardi; }               // Scala: nobody but the allow-listed miners can find this block
+    inline void setDiardi(bool diardi)                  { m_diardi = diardi; }
     inline bool bigEndianValue() const                  { return m_epic || isVeil(); }
     inline bool isValid() const                         { return (m_size > 0 && m_diff > 0) || !m_poolWallet.isEmpty(); }
     inline bool setId(const char *id)                   { return (m_id = id); }
@@ -164,6 +166,7 @@ private:
     void copy(const Job &other);
     void move(Job &&other);
 
+    bool m_diardi = false;
     Algorithm m_algorithm;
     bool m_nicehash     = false;
     bool m_epic         = false;

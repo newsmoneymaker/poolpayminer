@@ -42,6 +42,7 @@ namespace xmrig {
 
 
 const char *Pools::kDonateLevel     = "donate-level";
+const char *Pools::kDiardiPause     = "diardi-pause";
 const char *Pools::kDonateOverProxy = "donate-over-proxy";
 const char *Pools::kPools           = "pools";
 const char *Pools::kRetries         = "retries";
@@ -167,6 +168,7 @@ void xmrig::Pools::load(const IJsonReader &reader)
     }
 
     setDonateLevel(reader.getInt(kDonateLevel, kDefaultDonateLevel));
+    m_diardiPause = reader.getBool(kDiardiPause, true);
     setProxyDonate(reader.getInt(kDonateOverProxy, PROXY_DONATE_AUTO));
     setRetries(reader.getInt(kRetries));
     setRetryPause(reader.getInt(kRetryPause));
@@ -216,6 +218,7 @@ void xmrig::Pools::toJSON(rapidjson::Value &out, rapidjson::Document &doc) const
 #   endif
 
     doc.AddMember(StringRef(kDonateLevel),      m_donateLevel, allocator);
+    doc.AddMember(StringRef(kDiardiPause),      m_diardiPause, allocator);
     doc.AddMember(StringRef(kDonateOverProxy),  m_proxyDonate, allocator);
     out.AddMember(StringRef(kPools),            toJSON(doc), allocator);
     doc.AddMember(StringRef(kRetries),          retries(), allocator);

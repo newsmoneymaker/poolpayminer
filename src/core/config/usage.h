@@ -74,6 +74,7 @@ static inline const std::string &usage()
     u += "  -R, --retry-pause=N           time to pause between retries (default: 5)\n";
     u += "      --user-agent              set custom user-agent string for pool\n";
     u += "      --donate-level=N          donate level, default 1%% (1 minute in 100 minutes)\n";
+    u += "      --no-diardi-pause         Scala: keep hashing while the pool waits for a block of the allow-listed Diardi miners\n";
     u += "      --donate-over-proxy=N     control donate over xmrig-proxy feature\n";
 
     u += "\nCPU backend:\n";

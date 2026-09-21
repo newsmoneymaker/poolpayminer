@@ -294,6 +294,7 @@ void xmrig::Job::copy(const Job &other)
     m_backend    = other.m_backend;
     m_diff       = other.m_diff;
     m_height     = other.m_height;
+    m_diardi     = other.m_diardi;
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = other.m_seed;
@@ -347,6 +348,7 @@ void xmrig::Job::move(Job &&other)
     m_backend    = other.m_backend;
     m_diff       = other.m_diff;
     m_height     = other.m_height;
+    m_diardi     = other.m_diardi;
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = std::move(other.m_seed);

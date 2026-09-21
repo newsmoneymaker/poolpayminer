@@ -44,6 +44,7 @@ class Pools
 {
 public:
     static const char *kDonateLevel;
+    static const char *kDiardiPause;
     static const char *kDonateOverProxy;
     static const char *kPools;
     static const char *kRetries;
@@ -73,6 +74,7 @@ public:
 
     bool isEqual(const Pools &other) const;
     int donateLevel() const;
+    inline bool diardiPause() const { return m_diardiPause; }
     IStrategy *createStrategy(IStrategyListener *listener) const;
     rapidjson::Value toJSON(rapidjson::Document &doc) const;
     size_t active() const;
@@ -87,6 +89,7 @@ private:
     void setRetries(int retries);
     void setRetryPause(int retryPause);
 
+    bool m_diardiPause = true;
     int m_donateLevel;
     int m_retries               = 5;
     int m_retryPause            = 5;
