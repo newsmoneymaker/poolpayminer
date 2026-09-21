@@ -90,7 +90,7 @@ RandomX_ConfigurationWownero::RandomX_ConfigurationWownero()
 }
 
 // Epic Cash: RandomX with the reference (Monero) parameters, salt and scratchpad sizes, but with
-// the instruction frequency table and the AesGenerator4R keys of the Epic node. Verified against the
+// the instruction frequency table and the AesGenerator4R keys of Wownero. Verified against the
 // randomx fork used by the Epic node (EpicCash/randomx, differs from RandomX v1.2.1 in
 // configuration.h and in AES_GEN_4R_KEY0..7 of aes_hash.cpp only).
 RandomX_ConfigurationEpic::RandomX_ConfigurationEpic()

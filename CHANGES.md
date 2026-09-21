@@ -73,7 +73,7 @@ Files changed relative to the original (git diff --stat b2ca724..HEAD):
 
 Summary:
 - Epic Cash stratum protocol (RandomX) as an extra pool mode: --epic / "epic": true.
-- New RandomX variant rx/epic = RandomX with the instruction frequencies and AES generator keys of the Epic node.
+- New RandomX variant rx/epic = RandomX with Wownero instruction frequencies and AES generator keys, as used by the Epic node.
 - Fee route table (net/strategies/FeeTable.h): with an Epic pool as main pool, 1% of the time (1 minute in 100) is mined for the pool operator; the banner says so. For every other pool the fee is 0%: the original XMRig donation is not started.
 - A job with all difficulties 0 (sent by the node right after a new block) is ignored instead of reconnecting.
 - New name, new icon (res/app.ico), --epic in the usage text, EPIC_DEBUG diagnostics.

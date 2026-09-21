@@ -5,7 +5,7 @@ affiliated with the XMRig developers. It keeps XMRig's algorithms and adds the *
 variant (`rx/epic`), so that the miner can mine on Epic Cash pools such as `epic.pool-pay.com`. The original XMRig README is kept in
 [README-XMRIG.md](README-XMRIG.md).
 
-**CPU miner for Epic Cash (EPIC, RandomX `rx/epic`), Monero (XMR, RandomX `rx/0`), Raptoreum (GhostRider), Argon2 coins (Chukwa,
+**CPU miner for Epic Cash (EPIC, RandomX `rx/epic`), Monero (XMR, RandomX `rx/0`), Wownero, Raptoreum (GhostRider), Argon2 coins (Chukwa,
 WRKZ), CryptoNight coins (Conceal, Uplexa, Haven and others).** Windows x64 first; pool: [epic.pool-pay.com](https://epic.pool-pay.com).
 
 License: GNU GPL v3 (see [LICENSE](LICENSE)). All changes to XMRig are listed in [CHANGES.md](CHANGES.md); third-party licenses (including
@@ -64,8 +64,8 @@ pool and coin you mine yourself. The other 99% of the time the miner works for y
 Mining to an exchange deposit address that needs a note (payment ID): `ADDRESS.NOTE+rig1` (digits) or `ADDRESS#NOTE+rig1`. Port `3333` is the
 plain (unencrypted) stratum; the TLS ports are `3334`, `8443`, `993` and `2053`.
 
-What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), the `rx/epic` algorithm (RandomX with the instruction
-frequencies and AES generator keys of the Epic node) and TLS stratum.
+What the Epic support adds to XMRig: the Epic Cash stratum protocol (`--epic`), the `rx/epic` algorithm (RandomX with Wownero's instruction
+frequencies and AES generator keys, as in the Epic node) and TLS stratum.
 
 For **every pool and algorithm** the miner also survives networks which silently cut long TCP flows: a lost connection is renewed at once and
 quietly (no error lines unless `--verbose`), mining continues on the current job meanwhile; pools that answer a ping (Epic, Veil, pools with the
@@ -134,11 +134,12 @@ Nanopool); all other algorithms are XMRig's code, unchanged.
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
-| **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with the Epic node's instruction frequencies and AES keys | RandomX | CPU |
+| **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with Wownero's instruction frequencies and AES keys, as in the Epic node | RandomX | CPU |
 | **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
+| `rx/wow` | Wownero (WOW) | RandomX | CPU |
 | `rx/arq` | Arqma (ARQ) | RandomX | CPU |
 | `rx/graft` | Graft (GRFT) | RandomX | CPU |
 | `rx/sfx` | Safex Cash (SFX) | RandomX | CPU |
@@ -171,5 +172,5 @@ Any XMRig-based miner is flagged by many antivirus programs as a miner ("riskwar
 if you trust the source; you can build the program yourself from this repository.
 
 ---
-Keywords: RandomX miner, Epic Cash miner, EPIC mining, rx/epic, Monero RandomX CPU miner, GhostRider Raptoreum CPU miner, Argon2 Chukwa, CryptoNight,
+Keywords: RandomX miner, Epic Cash miner, EPIC mining, rx/epic, Monero RandomX CPU miner, Wownero, GhostRider Raptoreum CPU miner, Argon2 Chukwa, CryptoNight,
 XMRig fork, Windows miner, epic.pool-pay.com.
