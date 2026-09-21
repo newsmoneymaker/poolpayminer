@@ -145,6 +145,15 @@ RandomX_ConfigurationC64::RandomX_ConfigurationC64()
 	fillAes4Rx4_Key[7] = fillAes4Rx4_Key[3];
 }
 
+// Satoshi Cash (rx/scash): RandomX v1.2.1 with its own Argon2 salt. The 112 byte block header (nonce at byte 76, the hashRandomX field zero) is
+// hashed as it is; a block is valid by the RandomX commitment of the header and the hash, not by the hash itself, which is what the
+// commitment tweak of the CPU worker computes (the hash goes to the pool as "commitment", the commitment as the result).
+RandomX_ConfigurationScash::RandomX_ConfigurationScash()
+{
+	ArgonSalt = "RandomX-Scash\x01";
+	Tweak_V2_COMMITMENT = 1;
+}
+
 RandomX_ConfigurationArqma::RandomX_ConfigurationArqma()
 {
 	ArgonIterations = 1;
@@ -442,6 +451,7 @@ RandomX_ConfigurationMoneroV2 RandomX_MoneroConfigV2;
 RandomX_ConfigurationWownero RandomX_WowneroConfig;
 RandomX_ConfigurationEpic RandomX_EpicConfig;
 RandomX_ConfigurationC64 RandomX_C64Config;
+RandomX_ConfigurationScash RandomX_ScashConfig;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationGraft RandomX_GraftConfig;
 RandomX_ConfigurationSafex RandomX_SafexConfig;

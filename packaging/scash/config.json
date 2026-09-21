@@ -1,0 +1,15 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/scash",
+            "url": "scash.pool-pay.com:5051",
+            "user": "YOUR_SCASH_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
