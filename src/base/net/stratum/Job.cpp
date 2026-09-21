@@ -174,6 +174,11 @@ size_t xmrig::Job::nonceOffset() const
         return 147;
     }
 
+    if (algorithm() == Algorithm::RX_SCASH) {
+        // Satoshi Cash: 112 byte header (version, prev hash, merkle root, time, bits, NONCE, hashRandomX)
+        return 76;
+    }
+
     if (algorithm() == Algorithm::RX_VEIL) {
         // Veil: 148 byte header (version, prev hash, merkle root, witness root, accumulators, time, bits, NONCE, height)
         return 140;

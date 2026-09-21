@@ -81,6 +81,7 @@ public:
         RX_YADA         = 0x72151279,   // "rx/yada"          RandomYada (YadaCoin).
         RX_EPIC         = 0x72151257,   // "rx/epic"          RandomX with Wownero instruction frequencies (Epic Cash).
         RX_C64          = 0x72151264,   // "rx/c64"           RandomX variant of C64 Chain.
+        RX_SCASH        = 0x72151253,   // "rx/scash"         RandomX with its own Argon2 salt over the 112 byte block header, block valid by the RandomX commitment (Satoshi Cash).
         RX_VEIL         = 0x72151201,   // "rx/veil"          RandomX (reference configuration) over the double SHA-256 of the block header (Veil).
         AR2_CHUKWA      = 0x61130000,   // "argon2/chukwa"    Argon2id (Chukwa).
         AR2_CHUKWA_V2   = 0x61140000,   // "argon2/chukwav2"  Argon2id (Chukwa v2).
@@ -150,6 +151,7 @@ public:
     static const char *kRX_SFX;
     static const char *kRX_EPIC;
     static const char *kRX_VEIL;
+    static const char *kRX_SCASH;
     static const char *kRX_C64;
     static const char *kRX_YADA;
 #   endif

@@ -125,9 +125,35 @@ poolpayminer knows the C64 Chain algorithm `rx/c64` (a RandomX variant). The poo
 ```
 3. Start `poolpayminer`. Command line: `poolpayminer -a rx/c64 --tls -o c64.pool-pay.com:6667 -u ADDRESS+rig1 -p x -k`.
 
+## Satoshi Cash (SCASH) quick start
+
+poolpayminer knows the Satoshi Cash algorithm `rx/scash` (RandomX with a commitment). The pool `scash.pool-pay.com` (source:
+[scash-nodejs-pool](https://github.com/newsmoneymaker/scash-nodejs-pool)) speaks the usual XMRig stratum with the extension `algo`.
+
+1. Get a native SegWit address of Satoshi Cash (`scash1q...`, 45 characters) from the Scash wallet (`getnewaddress "" bech32`).
+2. `config.json` (also `config-scash.json` in the package):
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/scash",
+            "url": "scash.pool-pay.com:5051",
+            "user": "YOUR_SCASH_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/scash --tls -o scash.pool-pay.com:5051 -u ADDRESS+rig1 -p x -k`.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil` and `rx/c64`. Only
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64` and `rx/scash`. Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
 `epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
 Nanopool); all other algorithms are XMRig's code, unchanged.
@@ -137,6 +163,7 @@ Nanopool); all other algorithms are XMRig's code, unchanged.
 | **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with Wownero's instruction frequencies and AES keys, as in the Epic node | RandomX | CPU |
 | **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
+| **`rx/scash`** | **Satoshi Cash (SCASH)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target | RandomX | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
 | `rx/wow` | Wownero (WOW) | RandomX | CPU |

@@ -1,3 +1,12 @@
+# The algorithm rx/scash for Satoshi Cash (1.1.5)
+
+* New algorithm `rx/scash` (`Algorithm::RX_SCASH`, alias `randomx/scash`, `randomscash`): Satoshi Cash (SCASH) proof of work, RandomX 1.2.1 with the Argon2 salt
+  `RandomX-Scash\x01` and the commitment: the value compared with the target is `randomx_calculate_commitment(header, hash)`, the hash itself goes into the block header.
+  Configuration: `RandomX_ConfigurationScash` (`Tweak_V2_COMMITMENT`). The job is the 112 byte block header with the nonce at offset 76; the result carries the commitment
+  as the share value and the RandomX hash as the extra field `commitment` (`JobResult::hasCommitment`). Checked against the real node (`scashd`, regtest): blocks found by the miner
+  are accepted by the node.
+* `packaging/scash/config.json`: ready config for scash.pool-pay.com.
+
 # The algorithm rx/c64 for C64 Chain (1.1.4)
 
 * New algorithm `rx/c64` (`Algorithm::RX_C64`, alias `randomx/c64`, `randomc64`): the RandomX variant of the C64 Chain node (parameters and AES generator keys as in the node's library;
