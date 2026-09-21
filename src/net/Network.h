@@ -90,6 +90,7 @@ private:
     Timer *m_timer          = nullptr;
     bool m_resilient        = false;    // a lost connection is renewed quietly, mining goes on meanwhile (every pool)
     bool m_quietJob         = false;    // the next job is the one we already had, delivered again after a reconnect
+    bool m_diardiPaused     = false;    // Scala: the miner rests while a block of the allow-listed Diardi miners is found
     uint64_t m_graceUntil   = 0;        // Epic: connection is being renewed, mining goes on until this moment
     uint64_t m_height       = 0;        // height of the last job of the main pool
 };

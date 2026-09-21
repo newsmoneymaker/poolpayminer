@@ -64,6 +64,7 @@ public:
         ProxyDonateKey       = 1017,
         DaemonKey            = 1018,
         EpicKey              = 1990,
+        DiardiPauseKey       = 1991,
         DaemonPollKey        = 1019,
         SelfSelectKey        = 1028,
         DataDirKey           = 1035,

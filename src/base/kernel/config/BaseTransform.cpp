@@ -265,6 +265,7 @@ void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const ch
         return transformBoolean(doc, key, true);
 
     case IConfig::ColorKey:          /* --no-color */
+    case IConfig::DiardiPauseKey:    /* --no-diardi-pause */
     case IConfig::HttpRestrictedKey: /* --http-no-restricted */
     case IConfig::NoTitleKey:        /* --no-title */
         return transformBoolean(doc, key, false);
@@ -307,6 +308,9 @@ void xmrig::BaseTransform::transformBoolean(rapidjson::Document &doc, int key, b
 
     case IConfig::ColorKey: /* --no-color */
         return set(doc, BaseConfig::kColors, enable);
+
+    case IConfig::DiardiPauseKey: /* --no-diardi-pause */
+        return set(doc, Pools::kDiardiPause, enable);
 
     case IConfig::HttpRestrictedKey: /* --http-no-restricted */
         m_http = true;
