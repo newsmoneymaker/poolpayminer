@@ -1,3 +1,10 @@
+# Windows 7 compatibility (1.1.1)
+
+* The Windows builds are linked with libuv 1.48.0. That version calls `GetSystemTimePreciseAsFileTime` (Windows 8 and newer) directly, so the
+  program did not start on Windows 7 ("entry point ... not found in kernel32.dll"). The patch `packaging/windows/libuv-1.48.0-windows7.patch`
+  looks the function up at run time and falls back to `GetSystemTimeAsFileTime`. Apply it to the libuv 1.48.0 source before building the Windows
+  binary (`patch -p1 < libuv-1.48.0-windows7.patch` in the libuv directory, paths are `a/src/win/util.c`). No change for Linux.
+
 # Veil support (rx/veil)
 
 * New algorithm `rx/veil` (id 0x72151201, alias `randomx/veil`): the RandomX reference configuration (same as `rx/0`) fed with the double

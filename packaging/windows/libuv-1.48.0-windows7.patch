@@ -1,0 +1,24 @@
+--- a/src/win/util.c	2026-09-21 09:32:08.664226296 +0200
++++ b/src/win/util.c	2026-09-21 09:32:08.664226296 +0200
+@@ -446,7 +446,20 @@
+       ts->tv_nsec = t % 1000000000;
+       return 0;
+     case UV_CLOCK_REALTIME:
+-      GetSystemTimePreciseAsFileTime(&ft);
++      {
++        /* poolpayminer: GetSystemTimePreciseAsFileTime exists only since Windows 8; look it up at run time and fall back
++           to GetSystemTimeAsFileTime so that the program also starts on Windows 7. */
++        typedef VOID (WINAPI *uv__precise_time_fn)(LPFILETIME);
++        static uv__precise_time_fn uv__precise_time = (uv__precise_time_fn) (ULONG_PTR) -1;
++        if (uv__precise_time == (uv__precise_time_fn) (ULONG_PTR) -1) {
++          HMODULE k32 = GetModuleHandleA("kernel32.dll");
++          uv__precise_time = k32 ? (uv__precise_time_fn) GetProcAddress(k32, "GetSystemTimePreciseAsFileTime") : NULL;
++        }
++        if (uv__precise_time != NULL)
++          uv__precise_time(&ft);
++        else
++          GetSystemTimeAsFileTime(&ft);
++      }
+       /* In 100-nanosecond increments from 1601-01-01 UTC because why not? */
+       t = (int64_t) ft.dwHighDateTime << 32 | ft.dwLowDateTime;
+       /* Convert to UNIX epoch, 1970-01-01. Still in 100 ns increments. */
