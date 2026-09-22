@@ -179,13 +179,40 @@ poolpayminer knows the Scala algorithm `rx/xla` (Panthera, a RandomX variant wit
 
 **Power saving for Scala ("Diardi rest").** In the Scala network every block whose height is divisible by 4 can only be mined by the allow-listed "Diardi" miners of the Scala team (a rule of
 the network), so about a third of the time every miner's hashing is wasted. poolpayminer is the miner that knows this: the pool marks such a block, the miner switches its CPU to rest instead of burning
-electricity for nothing (about 35% less power and heat on average, with the same earnings), says so in its window, says so in its window (`Scala: resting while block N is found ...`) and resumes by itself when the block is found (usually within
+electricity for nothing (about 35% less power and heat on average, with the same earnings), says so in its window (`Scala: resting while block N is found ...`) and resumes by itself when the block is found (usually within
 a couple of minutes). While it rests the hashrate shown by the miner is 0: this is not a fault, and the pool's hashrate figure is an average that is lower by the resting part. `--no-diardi-pause` (or
 `"diardi-pause": false` in `config.json`) keeps the miner hashing all the time. A miner that does not know the rule keeps hashing for nothing during those blocks.
 
+## Riecoin (RIC) quick start
+
+Riecoin's proof of work has nothing to do with RandomX: instead of hashes, it looks for constellations of prime numbers (GMP arithmetic), which needs completely different code
+that cannot run on XMRig's CPU backend. poolpayminer ships the Riecoin team's own [rieMiner](https://github.com/RiecoinTeam/rieMiner) (MIT licence) right next to itself: give
+`-a ric`, and poolpayminer turns `-o`/`-u`/`-p` into a `rieMiner.conf` and runs rieMiner for you, so you keep using the one program and the one command line for every coin on
+pool-pay.com, this one included. The pool `ric.pool-pay.com` (source: [Riecoin's StellaPool](https://github.com/RiecoinTeam/StellaPool)) speaks Stratum.
+
+1. Get a Riecoin address (`ric1...`) from the Riecoin Core wallet.
+2. `config.json` (also `config-ric.json` in the package):
+```json
+{
+    "pools": [
+        {
+            "algo": "ric",
+            "url": "ric.pool-pay.com:PORT",
+            "user": "YOUR_RIECOIN_ADDRESS+rig1",
+            "pass": "x"
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a ric -o ric.pool-pay.com:PORT -u ADDRESS+rig1 -p x`.
+4. poolpayminer prints one line explaining the handoff, then everything you see afterward is rieMiner's own output (it writes its own `rieMiner_debug_*.log` files too). Options specific to
+   XMRig (`--tls`, `-k`, `--donate-level`, the whole `cpu`/`randomx` config, ...) do not apply here and are ignored; rieMiner is configured only through `Mode`/`Host`/`Port`/`Username`/`Password`
+   in the generated conf, which is exactly what `-a`/`-o`/`-u`/`-p` give it.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`. Only
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`, and dispatches `ric` to the
+bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
 `epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
 Nanopool); all other algorithms are XMRig's code, unchanged.

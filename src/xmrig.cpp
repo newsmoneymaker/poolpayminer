@@ -19,11 +19,17 @@
 #include "App.h"
 #include "base/kernel/Entry.h"
 #include "base/kernel/Process.h"
+#include "riecoin/Dispatch.h"
 
 
 int main(int argc, char **argv)
 {
     using namespace xmrig;
+
+    int riecoinExitCode = 0;
+    if (riecoin::maybeDispatch(argc, argv, riecoinExitCode)) {
+        return riecoinExitCode;
+    }
 
     Process process(argc, argv);
     const Entry::Id entry = Entry::get(process);
