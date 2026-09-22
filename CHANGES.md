@@ -1,3 +1,12 @@
+# Riecoin (ric): one miner, two engines (1.1.7)
+
+* New algorithm `ric` for Riecoin, but it is not RandomX and does not run on XMRig's own code: Riecoin's proof of work looks for constellations of prime numbers (GMP), a different kind of
+  computation entirely. poolpayminer now ships the Riecoin team's own [rieMiner](https://github.com/RiecoinTeam/rieMiner) (MIT licence) next to itself, statically built for Linux x64 and
+  Windows x64. Give `-a ric`, and `src/riecoin/Dispatch.cpp` (checked at the very start of `main()`, before any of XMRig's own argument parsing, so every other algorithm is untouched) turns
+  `-o`/`-u`/`-p` (or the `pools[0]` of `-c config.json`) into a `rieMiner.conf` next to the executable and runs the bundled `rieMiner`/`rieMiner.exe` with inherited console output, returning
+  its exit code. The result is one program and one familiar command line for every pool-pay.com coin, Riecoin included, even though the actual mining code underneath is a separate project.
+* `packaging/ric/config.json`: ready config for ric.pool-pay.com.
+
 # The algorithm rx/xla for Scala (1.1.6)
 
 * New algorithm `rx/xla` (`Algorithm::RX_XLA`, aliases `randomx/xla`, `panthera`): Scala's variant of RandomX ("Panthera" / DefyX). Configuration `RandomX_ConfigurationXla`: Argon2 salt

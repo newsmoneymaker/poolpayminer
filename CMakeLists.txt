@@ -116,6 +116,7 @@ set(SOURCES
     src/net/Network.cpp
     src/net/strategies/DonateStrategy.cpp
     src/net/strategies/FeeTable.cpp
+    src/riecoin/Dispatch.cpp
     src/Summary.cpp
     src/xmrig.cpp
    )
