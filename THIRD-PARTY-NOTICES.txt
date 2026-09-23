@@ -437,10 +437,12 @@ From the eXtended Keccak Code Package (XKCP) by the Keccak team, implementation 
 all copyright and related rights to the source code (CC0, http://creativecommons.org/publicdomain/zero/1.0/); the files keep their original headers.
 
 ================================================================================
-rieMiner (bundled as a separate program: rieMiner / rieMiner.exe), used by the algorithm ric (Riecoin)
+rieMiner (embedded, extracted to rieMiner / rieMiner.exe next to poolpayminer on first use), used by the algorithm ric (Riecoin)
 ================================================================================
 rieMiner is not part of poolpayminer's own source and is not linked into it: it is the Riecoin team's own program (github.com/RiecoinTeam/rieMiner), built unmodified from their public
-source and shipped as a separate executable next to poolpayminer. poolpayminer only writes it a configuration file and starts it (src/riecoin/Dispatch.cpp). Licence (MIT-style):
+source. Its compiled binary is embedded as data in poolpayminer's own executable (tools/embed_binary.py, generated/RieMinerBlob.cpp) and written back out to a plain file next to poolpayminer
+the first time it is needed; poolpayminer only writes it a configuration file and runs it as a separate program from there (src/riecoin/Dispatch.cpp) -- nothing of rieMiner's code runs inside
+poolpayminer's own process. Licence (MIT-style):
 
 Copyright 2017-2020 Pttn and contributors
 

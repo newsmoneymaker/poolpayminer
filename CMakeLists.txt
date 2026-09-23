@@ -102,6 +102,31 @@ else()
     set(HEADERS_CRYPTO "${HEADERS_CRYPTO}" src/crypto/cn/CryptoNight_x86.h)
 endif()
 
+# Riecoin: embed the platform's rieMiner binary into poolpayminer itself (tools/embed_binary.py; extracted back to
+# disk by src/riecoin/Dispatch.cpp before it is run) so one downloaded file is enough for -a ric, instead of
+# poolpayminer[.exe] and rieMiner[.exe] having to be kept together (a real support problem: a user who replaced only
+# poolpayminer.exe on an update got a silent instant-exit because rieMiner.exe was missing next to it).
+set(RIEMINER_BIN_DIR "/root/claude/ric" CACHE PATH "Directory containing the prebuilt rieMiner binaries to embed")
+if (XMRIG_OS_WIN)
+    set(RIEMINER_SRC_BIN "${RIEMINER_BIN_DIR}/rieMiner-win64.exe")
+else()
+    set(RIEMINER_SRC_BIN "${RIEMINER_BIN_DIR}/rieMiner-linux-x64")
+endif()
+set(RIEMINER_BLOB_CPP "${CMAKE_BINARY_DIR}/generated/RieMinerBlob.cpp")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated")
+if (EXISTS "${RIEMINER_SRC_BIN}")
+    execute_process(
+        COMMAND python3 "${CMAKE_SOURCE_DIR}/tools/embed_binary.py" "${RIEMINER_SRC_BIN}" "${RIEMINER_BLOB_CPP}" "kRieMinerBlob"
+        RESULT_VARIABLE RIEMINER_EMBED_RESULT
+    )
+    if (NOT RIEMINER_EMBED_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to embed rieMiner binary from ${RIEMINER_SRC_BIN}")
+    endif()
+else()
+    message(WARNING "rieMiner binary not found at ${RIEMINER_SRC_BIN}: this build's -a ric will not be able to extract its own copy. Set -DRIEMINER_BIN_DIR=... or place the binaries there.")
+    file(WRITE "${RIEMINER_BLOB_CPP}" "namespace xmrig {\nnamespace riecoin {\nextern const unsigned char kRieMinerBlob[] = {0};\nextern const unsigned long kRieMinerBlob_len = 0UL;\n}\n}\n")
+endif()
+
 set(SOURCES
     "${SOURCES_BASE}"
     "${SOURCES_BASE_HTTP}"
@@ -117,6 +142,7 @@ set(SOURCES
     src/net/strategies/DonateStrategy.cpp
     src/net/strategies/FeeTable.cpp
     src/riecoin/Dispatch.cpp
+    "${RIEMINER_BLOB_CPP}"
     src/Summary.cpp
     src/xmrig.cpp
    )

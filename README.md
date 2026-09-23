@@ -186,9 +186,10 @@ a couple of minutes). While it rests the hashrate shown by the miner is 0: this 
 ## Riecoin (RIC) quick start
 
 Riecoin's proof of work has nothing to do with RandomX: instead of hashes, it looks for constellations of prime numbers (GMP arithmetic), which needs completely different code
-that cannot run on XMRig's CPU backend. poolpayminer ships the Riecoin team's own [rieMiner](https://github.com/RiecoinTeam/rieMiner) (MIT licence) right next to itself: give
-`-a ric`, and poolpayminer turns `-o`/`-u`/`-p` into a `rieMiner.conf` and runs rieMiner for you, so you keep using the one program and the one command line for every coin on
-pool-pay.com, this one included. The pool `ric.pool-pay.com` (source: [Riecoin's StellaPool](https://github.com/RiecoinTeam/StellaPool)) speaks Stratum.
+that cannot run on XMRig's CPU backend. poolpayminer has the Riecoin team's own [rieMiner](https://github.com/RiecoinTeam/rieMiner) (MIT licence) built right into it (`tools/embed_binary.py`,
+`src/riecoin/Dispatch.cpp`): give `-a ric`, and it extracts rieMiner next to itself the first time it's needed, turns `-o`/`-u`/`-p` into a `rieMiner.conf` and runs it for you, so a single
+downloaded file is enough and you keep using the one program and the one command line for every coin on pool-pay.com, this one included. The pool `ric.pool-pay.com` (source: [Riecoin's
+StellaPool](https://github.com/RiecoinTeam/StellaPool)) speaks Stratum.
 
 **Login is just the address, with no `+worker` suffix and no password.** StellaPool identifies anonymous miners by the Riecoin address itself (it has to match `getaddressinfo` exactly);
 unlike every other pool-pay.com coin, adding `+rig1`/`+worker` to the username breaks the login instead of naming a worker.
