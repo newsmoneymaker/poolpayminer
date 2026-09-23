@@ -1,3 +1,13 @@
+# Riecoin: hand-tuned rieMiner settings survive a restart (1.1.10)
+
+* `poolpayminer-ric.conf` was fully rewritten on every start (Mode/Host/Port/Username/Password, 5 fixed lines), so a user who added `Threads`/`PrimeTableLimit` by hand to fit their RAM -- exactly what
+  1.1.7's README told them to do -- lost the change the next time poolpayminer (not just rieMiner) restarted, silently back to rieMiner's own heavy defaults (8 threads, ~198M-entry table, ~7+ GB RAM).
+  Caught from a real report: a miner kept getting "disconnected due to inactivity" by the pool (10-minute no-share timeout) every few minutes, because each restart wiped the lighter settings back to
+  the defaults that either OOM'd or (after being lowered) never got picked up at all.
+* `src/riecoin/Dispatch.cpp`'s `writeRieMinerConf()` now reads the existing conf first (`readExtraRieMinerLines()`) and keeps every line that isn't one of the five it manages -- `Threads`,
+  `PrimeTableLimit`, or anything else rieMiner accepts -- instead of discarding it. Only `Mode`/`Host`/`Port`/`Username`/`Password` are regenerated fresh each start, since those come from `-o`/`-u`/`-p`
+  and can legitimately change between runs.
+
 # rieMiner embedded: one download for Riecoin, not two (1.1.9)
 
 * A user who updated only `poolpayminer.exe` (kept the old package's `rieMiner.exe`, or none at all) got a silent instant-exit, because `-a ric` needs the two files kept side by side. `rieMiner`

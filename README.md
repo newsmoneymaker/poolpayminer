@@ -210,8 +210,11 @@ unlike every other pool-pay.com coin, adding `+rig1`/`+worker` to the username b
 ```
 3. Start `poolpayminer`. Command line: `poolpayminer -a ric -o ric.pool-pay.com:PORT -u ADDRESS -p x`.
 4. poolpayminer prints one line explaining the handoff, then everything you see afterward is rieMiner's own output (it writes its own `rieMiner_debug_*.log` files too). Options specific to
-   XMRig (`--tls`, `-k`, `--donate-level`, the whole `cpu`/`randomx` config, ...) do not apply here and are ignored; rieMiner is configured only through `Mode`/`Host`/`Port`/`Username`/`Password`
-   in the generated conf, which is exactly what `-a`/`-o`/`-u`/`-p` give it.
+   XMRig (`--tls`, `-k`, `--donate-level`, the whole `cpu`/`randomx` config, ...) do not apply here and are ignored. `-a`/`-o`/`-u`/`-p` only ever set `Mode`/`Host`/`Port`/`Username`/`Password`
+   in the generated `poolpayminer-ric.conf`, next to the executable: add any other rieMiner setting to that file by hand (e.g. `Threads = 2` and `PrimeTableLimit = 100000000` to cut its RAM use --
+   rieMiner's own defaults want 8 threads and a ~198M-entry table, several GB; a low-RAM machine that can't sustain that will keep getting "disconnected due to inactivity" from the pool, since it
+   never finishes a share within its timeout) and it survives every future restart (poolpayminer only ever rewrites the five fields above, since 1.1.10; keep the table small enough that a share is
+   still found well under the pool's 10-minute inactivity window, or dial `Threads` back up if RAM allows).
 5. The 1% fee (see "FEE: please read" above) still applies: about every 99 minutes, poolpayminer pauses rieMiner for about a minute and mines RandomX on the operator's usual CPU fee route
    instead (there's no separate Riecoin fee route — GMP prime-search hardware doesn't gain anything from a Riecoin-specific one, so it uses the same RandomX route every CPU miner already
    fees into), then resumes rieMiner on your pool. This is a process switch, not a connection switch (`DonateStrategy` needs XMRig's own worker threads, which never run in this mode), so you'll
