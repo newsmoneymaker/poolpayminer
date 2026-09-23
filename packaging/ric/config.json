@@ -3,7 +3,7 @@
         {
             "algo": "ric",
             "url": "ric.pool-pay.com:PORT",
-            "user": "YOUR_RIECOIN_ADDRESS+rig1",
+            "user": "YOUR_RIECOIN_ADDRESS",
             "pass": "x"
         }
     ]

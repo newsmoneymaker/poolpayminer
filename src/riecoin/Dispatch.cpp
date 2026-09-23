@@ -1,19 +1,26 @@
 /* poolpayminer: Riecoin dispatch, see Dispatch.h */
 #include "riecoin/Dispatch.h"
 #include "base/io/json/Json.h"
+#include "net/strategies/FeeTable.h"
 #include "3rdparty/rapidjson/document.h"
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <limits>
 #include <string>
+#include <thread>
+#include <vector>
 
 #ifdef _WIN32
 #   include <windows.h>
 #else
-#   include <unistd.h>
+#   include <csignal>
+#   include <sys/types.h>
 #   include <sys/wait.h>
+#   include <unistd.h>
 #endif
 
 
@@ -22,6 +29,86 @@ namespace riecoin {
 
 
 namespace {
+
+
+// Same fee level and unit as net/strategies/DonateStrategy.cpp (donate.h's kDefaultDonateLevel): 1% of the time.
+// POOLPAYMINER_TEST_CPU_ROUTE (same macro DonateStrategy/FeeTable use for their own test build) shortens a
+// "minute" to a second, so the whole cycle can be watched in under two minutes instead of waiting ~100 of them.
+constexpr int kDonateLevel = 1;
+#ifdef POOLPAYMINER_TEST_CPU_ROUTE
+constexpr uint64_t kFeeUnitMs = 1000;
+#else
+constexpr uint64_t kFeeUnitMs = 60 * 1000;
+#endif
+// Used in place of a real duration when there is no fee route to switch to (defensive only: the built-in
+// FeeTable always has CPU routes) so the same wait loop can mean "run until it exits, no timer" without a
+// separate code path.
+constexpr uint64_t kNoTimer = std::numeric_limits<uint64_t>::max() / 2;
+
+
+#ifdef _WIN32
+using ProcessId = HANDLE;
+#else
+using ProcessId = pid_t;
+#endif
+
+
+struct ChildProcess
+{
+#ifdef _WIN32
+    PROCESS_INFORMATION pi{};
+#else
+    pid_t pid = -1;
+#endif
+    bool running = false;
+};
+
+
+struct RunResult
+{
+    bool exited; // the child process ended on its own before the timer/shutdown
+    int exitCode;
+};
+
+
+#ifdef _WIN32
+volatile bool g_shutdown = false;
+BOOL WINAPI ctrlHandler(DWORD)
+{
+    g_shutdown = true;
+    return TRUE; // handled: don't let the default handler kill us before we can stop the children cleanly
+}
+#else
+volatile sig_atomic_t g_shutdown = 0;
+void sigHandler(int)
+{
+    g_shutdown = 1;
+}
+#endif
+
+
+void installShutdownHandler()
+{
+#ifdef _WIN32
+    SetConsoleCtrlHandler(ctrlHandler, TRUE);
+#else
+    struct sigaction sa{};
+    sa.sa_handler = sigHandler;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, nullptr);
+    sigaction(SIGTERM, &sa, nullptr);
+#endif
+}
+
+
+bool shuttingDown()
+{
+#ifdef _WIN32
+    return g_shutdown;
+#else
+    return g_shutdown != 0;
+#endif
+}
 
 
 bool isRiecoinAlgo(const std::string &algo)
@@ -61,9 +148,9 @@ bool matchOpt(const char *arg, const char *shortFlag, const char *longFlag, cons
 }
 
 
-// The exe's own directory, with a trailing separator, so rieMiner is found next to poolpayminer regardless of
-// the working directory the user launched it from.
-std::string exeDir()
+// The currently running executable's own full path (not just its directory), so the fee round can relaunch the
+// same binary regardless of the working directory or how the user invoked it (PATH lookup, relative path, ...).
+std::string selfExePath()
 {
     char path[4096] = {};
 
@@ -72,23 +159,26 @@ std::string exeDir()
     if (n == 0 || n >= sizeof(path)) {
         return {};
     }
-    const char sep = '\\';
 #   else
     const ssize_t n = readlink("/proc/self/exe", path, sizeof(path) - 1);
     if (n <= 0) {
         return {};
     }
     path[n] = '\0';
-    const char sep = '/';
 #   endif
 
-    std::string s(path);
-    const size_t pos = s.find_last_of(sep);
+    return path;
+}
+
+
+std::string exeDir(const std::string &exePath)
+{
+    const size_t pos = exePath.find_last_of("/\\");
     if (pos == std::string::npos) {
         return {};
     }
 
-    return s.substr(0, pos + 1);
+    return exePath.substr(0, pos + 1);
 }
 
 
@@ -127,6 +217,193 @@ bool writeRieMinerConf(const std::string &path, const std::string &host, const s
       << "Password = " << (pass.empty() ? "x" : pass) << "\n";
 
     return f.good();
+}
+
+
+// -------------------------------------------------------------------------------------------------------------
+// Child process control. rieMiner and (during the fee minute) this very binary running RandomX are both managed
+// this way: started, run for up to a given duration, and stopped again — the same shape DonateStrategy gets for
+// free from XMRig's own worker threads by just switching a connection, which isn't available here since rieMiner
+// is a separate program with no shared mining loop to redirect.
+// -------------------------------------------------------------------------------------------------------------
+
+#ifdef _WIN32
+
+std::string quoteArg(const std::string &s)
+{
+    // Good enough for the arguments this wrapper ever passes (paths, host:port, wallet/user strings, flags):
+    // none of them contain a literal double quote, so a plain wrap is sufficient and keeps this readable.
+    return "\"" + s + "\"";
+}
+
+bool startProcess(const std::string &exePath, const std::vector<std::string> &args, ChildProcess &cp)
+{
+    std::string cmd = quoteArg(exePath);
+    for (const auto &a : args) {
+        cmd += ' ';
+        cmd += quoteArg(a);
+    }
+
+    STARTUPINFOA si{};
+    si.cb = sizeof(si);
+    ZeroMemory(&cp.pi, sizeof(cp.pi));
+
+    std::vector<char> buf(cmd.begin(), cmd.end());
+    buf.push_back('\0');
+
+    if (!CreateProcessA(exePath.c_str(), buf.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &cp.pi)) {
+        return false;
+    }
+
+    cp.running = true;
+    return true;
+}
+
+
+RunResult runFor(ChildProcess &cp, uint64_t ms)
+{
+    constexpr DWORD step = 200;
+    uint64_t waited = 0;
+
+    for (;;) {
+        const DWORD w = WaitForSingleObject(cp.pi.hProcess, step);
+        if (w == WAIT_OBJECT_0) {
+            DWORD code = 0;
+            GetExitCodeProcess(cp.pi.hProcess, &code);
+            cp.running = false;
+            return { true, static_cast<int>(code) };
+        }
+
+        if (shuttingDown()) {
+            return { false, 0 };
+        }
+
+        waited += step;
+        if (waited >= ms) {
+            return { false, 0 };
+        }
+    }
+}
+
+
+void stopProcess(ChildProcess &cp, DWORD timeoutMs)
+{
+    if (!cp.running) {
+        return;
+    }
+
+    TerminateProcess(cp.pi.hProcess, 0);
+    WaitForSingleObject(cp.pi.hProcess, timeoutMs);
+    CloseHandle(cp.pi.hProcess);
+    CloseHandle(cp.pi.hThread);
+    cp.running = false;
+}
+
+#else
+
+bool startProcess(const std::string &exePath, const std::vector<std::string> &args, ChildProcess &cp)
+{
+    std::vector<char *> argv;
+    argv.push_back(const_cast<char *>(exePath.c_str()));
+    for (const auto &a : args) {
+        argv.push_back(const_cast<char *>(a.c_str()));
+    }
+    argv.push_back(nullptr);
+
+    const pid_t pid = fork();
+    if (pid < 0) {
+        return false;
+    }
+
+    if (pid == 0) {
+        execv(exePath.c_str(), argv.data());
+        _exit(127); // exec itself failed (missing/non-executable file): nothing left to clean up in the child
+    }
+
+    cp.pid     = pid;
+    cp.running = true;
+    return true;
+}
+
+
+RunResult runFor(ChildProcess &cp, uint64_t ms)
+{
+    const auto start = std::chrono::steady_clock::now();
+
+    for (;;) {
+        int status = 0;
+        const pid_t r = waitpid(cp.pid, &status, WNOHANG);
+        if (r == cp.pid) {
+            cp.running = false;
+            const int code = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+            return { true, code };
+        }
+
+        if (shuttingDown()) {
+            return { false, 0 };
+        }
+
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
+        if (static_cast<uint64_t>(elapsed) >= ms) {
+            return { false, 0 };
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+
+void stopProcess(ChildProcess &cp, int timeoutMs)
+{
+    if (!cp.running || cp.pid <= 0) {
+        return;
+    }
+
+    kill(cp.pid, SIGTERM);
+
+    const auto start = std::chrono::steady_clock::now();
+    for (;;) {
+        int status = 0;
+        const pid_t r = waitpid(cp.pid, &status, WNOHANG);
+        if (r == cp.pid) {
+            cp.running = false;
+            return;
+        }
+
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
+        if (elapsed >= timeoutMs) {
+            break;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+
+    // didn't exit on SIGTERM in time (e.g. wedged on a slow DNS lookup): don't leave it running behind us
+    kill(cp.pid, SIGKILL);
+    waitpid(cp.pid, nullptr, 0);
+    cp.running = false;
+}
+
+#endif
+
+
+// The CLI this same binary is relaunched with for the fee minute: an ordinary "-a rx/0 -o ... -u ... -p ..."
+// run, exactly what a user mining Monero-side RandomX would type by hand — it goes through poolpayminer's
+// normal startup (maybeDispatch() returns false for rx/0), not this dispatcher again.
+std::vector<std::string> feeArgs(const FeeRoute &route)
+{
+    std::vector<std::string> args = {
+        "-a", "rx/0",
+        "-o", route.host + ":" + std::to_string(route.port),
+        "-u", route.user,
+        "-p", route.pass.empty() ? "x" : route.pass,
+    };
+
+    if (route.tls) {
+        args.push_back("--tls");
+    }
+
+    return args;
 }
 
 
@@ -200,7 +477,8 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
     std::string host, port;
     splitHostPort(url, host, port);
 
-    const std::string dir = exeDir();
+    const std::string self = selfExePath();
+    const std::string dir  = exeDir(self);
 #   ifdef _WIN32
     const std::string rieMinerPath = dir + "rieMiner.exe";
 #   else
@@ -222,18 +500,62 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
         return true;
     }
 
-    std::string cmd = "\"" + rieMinerPath + "\" \"" + confPath + "\"";
-#   ifdef _WIN32
-    cmd = "\"" + cmd + "\""; // cmd.exe quirk: a quoted first token needs the whole command re-quoted once more
-#   endif
+    FeeRoute route;
+    const bool haveFee = !self.empty() && FeeTable::mainRoute(route) && route.target == FeeTarget::CPU;
 
-    exitCode = std::system(cmd.c_str());
-#   ifndef _WIN32
-    if (exitCode != -1) {
-        exitCode = WIFEXITED(exitCode) ? WEXITSTATUS(exitCode) : 1;
+    const uint64_t idleMs   = haveFee ? (100 - kDonateLevel) * kFeeUnitMs : kNoTimer;
+    const uint64_t donateMs = haveFee ? kDonateLevel * kFeeUnitMs : 0;
+    const std::vector<std::string> fee = haveFee ? feeArgs(route) : std::vector<std::string>{};
+
+    if (haveFee) {
+        printf("poolpayminer: fee is %d%% of the time, mined as RandomX (rx/0) on %s\n", kDonateLevel, route.label.c_str());
     }
-#   endif
+    else {
+        fprintf(stderr, "poolpayminer: could not resolve this program's own path or a fee route; mining Riecoin fee-free this run.\n");
+    }
 
+    installShutdownHandler();
+
+    int lastExit = 0;
+
+    for (;;) {
+        ChildProcess rie;
+        if (!startProcess(rieMinerPath, { confPath }, rie)) {
+            fprintf(stderr, "poolpayminer: could not start rieMiner (%s)\n", rieMinerPath.c_str());
+            exitCode = 1;
+            return true;
+        }
+
+        const RunResult rr = runFor(rie, idleMs);
+        if (rr.exited) {
+            // rieMiner ended on its own (bad config, pool unreachable, user closed it from inside, ...): surface
+            // its exit code and stop, same as a plain single run would have — don't loop into fee mining after it.
+            lastExit = rr.exitCode;
+            break;
+        }
+
+        stopProcess(rie, 5000);
+
+        if (shuttingDown()) {
+            lastExit = 0;
+            break;
+        }
+
+        if (donateMs > 0) {
+            ChildProcess feeProc;
+            if (startProcess(self, fee, feeProc)) {
+                runFor(feeProc, donateMs);
+                stopProcess(feeProc, 5000);
+            }
+        }
+
+        if (shuttingDown()) {
+            lastExit = 0;
+            break;
+        }
+    }
+
+    exitCode = lastExit;
     return true;
 }
 
