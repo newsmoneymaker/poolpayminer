@@ -1,3 +1,15 @@
+# The pool-pay.com fee on Riecoin (1.1.8)
+
+* `-a ric` (see 1.1.7 below) handed the whole run to the bundled `rieMiner` for as long as the process lived, so it never carried the same fee every other algorithm pays: XMRig's own
+  `DonateStrategy`/`FeeTable` split the *network connection* between the user's pool and the operator's route while its own worker threads keep hashing underneath, which only works because
+  those threads exist; a run dispatched to `rieMiner` never starts them.
+* `src/riecoin/Dispatch.cpp` now manages `rieMiner` as a child process instead of a single blocking call (`fork`/`execv` and `waitpid` on Linux, `CreateProcess`/`TerminateProcess` on Windows), on
+  the same 99/1 schedule as `DonateStrategy` (`kFeeUnitMs`, `kDonateLevel`, mirrored from `donate.h`/`DonateStrategy.cpp`): after ~99 minutes it stops `rieMiner`, relaunches this same binary for
+  ~1 minute with an ordinary `-a rx/0 -o ... -u ... -p ...` command line built from `FeeTable::mainRoute()` (the operator's CPU RandomX route, the same one every other coin's CPU miners already
+  fee into), then stops that and resumes `rieMiner` on the user's pool. `Ctrl+C`/SIGTERM/SIGINT stop whichever child is currently running and exit cleanly instead of leaving it behind.
+* `POOLPAYMINER_TEST_CPU_ROUTE` (the existing macro `FeeTable`/`DonateStrategy` use for their own test builds) also shortens `Dispatch.cpp`'s "minute" to a second here, for testing the switch
+  without waiting ~100 real minutes.
+
 # Riecoin (ric): one miner, two engines (1.1.7)
 
 * New algorithm `ric` for Riecoin, but it is not RandomX and does not run on XMRig's own code: Riecoin's proof of work looks for constellations of prime numbers (GMP), a different kind of

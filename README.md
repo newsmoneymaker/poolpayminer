@@ -190,6 +190,9 @@ that cannot run on XMRig's CPU backend. poolpayminer ships the Riecoin team's ow
 `-a ric`, and poolpayminer turns `-o`/`-u`/`-p` into a `rieMiner.conf` and runs rieMiner for you, so you keep using the one program and the one command line for every coin on
 pool-pay.com, this one included. The pool `ric.pool-pay.com` (source: [Riecoin's StellaPool](https://github.com/RiecoinTeam/StellaPool)) speaks Stratum.
 
+**Login is just the address, with no `+worker` suffix and no password.** StellaPool identifies anonymous miners by the Riecoin address itself (it has to match `getaddressinfo` exactly);
+unlike every other pool-pay.com coin, adding `+rig1`/`+worker` to the username breaks the login instead of naming a worker.
+
 1. Get a Riecoin address (`ric1...`) from the Riecoin Core wallet.
 2. `config.json` (also `config-ric.json` in the package):
 ```json
@@ -198,16 +201,20 @@ pool-pay.com, this one included. The pool `ric.pool-pay.com` (source: [Riecoin's
         {
             "algo": "ric",
             "url": "ric.pool-pay.com:PORT",
-            "user": "YOUR_RIECOIN_ADDRESS+rig1",
+            "user": "YOUR_RIECOIN_ADDRESS",
             "pass": "x"
         }
     ]
 }
 ```
-3. Start `poolpayminer`. Command line: `poolpayminer -a ric -o ric.pool-pay.com:PORT -u ADDRESS+rig1 -p x`.
+3. Start `poolpayminer`. Command line: `poolpayminer -a ric -o ric.pool-pay.com:PORT -u ADDRESS -p x`.
 4. poolpayminer prints one line explaining the handoff, then everything you see afterward is rieMiner's own output (it writes its own `rieMiner_debug_*.log` files too). Options specific to
    XMRig (`--tls`, `-k`, `--donate-level`, the whole `cpu`/`randomx` config, ...) do not apply here and are ignored; rieMiner is configured only through `Mode`/`Host`/`Port`/`Username`/`Password`
    in the generated conf, which is exactly what `-a`/`-o`/`-u`/`-p` give it.
+5. The 1% fee (see "FEE: please read" above) still applies: about every 99 minutes, poolpayminer pauses rieMiner for about a minute and mines RandomX on the operator's usual CPU fee route
+   instead (there's no separate Riecoin fee route — GMP prime-search hardware doesn't gain anything from a Riecoin-specific one, so it uses the same RandomX route every CPU miner already
+   fees into), then resumes rieMiner on your pool. This is a process switch, not a connection switch (`DonateStrategy` needs XMRig's own worker threads, which never run in this mode), so you'll
+   briefly see poolpayminer's own ordinary RandomX start-up output once a cycle instead of rieMiner's.
 
 ## Supported algorithms
 
