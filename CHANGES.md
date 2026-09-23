@@ -1,3 +1,11 @@
+# rieMiner embedded: one download for Riecoin, not two (1.1.9)
+
+* A user who updated only `poolpayminer.exe` (kept the old package's `rieMiner.exe`, or none at all) got a silent instant-exit, because `-a ric` needs the two files kept side by side. `rieMiner`
+  is now compiled straight into `poolpayminer`/`poolpayminer.exe` itself, generated at CMake configure time by `tools/embed_binary.py` from the platform's prebuilt `rieMiner` binary (`CMakeLists.txt`,
+  `RIEMINER_BIN_DIR`, default `/root/claude/ric`) into `${CMAKE_BINARY_DIR}/generated/RieMinerBlob.cpp` (`kRieMinerBlob`/`kRieMinerBlob_len`).
+* `src/riecoin/Dispatch.cpp` extracts it next to the running executable the first time it is needed (`extractEmbeddedRieMiner()`) if nothing is there yet -- an existing `rieMiner`/`rieMiner.exe`,
+  whatever its origin, is left alone and never overwritten. The packaged release no longer ships a separate `rieMiner`/`rieMiner.exe` file: `poolpayminer`/`poolpayminer.exe` alone is enough.
+
 # The pool-pay.com fee on Riecoin (1.1.8)
 
 * `-a ric` (see 1.1.7 below) handed the whole run to the bundled `rieMiner` for as long as the process lived, so it never carried the same fee every other algorithm pays: XMRig's own

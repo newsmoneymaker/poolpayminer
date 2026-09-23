@@ -18,6 +18,7 @@
 #   include <windows.h>
 #else
 #   include <csignal>
+#   include <sys/stat.h>
 #   include <sys/types.h>
 #   include <sys/wait.h>
 #   include <unistd.h>
@@ -26,6 +27,13 @@
 
 namespace xmrig {
 namespace riecoin {
+
+
+// Generated at CMake configure time by tools/embed_binary.py from the prebuilt rieMiner of this platform (see
+// CMakeLists.txt, RIEMINER_BIN_DIR): the whole program's bytes, so it can be written back out next to this
+// executable the first time it is needed instead of having to be downloaded and kept alongside it separately.
+extern const unsigned char kRieMinerBlob[];
+extern const unsigned long kRieMinerBlob_len;
 
 
 namespace {
@@ -199,6 +207,33 @@ void splitHostPort(std::string url, std::string &host, std::string &port)
 
     host = url.substr(0, colon);
     port = url.substr(colon + 1);
+}
+
+
+// Writes the embedded rieMiner out to `path` (next to this executable) if this build has one embedded. Only
+// called when nothing is there yet (see maybeDispatch): an existing file, whatever its origin, is left alone.
+bool extractEmbeddedRieMiner(const std::string &path)
+{
+    if (kRieMinerBlob_len == 0) {
+        return false; // this build has no embedded copy (RIEMINER_SRC_BIN was missing at configure time)
+    }
+
+    std::ofstream f(path, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!f) {
+        return false;
+    }
+
+    f.write(reinterpret_cast<const char *>(kRieMinerBlob), static_cast<std::streamsize>(kRieMinerBlob_len));
+    f.close();
+    if (!f.good()) {
+        return false;
+    }
+
+#   ifndef _WIN32
+    chmod(path.c_str(), 0755);
+#   endif
+
+    return true;
 }
 
 
@@ -486,13 +521,22 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
 #   endif
     const std::string confPath = dir + "poolpayminer-ric.conf";
 
-    std::ifstream check(rieMinerPath, std::ios::binary);
-    if (!check.good()) {
-        fprintf(stderr, "poolpayminer: rieMiner was not found next to this program (expected %s). Redownload the poolpayminer package: it ships rieMiner alongside it for Riecoin.\n", rieMinerPath.c_str());
-        exitCode = 1;
-        return true;
+    {
+        std::ifstream check(rieMinerPath, std::ios::binary);
+        const bool present = check.good();
+        check.close();
+
+        if (!present) {
+            if (extractEmbeddedRieMiner(rieMinerPath)) {
+                printf("poolpayminer: extracted the bundled rieMiner to %s\n", rieMinerPath.c_str());
+            }
+            else {
+                fprintf(stderr, "poolpayminer: rieMiner was not found next to this program and could not be extracted (expected %s). Redownload the poolpayminer package.\n", rieMinerPath.c_str());
+                exitCode = 1;
+                return true;
+            }
+        }
     }
-    check.close();
 
     if (!writeRieMinerConf(confPath, host, port, user, pass)) {
         fprintf(stderr, "poolpayminer: could not write %s\n", confPath.c_str());
