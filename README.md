@@ -243,9 +243,33 @@ protocol that GhostRider miners use). Login is your FewBit address (`F...`), opt
 Command line: `poolpayminer -a gr --tls -o fbit.pool-pay.com:3801 -u ADDRESS+rig1 -p x -k`. The package has it as `config-fbit.json`. GhostRider needs a few MB of cache per thread and no GPU;
 for example about 60 H/s per thread on an Intel i7-7700 (four threads: 240 H/s). The fee (see "FEE: please read" above) is the usual 1% of the time.
 
+## Yenten (YTN) quick start
+
+Yenten is mined with yespower 1.0 (N=4096, r=16), a memory-hard CPU algorithm (8 MB per thread). poolpayminer has it as `-a yespower-r16` (aliases `ytn`, `yenten`; the yespower reference sources are
+bundled, build option `WITH_YESPOWER`). The pool of `ytn.pool-pay.com` speaks the standard Bitcoin Stratum protocol. Login is your Yenten address (`Y...`), optionally with a worker name
+(`ADDRESS+rig1`); ports: 3900 plain TCP, 3901/3902/3903 TLS.
+
+```json
+{
+    "pools": [
+        {
+            "algo": "yespower-r16",
+            "url": "ytn.pool-pay.com:3901",
+            "user": "YOUR_YTN_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+
+Command line: `poolpayminer -a yespower-r16 --tls -o ytn.pool-pay.com:3901 -u ADDRESS+rig1 -p x -k`. The package has it as `config-ytn.json`. A CPU self-test against a real Yenten block header runs at start.
+About 270 H/s per thread on an Intel i7-7700. The fee (see "FEE: please read" above) is the usual 1% of the time.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`, and dispatches `ric` to the
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla` and `yespower-r16`, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
 `epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
