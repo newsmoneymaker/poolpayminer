@@ -1,3 +1,9 @@
+# FewBit (FBIT): ready config for fbit.pool-pay.com (1.1.11)
+
+* FewBit is mined with GhostRider, which XMRig (and so poolpayminer) has always had as `-a gr` (Raptoreum's algorithm): no code change. This release adds `packaging/fbit/config.json` (shipped as
+  `config-fbit.json`) and the documentation for the new pool. Checked against the pool of fbit.pool-pay.com (Bitcoin Stratum v1): jobs, shares accepted, and the fee minute (GhostRider -> the RandomX fee
+  route -> GhostRider again) works like for every other algorithm.
+
 # Riecoin: hand-tuned rieMiner settings survive a restart (1.1.10)
 
 * `poolpayminer-ric.conf` was fully rewritten on every start (Mode/Host/Port/Username/Password, 5 fixed lines), so a user who added `Threads`/`PrimeTableLimit` by hand to fit their RAM -- exactly what
