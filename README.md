@@ -241,7 +241,7 @@ protocol that GhostRider miners use). Login is your FewBit address (`F...`), opt
 ```
 
 Command line: `poolpayminer -a gr --tls -o fbit.pool-pay.com:3801 -u ADDRESS+rig1 -p x -k`. The package has it as `config-fbit.json`. GhostRider needs a few MB of cache per thread and no GPU;
-expect about 60 H/s per modern CPU thread. The fee (see "FEE: please read" above) is the usual 1% of the time.
+for example about 60 H/s per thread on an Intel i7-7700 (four threads: 240 H/s). The fee (see "FEE: please read" above) is the usual 1% of the time.
 
 ## Supported algorithms
 
