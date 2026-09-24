@@ -220,6 +220,29 @@ unlike every other pool-pay.com coin, adding `+rig1`/`+worker` to the username b
    fees into), then resumes rieMiner on your pool. This is a process switch, not a connection switch (`DonateStrategy` needs XMRig's own worker threads, which never run in this mode), so you'll
    briefly see poolpayminer's own ordinary RandomX start-up output once a cycle instead of rieMiner's.
 
+## FewBit (FBIT) quick start
+
+FewBit is mined with GhostRider, the CPU algorithm of Raptoreum, which poolpayminer has as `-a gr` (XMRig's own implementation; the pool of `fbit.pool-pay.com` speaks the standard Bitcoin Stratum
+protocol that GhostRider miners use). Login is your FewBit address (`F...`), optionally with a worker name (`ADDRESS+rig1`); ports: 3800 plain TCP, 3801/3802/3803 TLS.
+
+```json
+{
+    "pools": [
+        {
+            "algo": "gr",
+            "url": "fbit.pool-pay.com:3801",
+            "user": "YOUR_FBIT_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+
+Command line: `poolpayminer -a gr --tls -o fbit.pool-pay.com:3801 -u ADDRESS+rig1 -p x -k`. The package has it as `config-fbit.json`. GhostRider needs a few MB of cache per thread and no GPU;
+expect about 60 H/s per modern CPU thread. The fee (see "FEE: please read" above) is the usual 1% of the time.
+
 ## Supported algorithms
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash` and `rx/xla`, and dispatches `ric` to the
