@@ -38,6 +38,12 @@
 #include "crypto/rx/RxDataset.h"
 #include "crypto/rx/RxVm.h"
 #include "crypto/ghostrider/ghostrider.h"
+
+#ifdef XMRIG_ALGO_YESPOWER
+extern "C" {
+#   include "crypto/yespower/yespower.h"
+}
+#endif
 #include "net/JobResults.h"
 
 
@@ -54,6 +60,38 @@
 namespace xmrig {
 
 static constexpr uint32_t kReserveCount = 32768;
+
+#ifdef XMRIG_ALGO_YESPOWER
+// Yenten: yespower 1.0, N=4096, r=16, no personalization, over the 80-byte block header
+static void yespowerHash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    static const yespower_params_t params = { YESPOWER_1_0, 4096, 16, nullptr, 0 };
+
+    if (yespower_tls(input, size, &params, reinterpret_cast<yespower_binary_t *>(output)) != 0) {
+        memset(output, 0xFF, 32);
+    }
+}
+
+
+static bool yespowerSelfTest()
+{
+    static const uint8_t expected[32] = {
+        0x81, 0x4d, 0xc9, 0xc0, 0xaf, 0xb1, 0xdb, 0x4d, 0x52, 0x71, 0x25, 0xbc, 0xc7, 0xf6, 0x35, 0x27,
+        0x24, 0xb7, 0x8d, 0x11, 0xc2, 0xed, 0x2a, 0x0b, 0xb1, 0xbd, 0xdf, 0x8d, 0x18, 0xce, 0xf0, 0x83
+    };
+
+    uint8_t input[80];
+    for (size_t i = 0; i < sizeof(input); ++i) {
+        input[i] = static_cast<uint8_t>(i);
+    }
+
+    uint8_t output[32];
+    yespowerHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
 
 
 #ifdef XMRIG_ALGO_CN_HEAVY
@@ -166,6 +204,12 @@ bool xmrig::CpuWorker<N>::selfTest()
 #   endif
 
     allocateCnCtx();
+
+#   ifdef XMRIG_ALGO_YESPOWER
+    if (m_algorithm.family() == Algorithm::YESPOWER) {
+        return (N == 1) && yespowerSelfTest();
+    }
+#   endif
 
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     if (m_algorithm.family() == Algorithm::GHOSTRIDER) {
@@ -347,6 +391,17 @@ void xmrig::CpuWorker<N>::start()
 #           endif
             {
                 switch (job.algorithm().family()) {
+
+#               ifdef XMRIG_ALGO_YESPOWER
+                case Algorithm::YESPOWER:
+                    if (N == 1) {
+                        yespowerHash(m_job.blob(), job.size(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
 
 #               ifdef XMRIG_ALGO_GHOSTRIDER
                 case Algorithm::GHOSTRIDER:

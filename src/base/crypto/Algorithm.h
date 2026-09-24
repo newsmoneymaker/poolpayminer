@@ -72,6 +72,7 @@ public:
         CN_GR_4         = 0x63120104,   // "cn/turtle"        GhostRider
         CN_GR_5         = 0x63120105,   // "cn/turtle-lite"   GhostRider
         GHOSTRIDER_RTM  = 0x6c150000,   // "ghostrider"       GhostRider
+        YESPOWER_R16    = 0x79170000,   // "yespower-r16"     yespower 1.0, N=4096, r=16, 8 MB (Yenten).
         RX_0            = 0x72151200,   // "rx/0"             RandomX (reference configuration).
         RX_V2           = 0x72151202,   // "rx/2"             RandomX (Monero v2).
         RX_WOW          = 0x72141177,   // "rx/wow"           RandomWOW (Wownero).
@@ -101,7 +102,8 @@ public:
         RANDOM_X        = 0x72000000,
         ARGON2          = 0x61000000,
         KAWPOW          = 0x6b000000,
-        GHOSTRIDER      = 0x6c000000
+        GHOSTRIDER      = 0x6c000000,
+        YESPOWER        = 0x79000000
     };
 
     static const char *kINVALID;
@@ -175,6 +177,11 @@ public:
     static const char* kGHOSTRIDER_RTM;
 #   endif
 
+#   ifdef XMRIG_ALGO_YESPOWER
+    static const char* kYESPOWER;
+    static const char* kYESPOWER_R16;
+#   endif
+
     inline Algorithm() = default;
     inline Algorithm(const char *algo) : m_id(parse(algo))  {}
     inline Algorithm(Id id) : m_id(id)                      {}
@@ -194,6 +201,9 @@ public:
     inline Id id() const                                    { return m_id; }
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
+    // the algorithms that speak Bitcoin's Stratum (mining.subscribe/notify with coinb1/coinb2, see EthStratumClient) and are mined over an 80 byte header
+    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16; }
+    inline bool isBitcoinStratum() const                    { return isBitcoinStratum(m_id); }
     inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
     inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
 

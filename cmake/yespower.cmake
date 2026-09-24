@@ -1,0 +1,8 @@
+if (WITH_YESPOWER)
+    add_definitions(/DXMRIG_ALGO_YESPOWER)
+    add_subdirectory(src/crypto/yespower)
+    set(YESPOWER_LIBRARY yespower)
+else()
+    remove_definitions(/DXMRIG_ALGO_YESPOWER)
+    set(YESPOWER_LIBRARY "")
+endif()
