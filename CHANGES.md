@@ -1,3 +1,9 @@
+# Yenten (YTN): new algorithm yespower-r16 and config for ytn.pool-pay.com (1.1.12)
+
+* New CPU algorithm `yespower-r16` (yespower 1.0, N=4096, r=16, aliases `ytn`, `yenten`) with the yespower sources bundled (CMake option `WITH_YESPOWER`, on by default). It uses the same Bitcoin Stratum
+  v1 path as GhostRider. The CPU worker runs a self-test against the hash of a real Yenten block header at start. `packaging/ytn/config.json` is shipped as `config-ytn.json`.
+  Checked against the pool of ytn.pool-pay.com over plain TCP and TLS: jobs, shares accepted (about 270 H/s per thread on an i7-7700).
+
 # FewBit (FBIT): ready config for fbit.pool-pay.com (1.1.11)
 
 * FewBit is mined with GhostRider, which XMRig (and so poolpayminer) has always had as `-a gr` (Raptoreum's algorithm): no code change. This release adds `packaging/fbit/config.json` (shipped as
