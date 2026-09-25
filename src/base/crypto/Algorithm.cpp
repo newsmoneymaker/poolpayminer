@@ -112,6 +112,13 @@ const char* Algorithm::kYESPOWER        = "yespower-r16";
 const char* Algorithm::kYESPOWER_R16    = "yespower-r16";
 #endif
 
+#ifdef XMRIG_ALGO_YESCRYPT
+const char* Algorithm::kYESCRYPT        = "yescrypt";
+const char* Algorithm::kYESCRYPT_R8     = "yescryptr8";
+const char* Algorithm::kYESCRYPT_R16    = "yescryptr16";
+const char* Algorithm::kYESCRYPT_R32    = "yescryptr32";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -183,6 +190,12 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_YESPOWER
     ALGO_NAME(YESPOWER_R16),
+#   endif
+
+#   ifdef XMRIG_ALGO_YESCRYPT
+    ALGO_NAME(YESCRYPT_R8),
+    ALGO_NAME(YESCRYPT_R16),
+    ALGO_NAME(YESCRYPT_R32),
 #   endif
 };
 
@@ -316,6 +329,18 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
                                      ALGO_ALIAS(YESPOWER_R16, "ytn"),
                                      ALGO_ALIAS(YESPOWER_R16, "yenten"),
 #   endif
+
+#   ifdef XMRIG_ALGO_YESCRYPT
+    ALGO_ALIAS_AUTO(YESCRYPT_R8),    ALGO_ALIAS(YESCRYPT_R8,  "mtbc"),
+
+    ALGO_ALIAS_AUTO(YESCRYPT_R16),   ALGO_ALIAS(YESCRYPT_R16, "fnnc"),
+                                     ALGO_ALIAS(YESCRYPT_R16, "fennec"),
+                                     ALGO_ALIAS(YESCRYPT_R16, "gold"),
+                                     ALGO_ALIAS(YESCRYPT_R16, "goldcash"),
+
+    ALGO_ALIAS_AUTO(YESCRYPT_R32),   ALGO_ALIAS(YESCRYPT_R32, "lpepe"),
+                                     ALGO_ALIAS(YESCRYPT_R32, "luckypepe"),
+#   endif
 };
 
 
@@ -391,7 +416,8 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         AR2_CHUKWA, AR2_CHUKWA_V2, AR2_WRKZ,
         KAWPOW_RVN,
         GHOSTRIDER_RTM,
-        YESPOWER_R16
+        YESPOWER_R16,
+        YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32
     };
 
     Algorithms out;
