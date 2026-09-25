@@ -160,6 +160,16 @@ size_t inline generate<Algorithm::YESPOWER>(Threads<CpuThreads>& threads, uint32
 #endif
 
 
+#ifdef XMRIG_ALGO_YESCRYPT
+template<>
+size_t inline generate<Algorithm::YESCRYPT>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    // one shared "yescrypt" auto-config thread count for all three (r8/r16/r32) variants, like "rx" covers all rx/* RandomX variants
+    return generate(Algorithm::kYESCRYPT, threads, Algorithm::YESCRYPT_R16, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 

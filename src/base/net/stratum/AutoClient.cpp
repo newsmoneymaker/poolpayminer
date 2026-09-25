@@ -50,7 +50,7 @@ bool xmrig::AutoClient::parseLogin(const rapidjson::Value &result, int *code)
     }
 
     const Algorithm algo(Json::getString(result, "algo"));
-    if (algo.family() != Algorithm::KAWPOW && algo.family() != Algorithm::GHOSTRIDER && algo.family() != Algorithm::YESPOWER) {
+    if (algo.family() != Algorithm::KAWPOW && algo.family() != Algorithm::GHOSTRIDER && algo.family() != Algorithm::YESPOWER && algo.family() != Algorithm::YESCRYPT) {
         *code = 6;
         return false;
     }
@@ -66,7 +66,7 @@ bool xmrig::AutoClient::parseLogin(const rapidjson::Value &result, int *code)
     setAlgo(algo);
 
 #   ifdef XMRIG_ALGO_GHOSTRIDER
-    if (algo.family() == Algorithm::GHOSTRIDER || algo.family() == Algorithm::YESPOWER) {
+    if (algo.family() == Algorithm::GHOSTRIDER || algo.family() == Algorithm::YESPOWER || algo.family() == Algorithm::YESCRYPT) {
         setExtraNonce2Size(Json::getUint64(result, "extra_nonce2_size"));
     }
 #   endif

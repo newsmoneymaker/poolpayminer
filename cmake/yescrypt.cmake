@@ -1,0 +1,8 @@
+if (WITH_YESCRYPT)
+    add_definitions(/DXMRIG_ALGO_YESCRYPT)
+    add_subdirectory(src/crypto/yescrypt)
+    set(YESCRYPT_LIBRARY yescrypt)
+else()
+    remove_definitions(/DXMRIG_ALGO_YESCRYPT)
+    set(YESCRYPT_LIBRARY "")
+endif()

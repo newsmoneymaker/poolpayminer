@@ -44,6 +44,12 @@ extern "C" {
 #   include "crypto/yespower/yespower.h"
 }
 #endif
+
+#ifdef XMRIG_ALGO_YESCRYPT
+extern "C" {
+#   include "crypto/yescrypt/yescrypt.h"
+}
+#endif
 #include "net/JobResults.h"
 
 
@@ -90,6 +96,99 @@ static bool yespowerSelfTest()
 
     uint8_t output[32];
     yespowerHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
+
+#ifdef XMRIG_ALGO_YESCRYPT
+// MateableCoin (MTBC): yescryptr8, yescrypt (pwxform), N=2048, r=8, p=1, self-salted, over the
+// 80-byte block header (see src/crypto/yescrypt/yescrypt.c, yescrypt_hash_r8()).
+static void yescryptR8Hash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    yescrypt_hash_r8(reinterpret_cast<const char *>(input), size, reinterpret_cast<char *>(output));
+}
+
+
+// Fennec (FNNC) / Gold Cash (GOLD): yescryptr16, yescrypt (pwxform), N=4096, r=16, p=1, self-salted
+// (see src/crypto/yescrypt/yescrypt.c, yescrypt_hash_r16()).
+static void yescryptR16Hash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    yescrypt_hash_r16(reinterpret_cast<const char *>(input), size, reinterpret_cast<char *>(output));
+}
+
+
+// LuckyPepe (LPEPE), originally WAVI: yescryptr32, yescrypt (pwxform), N=4096, r=32, p=1,
+// self-salted, personalization "WaviBanana" (see src/crypto/yescrypt/yescrypt-r32.c).
+static void yescryptR32Hash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    yescrypt_hash_r32(input, size, output);
+}
+
+
+// The three self-tests below use a synthetic 80-byte header (bytes 0,1,2,...,79) rather than a real
+// chain block -- unlike yespowerSelfTest() above, which checks against a real Yenten block; this
+// should be swapped for a real MTBC/FNNC/LPEPE block header check the same way, once one is on hand.
+// The expected digests were not invented, though: each was independently cross-checked by compiling
+// that coin's own, completely unmodified upstream yescrypt.c standalone (MateableCoin's
+// src/crypto/yescrypt/yescrypt.c for r8, Fennec's fennec/hash/yescrypt/yescrypt.c for r16, LuckyPepe's
+// src/crypto/yescrypt/yescrypt.c for r32) and running it on the same input; all three matched this
+// integration's output byte for byte. So this is a placeholder in the sense that it is not a real
+// block, but a bug that silently broke chain validation would also have to reproduce itself
+// identically in that separate, unmodified source tree.
+static bool yescryptR8SelfTest()
+{
+    uint8_t input[80];
+    for (size_t i = 0; i < sizeof(input); ++i) {
+        input[i] = static_cast<uint8_t>(i);
+    }
+
+    static const uint8_t expected[32] = {
+        0x72, 0x71, 0x48, 0xf2, 0xc0, 0xe7, 0x78, 0x65, 0x57, 0x17, 0xa9, 0x2d, 0xb8, 0x83, 0x1a, 0xa1,
+        0xb2, 0x41, 0xae, 0xfd, 0x7d, 0x1a, 0x51, 0xb4, 0xc7, 0x29, 0x4c, 0x26, 0x4a, 0xe8, 0x21, 0x62,
+    };
+
+    uint8_t output[32];
+    yescryptR8Hash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+
+
+static bool yescryptR16SelfTest()
+{
+    uint8_t input[80];
+    for (size_t i = 0; i < sizeof(input); ++i) {
+        input[i] = static_cast<uint8_t>(i);
+    }
+
+    static const uint8_t expected[32] = {
+        0x03, 0x69, 0x55, 0x08, 0x10, 0x39, 0x55, 0xe5, 0x3e, 0x70, 0xaa, 0x99, 0x14, 0xf5, 0x63, 0x5c,
+        0x26, 0xe4, 0xa7, 0x32, 0x1f, 0x25, 0xe2, 0xd8, 0x00, 0xb3, 0xca, 0x66, 0x95, 0xd7, 0xdd, 0x68,
+    };
+
+    uint8_t output[32];
+    yescryptR16Hash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+
+
+static bool yescryptR32SelfTest()
+{
+    uint8_t input[80];
+    for (size_t i = 0; i < sizeof(input); ++i) {
+        input[i] = static_cast<uint8_t>(i);
+    }
+
+    static const uint8_t expected[32] = {
+        0xb9, 0xc8, 0xba, 0x85, 0x27, 0xfb, 0x47, 0x30, 0x6f, 0xf7, 0x53, 0x32, 0x9a, 0x8c, 0x25, 0xc4,
+        0x21, 0x45, 0x0a, 0x24, 0xce, 0xc7, 0xdf, 0x77, 0xb4, 0x70, 0xf8, 0xec, 0xc3, 0x1d, 0x49, 0xba,
+    };
+
+    uint8_t output[32];
+    yescryptR32Hash(input, sizeof(input), output);
 
     return memcmp(output, expected, sizeof(output)) == 0;
 }
@@ -211,6 +310,25 @@ bool xmrig::CpuWorker<N>::selfTest()
 #   ifdef XMRIG_ALGO_YESPOWER
     if (m_algorithm.family() == Algorithm::YESPOWER) {
         return (N == 1) && yespowerSelfTest();
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_YESCRYPT
+    if (m_algorithm.family() == Algorithm::YESCRYPT) {
+        if (N != 1) {
+            return false;
+        }
+
+        switch (m_algorithm.id()) {
+        case Algorithm::YESCRYPT_R8:
+            return yescryptR8SelfTest();
+        case Algorithm::YESCRYPT_R16:
+            return yescryptR16SelfTest();
+        case Algorithm::YESCRYPT_R32:
+            return yescryptR32SelfTest();
+        default:
+            return false;
+        }
     }
 #   endif
 
@@ -399,6 +517,30 @@ void xmrig::CpuWorker<N>::start()
                 case Algorithm::YESPOWER:
                     if (N == 1) {
                         yespowerHash(m_job.blob(), job.size(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_YESCRYPT
+                case Algorithm::YESCRYPT:
+                    if (N == 1) {
+                        switch (job.algorithm().id()) {
+                        case Algorithm::YESCRYPT_R8:
+                            yescryptR8Hash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        case Algorithm::YESCRYPT_R16:
+                            yescryptR16Hash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        case Algorithm::YESCRYPT_R32:
+                            yescryptR32Hash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        default:
+                            valid = false;
+                            break;
+                        }
                     }
                     else {
                         valid = false;

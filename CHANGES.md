@@ -1,3 +1,16 @@
+# yescrypt family: yescryptr8/r16/r32 for MTBC, FNNC/GOLD, LPEPE (1.1.13)
+
+* New CPU algorithm family `yescrypt` (CMake option `WITH_YESCRYPT`, on by default), three algorithm ids using the same Bitcoin Stratum v1 path as GhostRider/yespower-r16:
+  `yescryptr8` (yescrypt/pwxform, N=2048, r=8, p=1; alias `mtbc`, MateableCoin), `yescryptr16` (N=4096, r=16, p=1; aliases `fnnc`/`fennec`/`gold`/`goldcash`, Fennec and Gold Cash, which
+  share the same algorithm) and `yescryptr32` (N=4096, r=32, p=1, personalization `WaviBanana`; aliases `lpepe`/`luckypepe`, LuckyPepe). This is the actual pwxform-based yescrypt (a
+  larger, different algorithm from yespower, which is only "a proven-secure subset" of it with a different code path) -- the `yescryptr8`/`r16` engine is MateableCoin's own unmodified
+  reference implementation (also confirmed byte-identical to Fennec's own copy), and `yescryptr32` is a separate, self-contained engine ported from LuckyPepe's own source, since that coin's
+  node does not compile the official reference engine at all, only its own hand-inlined smix/pwxform implementation with `WaviBanana` in place of the reference's hardcoded personalization
+  label (cross-checked against cpuminer-opt, which reaches the same N/r/label for `yescryptr32` by a different, yespower-based shortcut -- LuckyPepe's own source was used instead, as the
+  ground truth for what its node accepts). All three CPU self-tests were cross-checked against each coin's own unmodified upstream `yescrypt.c`, compiled and run standalone, matching this
+  integration's output byte for byte; they are not yet checked against a real MTBC/FNNC/LPEPE block header (no pool for these coins exists yet). Adds `packaging/mtbc/config.json`,
+  `packaging/fnnc/config.json` and `packaging/lpepe/config.json` (mtbc.pool-pay.com:4001, fnnc.pool-pay.com:4101, lpepe.pool-pay.com:4301, all TLS) ahead of those pools going live.
+
 # Yenten (YTN): new algorithm yespower-r16 and config for ytn.pool-pay.com (1.1.12)
 
 * New CPU algorithm `yespower-r16` (yespower 1.0, N=4096, r=16, aliases `ytn`, `yenten`) with the yespower sources bundled (CMake option `WITH_YESPOWER`, on by default). It uses the same Bitcoin Stratum

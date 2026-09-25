@@ -267,9 +267,39 @@ bundled, build option `WITH_YESPOWER`). The pool of `ytn.pool-pay.com` speaks th
 Command line: `poolpayminer -a yespower-r16 --tls -o ytn.pool-pay.com:3901 -u ADDRESS+rig1 -p x -k`. The package has it as `config-ytn.json`. A CPU self-test against a real Yenten block header runs at start.
 About 270 H/s per thread on an Intel i7-7700. The fee (see "FEE: please read" above) is the usual 1% of the time.
 
+## yescrypt family (MTBC, FNNC / GOLD, LPEPE) quick start
+
+poolpayminer also mines the pwxform-based yescrypt algorithm (a different, larger algorithm than yespower above, even though yespower is described as "a proven-secure subset" of it) used by three
+coin families, each with its own `r` (block size) parameter: `-a yescryptr8` for **MateableCoin (MTBC)** (N=2048, r=8; alias `mtbc`), `-a yescryptr16` for **Fennec (FNNC)** and **Gold Cash
+(GOLD)**, which share the same algorithm (N=4096, r=16; aliases `fnnc`, `fennec`, `gold`, `goldcash`), and `-a yescryptr32` for **LuckyPepe (LPEPE)** (N=4096, r=32, personalization
+`WaviBanana`; aliases `lpepe`, `luckypepe`). Build option `WITH_YESCRYPT`, on by default; the yescrypt reference sources are bundled. `packaging/mtbc/config.json`,
+`packaging/fnnc/config.json` and `packaging/lpepe/config.json` are shipped as `config-mtbc.json`, `config-fnnc.json` and `config-lpepe.json`, pointing at `mtbc.pool-pay.com:4001`,
+`fnnc.pool-pay.com:4101` and `lpepe.pool-pay.com:4301` (TLS) ahead of those pools going live -- **none of the three is live yet**, so treat these as templates until the corresponding pool
+is announced.
+
+```json
+{
+    "pools": [
+        {
+            "algo": "yescryptr16",
+            "url": "fnnc.pool-pay.com:4101",
+            "user": "YOUR_FNNC_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+
+Command line: `poolpayminer -a yescryptr8 --tls -o mtbc.pool-pay.com:4001 -u ADDRESS+rig1 -p x -k` (and the equivalent for `yescryptr16`/`yescryptr32` against the FNNC/LPEPE ports above). Each
+of the three CPU self-tests currently checks against a value cross-verified by compiling that coin's own unmodified upstream `yescrypt.c` standalone, not a real block header from the coin's own
+chain (see CHANGES.md) -- that should be swapped in the same way `yespower-r16` was once one of these three pools is live and a node is reachable.
+
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla` and `yespower-r16`, and dispatches `ric` to the
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `yespower-r16` and the
+`yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
 `epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
