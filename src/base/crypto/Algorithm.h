@@ -73,9 +73,13 @@ public:
         CN_GR_5         = 0x63120105,   // "cn/turtle-lite"   GhostRider
         GHOSTRIDER_RTM  = 0x6c150000,   // "ghostrider"       GhostRider
         YESPOWER_R16    = 0x79170000,   // "yespower-r16"     yespower 1.0, N=4096, r=16, 8 MB (Yenten).
-        YESCRYPT_R8     = 0x7a080000,   // "yescryptr8"       yescrypt (pwxform), N=2048, r=8, p=1 (MateableCoin / MTBC).
-        YESCRYPT_R16    = 0x7a160000,   // "yescryptr16"      yescrypt (pwxform), N=4096, r=16, p=1 (Fennec / FNNC, Gold Cash / GOLD).
-        YESCRYPT_R32    = 0x7a320000,   // "yescryptr32"      yescrypt (pwxform), N=4096, r=32, p=1, pers "WaviBanana" (LuckyPepe / LPEPE).
+        // The second byte here (as with every other id above) is log2(memory bytes) for l3()/auto thread-count sizing, NOT the
+        // algorithm's "r" parameter -- 128*r*N bytes of smix scratch space: r8 N=2048 -> 2 MB (2^21), r16 N=4096 -> 8 MB (2^23),
+        // r32 N=4096 -> 16 MB (2^24). An earlier version of this file used 0x08/0x16/0x32 (the literal r digits, read as hex),
+        // which silently starved or over-committed the auto thread count -- found from a real user's Windows run.
+        YESCRYPT_R8     = 0x7a150000,   // "yescryptr8"       yescrypt (pwxform), N=2048, r=8, p=1, 2 MB (MateableCoin / MTBC).
+        YESCRYPT_R16    = 0x7a170000,   // "yescryptr16"      yescrypt (pwxform), N=4096, r=16, p=1, 8 MB (Fennec / FNNC, Gold Cash / GOLD).
+        YESCRYPT_R32    = 0x7a180000,   // "yescryptr32"      yescrypt (pwxform), N=4096, r=32, p=1, 16 MB, pers "WaviBanana" (LuckyPepe / LPEPE).
         RX_0            = 0x72151200,   // "rx/0"             RandomX (reference configuration).
         RX_V2           = 0x72151202,   // "rx/2"             RandomX (Monero v2).
         RX_WOW          = 0x72141177,   // "rx/wow"           RandomWOW (Wownero).
