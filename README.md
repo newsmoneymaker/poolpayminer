@@ -274,8 +274,8 @@ coin families, each with its own `r` (block size) parameter: `-a yescryptr8` for
 (GOLD)**, which share the same algorithm (N=4096, r=16; aliases `fnnc`, `fennec`, `gold`, `goldcash`), and `-a yescryptr32` for **LuckyPepe (LPEPE)** (N=4096, r=32, personalization
 `WaviBanana`; aliases `lpepe`, `luckypepe`). Build option `WITH_YESCRYPT`, on by default; the yescrypt reference sources are bundled. `packaging/mtbc/config.json`,
 `packaging/fnnc/config.json` and `packaging/lpepe/config.json` are shipped as `config-mtbc.json`, `config-fnnc.json` and `config-lpepe.json`, pointing at `mtbc.pool-pay.com:4001`,
-`fnnc.pool-pay.com:4101` and `lpepe.pool-pay.com:4301` (TLS) ahead of those pools going live -- **none of the three is live yet**, so treat these as templates until the corresponding pool
-is announced.
+`fnnc.pool-pay.com:4101` and `lpepe.pool-pay.com:4301` (TLS). All three pools are live; Gold Cash (GOLD) shares `yescryptr16` with Fennec but has no pool of its own yet (its web
+infrastructure could not be reached at launch time), so the `gold`/`goldcash` aliases exist for whenever that changes.
 
 ```json
 {
@@ -293,17 +293,17 @@ is announced.
 ```
 
 Command line: `poolpayminer -a yescryptr8 --tls -o mtbc.pool-pay.com:4001 -u ADDRESS+rig1 -p x -k` (and the equivalent for `yescryptr16`/`yescryptr32` against the FNNC/LPEPE ports above). Each
-of the three CPU self-tests currently checks against a value cross-verified by compiling that coin's own unmodified upstream `yescrypt.c` standalone, not a real block header from the coin's own
-chain (see CHANGES.md) -- that should be swapped in the same way `yespower-r16` was once one of these three pools is live and a node is reachable.
+of the three CPU self-tests checks against a real block header from that coin's own chain (see CHANGES.md), and all three algorithms have been checked end to end against their real pools:
+shares accepted over TLS on mtbc.pool-pay.com, fnnc.pool-pay.com and lpepe.pool-pay.com.
 
 ## Supported algorithms
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `yespower-r16` and the
 `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
-**Epic Cash (`rx/epic`)** and **Veil (`rx/veil`)** have been tested end to end by the project (against the real Epic node and the pool
-`epic.pool-pay.com`; for Veil against the project's pool code, whose hashing was checked against real Veil mainnet RandomX blocks; and, for the fee,
-Nanopool); all other algorithms are XMRig's code, unchanged.
+**Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **Yenten (`yespower-r16`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
+end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
+documented above or are XMRig's own code, unchanged.
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
