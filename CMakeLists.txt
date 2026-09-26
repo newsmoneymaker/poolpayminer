@@ -143,6 +143,7 @@ set(SOURCES
     src/net/Network.cpp
     src/net/strategies/DonateStrategy.cpp
     src/net/strategies/FeeTable.cpp
+    src/autoswitch/AutoSwitch.cpp
     src/riecoin/Dispatch.cpp
     "${RIEMINER_BLOB_CPP}"
     src/Summary.cpp
