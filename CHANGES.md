@@ -1,3 +1,15 @@
+# Fix: yescrypt auto thread count (1.1.14)
+
+* 1.1.13's `yescryptr8`/`yescryptr16`/`yescryptr32` were broken for every normal user: without an explicit `--threads=N` on the command
+  line (i.e. the default, auto-detected thread count), the miner reported `incompatible/disabled algorithm "yescryptrNN" detected,
+  reconnect` and never mined -- found from a real user's Windows run against mtbc.pool-pay.com. Two bugs, both in the yescrypt
+  integration: the three variants' internal ids encoded their memory footprint wrong (the "r" parameter's digits were read as a
+  power-of-two exponent, e.g. r32 came out as 2^50 bytes), and all three shared one auto-config thread profile registered under the
+  family name "yescrypt" instead of each variant's own exact name, which the lookup never found (unlike `yespower-r16`, whose family
+  name and only member happen to be the same string, or the RandomX `rx/...` ids, which share a profile through a different, explicit
+  mechanism). Fixed both; verified all three mine and get shares accepted with the default thread count (no `--threads` needed) against
+  their real pools.
+
 # yescrypt family: yescryptr8/r16/r32 for MTBC, FNNC/GOLD, LPEPE (1.1.13)
 
 * New CPU algorithm family `yescrypt` (CMake option `WITH_YESCRYPT`, on by default), three algorithm ids using the same Bitcoin Stratum v1 path as GhostRider/yespower-r16:

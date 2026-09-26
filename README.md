@@ -293,8 +293,8 @@ infrastructure could not be reached at launch time), so the `gold`/`goldcash` al
 ```
 
 Command line: `poolpayminer -a yescryptr8 --tls -o mtbc.pool-pay.com:4001 -u ADDRESS+rig1 -p x -k` (and the equivalent for `yescryptr16`/`yescryptr32` against the FNNC/LPEPE ports above). Each
-of the three CPU self-tests checks against a real block header from that coin's own chain (see CHANGES.md), and all three algorithms have been checked end to end against their real pools:
-shares accepted over TLS on mtbc.pool-pay.com, fnnc.pool-pay.com and lpepe.pool-pay.com.
+of the three CPU self-tests checks against a real block header from that coin's own chain (see CHANGES.md), and all three algorithms have been checked end to end against their real pools with the default thread count (no `--threads` needed): shares accepted over TLS on
+mtbc.pool-pay.com, fnnc.pool-pay.com and lpepe.pool-pay.com. (1.1.13 was broken here for anyone not passing `--threads` explicitly; fixed in 1.1.14.)
 
 ## Supported algorithms
 
