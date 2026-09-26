@@ -1,3 +1,8 @@
+# Auto mode: faster refresh, notices a refused login (1.1.16)
+
+* `--auto` now asks the route server every 2 minutes (was 5) and every 30 seconds while the pool connection is down (login refused or pool unreachable, checked through the child's own local API on 127.0.0.1), so a corrected
+  or changed route (e.g. you switched a coin off) takes effect quickly. Found when a wrong login separator for Epic Cash was served for a while and the miner kept retrying it until the next 5-minute refresh.
+
 # Auto mode: `--auto <personal port>` (1.1.15)
 
 * New: `poolpayminer --auto 15000` -- register on https://all.pool-pay.com, get a personal port number, and the miner mines whichever of the coins you enabled pays best right now, switching by itself. Every 5 minutes it asks

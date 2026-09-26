@@ -2,6 +2,7 @@
 #include "autoswitch/AutoSwitch.h"
 #include "3rdparty/rapidjson/document.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -41,7 +42,8 @@ namespace {
 // Ed25519 public key of the route server (account-service/route-signing.key holds the private half).
 constexpr const char *kRoutePublicKeyHex = "87ce02913522313978a5f87b32e8dfcc6fae3ede837f9e38644a02e75e311b9e";
 constexpr const char *kDefaultHost       = "all.pool-pay.com";
-constexpr int kRefreshSeconds            = 300;   // ask again this often
+constexpr int kRefreshSeconds            = 120;   // ask again this often
+constexpr int kFailingRefreshSeconds     = 30;    // ...and this often while the child is failing (pool refuses the login, no shares)
 constexpr int kRetrySeconds              = 30;    // route server unreachable / bad answer / child exited
 
 
@@ -312,6 +314,91 @@ bool fetchRoute(const std::string &, int, Route &) { return false; }
 #endif // XMRIG_FEATURE_TLS
 
 
+// Plain HTTP GET to the child's own local API (127.0.0.1); returns the body or an empty string.
+std::string localHttpGet(int port, const std::string &path)
+{
+#   ifdef _WIN32
+    WSADATA wsa;
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+#   endif
+
+    int fd = static_cast<int>(socket(AF_INET, SOCK_STREAM, 0));
+    if (fd < 0) {
+        return {};
+    }
+
+#   ifdef _WIN32
+    DWORD tv = 3000;
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char *>(&tv), sizeof(tv));
+    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char *>(&tv), sizeof(tv));
+#   else
+    struct timeval tv{3, 0};
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+#   endif
+
+    struct sockaddr_in addr{};
+    addr.sin_family      = AF_INET;
+    addr.sin_port        = htons(static_cast<unsigned short>(port));
+    addr.sin_addr.s_addr = htonl(0x7F000001);
+
+    std::string all;
+    if (connect(fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) == 0) {
+        const std::string req = "GET " + path + " HTTP/1.0\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
+        send(fd, req.data(), static_cast<int>(req.size()), 0);
+        char buf[4096];
+        int n;
+        while ((n = recv(fd, buf, sizeof(buf), 0)) > 0) {
+            all.append(buf, static_cast<size_t>(n));
+            if (all.size() > 262144) {
+                break;
+            }
+        }
+    }
+
+#   ifdef _WIN32
+    closesocket(fd);
+#   else
+    close(fd);
+#   endif
+
+    const size_t pos = all.find("\r\n\r\n");
+    return pos == std::string::npos ? std::string() : all.substr(pos + 4);
+}
+
+
+// The child is "failing" when its own API says the pool connection is not up at all (uptime 0: the pool refuses the
+// login, is unreachable, ...) and no share was ever accepted. RandomX dataset start-up alone does not count: the
+// connection is up then. If the API cannot be read we assume all is well: never restart on a guess.
+bool childFailing(int apiPort)
+{
+    const std::string body = localHttpGet(apiPort, "/2/summary");
+    if (body.empty()) {
+        return false;
+    }
+
+    rapidjson::Document d;
+    d.Parse(body.c_str());
+    if (d.HasParseError() || !d.IsObject()) {
+        return false;
+    }
+
+    uint64_t good = 0;
+    if (d.HasMember("results") && d["results"].IsObject() && d["results"].HasMember("shares_good") && d["results"]["shares_good"].IsUint64()) {
+        good = d["results"]["shares_good"].GetUint64();
+    }
+
+    if (!d.HasMember("connection") || !d["connection"].IsObject()) {
+        return false;
+    }
+
+    const auto &c = d["connection"];
+    const bool notConnected = c.HasMember("uptime_ms") && c["uptime_ms"].IsUint64() && c["uptime_ms"].GetUint64() == 0;
+
+    return good == 0 && notConnected;
+}
+
+
 // ---- child process control (same shape as riecoin/Dispatch.cpp) ----
 
 struct ChildProcess
@@ -525,7 +612,9 @@ bool maybeAuto(int argc, char **argv, int &exitCode)
     installShutdownHandler();
     printf("poolpayminer: auto mode, personal port %d, route server %s\n", port, host.c_str());
 
+    const int apiPort = 45000 + (port % 1000); // the child's local API (127.0.0.1 only), used to notice a failing connection
     ChildProcess child;
+    std::chrono::steady_clock::time_point childStarted = std::chrono::steady_clock::now();
     Route current;
     bool haveCurrent = false;
 
@@ -555,6 +644,8 @@ bool maybeAuto(int argc, char **argv, int &exitCode)
                 args.push_back("--tls");
             }
             args.insert(args.end(), passthrough.begin(), passthrough.end());
+            args.push_back("--http-host=127.0.0.1");
+            args.push_back("--http-port=" + std::to_string(apiPort));
 
             printf("poolpayminer: mining %s (%s) on %s:%d\n", next.coin.c_str(), next.algo.c_str(), next.host.c_str(), next.port);
             if (!startProcess(self, args, child)) {
@@ -562,11 +653,20 @@ bool maybeAuto(int argc, char **argv, int &exitCode)
                 exitCode = 1;
                 return true;
             }
-            current     = next;
-            haveCurrent = true;
+            current      = next;
+            haveCurrent  = true;
+            childStarted = std::chrono::steady_clock::now();
         }
 
-        if (waitChild(child, static_cast<uint64_t>(refreshSeconds) * 1000, code)) {
+        // ask again sooner while the connection is failing, so a route the server corrected in the meantime is picked up quickly
+        const auto ageMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - childStarted).count();
+        const bool failing = ageMs >= 45000 && childFailing(apiPort);
+        if (failing) {
+            fprintf(stderr, "poolpayminer: the pool connection is not up (login refused or pool unreachable), asking the route server again in %d s\n", kFailingRefreshSeconds);
+        }
+
+        const uint64_t waitMs = static_cast<uint64_t>(failing ? std::min(kFailingRefreshSeconds, refreshSeconds) : refreshSeconds) * 1000;
+        if (waitChild(child, waitMs, code)) {
             fprintf(stderr, "poolpayminer: the miner process ended (exit code %d), restarting in %d s\n", code, kRetrySeconds);
             haveCurrent = false;
             sleepInterruptible(kRetrySeconds);
