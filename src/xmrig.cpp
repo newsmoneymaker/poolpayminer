@@ -19,12 +19,18 @@
 #include "App.h"
 #include "base/kernel/Entry.h"
 #include "base/kernel/Process.h"
+#include "autoswitch/AutoSwitch.h"
 #include "riecoin/Dispatch.h"
 
 
 int main(int argc, char **argv)
 {
     using namespace xmrig;
+
+    int autoExitCode = 0;
+    if (autoswitch::maybeAuto(argc, argv, autoExitCode)) {
+        return autoExitCode;
+    }
 
     int riecoinExitCode = 0;
     if (riecoin::maybeDispatch(argc, argv, riecoinExitCode)) {

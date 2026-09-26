@@ -1,3 +1,11 @@
+# Auto mode: `--auto <personal port>` (1.1.15)
+
+* New: `poolpayminer --auto 15000` -- register on https://all.pool-pay.com, get a personal port number, and the miner mines whichever of the coins you enabled pays best right now, switching by itself. Every 5 minutes it asks
+  `https://all.pool-pay.com/account/api/route?port=15000` for the current best coin plus the exact algorithm, pool and login, and runs an ordinary poolpayminer child process with those settings (the usual 1% fee logic applies
+  to the child unchanged); when the answer changes the child is replaced. Other options you pass (`--threads`, `--cpu-priority`, ...) are handed to the child; your own `-a/-o/-u/-p` are ignored in this mode.
+* The route answer is an Ed25519-signed JSON payload and the public key is compiled in, so nobody on the network path can point a miner at another pool or wallet. A bad signature is ignored and the current coin keeps being mined.
+* If the route server is unreachable the miner keeps mining what it has. `POOLPAYMINER_AUTO_REFRESH=<seconds>` shortens the 5-minute refresh (testing).
+
 # Fix: yescrypt auto thread count (1.1.14)
 
 * 1.1.13's `yescryptr8`/`yescryptr16`/`yescryptr32` were broken for every normal user: without an explicit `--threads=N` on the command

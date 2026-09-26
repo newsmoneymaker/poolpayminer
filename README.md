@@ -296,6 +296,12 @@ Command line: `poolpayminer -a yescryptr8 --tls -o mtbc.pool-pay.com:4001 -u ADD
 of the three CPU self-tests checks against a real block header from that coin's own chain (see CHANGES.md), and all three algorithms have been checked end to end against their real pools with the default thread count (no `--threads` needed): shares accepted over TLS on
 mtbc.pool-pay.com, fnnc.pool-pay.com and lpepe.pool-pay.com. (1.1.13 was broken here for anyone not passing `--threads` explicitly; fixed in 1.1.14.)
 
+## Auto mode (`--auto`)
+
+Register on <https://all.pool-pay.com> (email + password): you get a personal port number, can switch coins on and off, and choose to be paid either in USDT on your account balance (everything mined is credited at the coin's
+expected value, we keep 5%) or directly in each coin to your own address. Then simply run `poolpayminer --auto <your personal port>`. The miner asks our server every 5 minutes which of your enabled coins pays best right now
+(the ranking is the table at the top of that page, refreshed every 30 minutes) and mines it, changing algorithm and pool by itself without you touching anything. The answer is signed, see CHANGES.md 1.1.15. Riecoin is not part of it.
+
 ## Supported algorithms
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `yespower-r16` and the
