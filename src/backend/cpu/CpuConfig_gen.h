@@ -164,8 +164,17 @@ size_t inline generate<Algorithm::YESPOWER>(Threads<CpuThreads>& threads, uint32
 template<>
 size_t inline generate<Algorithm::YESCRYPT>(Threads<CpuThreads>& threads, uint32_t limit)
 {
-    // one shared "yescrypt" auto-config thread count for all three (r8/r16/r32) variants, like "rx" covers all rx/* RandomX variants
-    return generate(Algorithm::kYESCRYPT, threads, Algorithm::YESCRYPT_R16, limit);
+    // Unlike yespower-r16 (the family name IS the one member's exact name, so the lookup in Threads::profileName() finds it
+    // directly) yescrypt has three real, differently sized variants and none of their names contain "/" (the split that lets
+    // RandomX's "rx/..." ids share a generic "rx" profile) -- registering one shared profile under the family name "yescrypt"
+    // left profileName("yescryptr8"/"yescryptr16"/"yescryptr32") with nothing to find, so the CPU backend reported every one
+    // of them "disabled" whenever a user didn't pass --threads explicitly (i.e. for every normal user). Register each variant
+    // under its own exact name instead, sized for its own memory footprint (see the l3() comment in Algorithm.h).
+    size_t count = 0;
+    count += generate(Algorithm::kYESCRYPT_R8,  threads, Algorithm::YESCRYPT_R8,  limit);
+    count += generate(Algorithm::kYESCRYPT_R16, threads, Algorithm::YESCRYPT_R16, limit);
+    count += generate(Algorithm::kYESCRYPT_R32, threads, Algorithm::YESCRYPT_R32, limit);
+    return count;
 }
 #endif
 
