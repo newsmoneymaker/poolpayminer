@@ -162,6 +162,7 @@ struct RandomX_ConfigurationWownero : public RandomX_ConfigurationBase { RandomX
 struct RandomX_ConfigurationEpic : public RandomX_ConfigurationBase { RandomX_ConfigurationEpic(); };
 struct RandomX_ConfigurationC64 : public RandomX_ConfigurationBase { RandomX_ConfigurationC64(); };
 struct RandomX_ConfigurationScash : public RandomX_ConfigurationBase { RandomX_ConfigurationScash(); };
+struct RandomX_ConfigurationKeva : public RandomX_ConfigurationBase { RandomX_ConfigurationKeva(); };
 struct RandomX_ConfigurationXla : public RandomX_ConfigurationBase { RandomX_ConfigurationXla(); };
 struct RandomX_ConfigurationArqma : public RandomX_ConfigurationBase { RandomX_ConfigurationArqma(); };
 struct RandomX_ConfigurationGraft : public RandomX_ConfigurationBase { RandomX_ConfigurationGraft(); };
@@ -174,6 +175,7 @@ extern RandomX_ConfigurationWownero RandomX_WowneroConfig;
 extern RandomX_ConfigurationEpic RandomX_EpicConfig;
 extern RandomX_ConfigurationC64 RandomX_C64Config;
 extern RandomX_ConfigurationScash RandomX_ScashConfig;
+extern RandomX_ConfigurationKeva RandomX_KevaConfig;
 extern RandomX_ConfigurationXla RandomX_XlaConfig;
 extern RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 extern RandomX_ConfigurationGraft RandomX_GraftConfig;
