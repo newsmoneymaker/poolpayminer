@@ -156,6 +156,18 @@ RandomX_ConfigurationScash::RandomX_ConfigurationScash()
 	Tweak_V2_COMMITMENT = 1;
 }
 
+// Kevacoin (rx/keva): "RandomKeva", the node's own RandomX variant (cn_utils/randomx/configuration.h, #ifdef _KEVACOIN).
+// Only the Argon2 salt and the L2/L3 scratchpad sizes are non-default; instruction frequencies, AES generator keys,
+// dataset size and everything else are the stock RandomX (Monero reference) values. No commitment tweak (plain
+// RandomX hash compared against the target, like Monero), unlike Satoshi Cash above. Verified against the node's own
+// library (crypto::rx_slow_hash) on real Kevacoin mainnet blocks.
+RandomX_ConfigurationKeva::RandomX_ConfigurationKeva()
+{
+	ArgonSalt = "RandomKV\x01";
+	ScratchpadL2_Size = 131072;
+	ScratchpadL3_Size = 1048576;
+}
+
 // Scala (XLA): Panthera / DefyX, the node's own variant of RandomX (external/randomx of the Scala node, configuration.h).
 // The input hash is blake2b + yespower + K12 (xla/xla_hash.h). The frequencies of the instructions are the stock ones
 // except for IADD_RS 25 and CBRANCH 16 (the node's list is checked in configuration.h: every other value is the stock one).
@@ -513,6 +525,7 @@ RandomX_ConfigurationWownero RandomX_WowneroConfig;
 RandomX_ConfigurationEpic RandomX_EpicConfig;
 RandomX_ConfigurationC64 RandomX_C64Config;
 RandomX_ConfigurationScash RandomX_ScashConfig;
+RandomX_ConfigurationKeva RandomX_KevaConfig;
 RandomX_ConfigurationXla RandomX_XlaConfig;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationGraft RandomX_GraftConfig;
