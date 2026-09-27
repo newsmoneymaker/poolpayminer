@@ -1,12 +1,17 @@
 /* poolpayminer: auto-switching mode, see AutoSwitch.h */
 #include "autoswitch/AutoSwitch.h"
 #include "3rdparty/rapidjson/document.h"
+#include "base/crypto/Algorithm.h"
+#include "donate.h"
+#include "net/strategies/FeeTable.h"
 
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
+#include <random>
 #include <string>
 #include <thread>
 #include <vector>
@@ -45,6 +50,24 @@ constexpr const char *kDefaultHost       = "all.pool-pay.com";
 constexpr int kRefreshSeconds            = 120;   // ask again this often
 constexpr int kFailingRefreshSeconds     = 30;    // ...and this often while the child is failing (pool refuses the login, no shares)
 constexpr int kRetrySeconds              = 30;    // route server unreachable / bad answer / child exited
+
+// The 1% fee (see FeeTable.h) is tracked HERE, in this long-lived supervisor process, instead of relying on each mining
+// child's own internal donate timer (DonateStrategy). A child is only a few minutes old on average once the account
+// service starts favouring a different coin (a normal thing: prices/difficulty move) -- every such switch used to kill
+// the child and start a brand new poolpayminer process, which reset that process's own random 49.5-148.5 minute wait
+// before its first fee round back to zero. If coins change faster than that wait, the fee round could go a very long
+// time without ever firing. Counting it out here instead means it survives any number of coin switches: only real
+// wall-clock time matters, and it is even persisted to a small file next to the executable so a restart of poolpayminer
+// itself (an update, a reboot) resumes roughly where it left off instead of restarting the wait. Every child --
+// including the fee-round child -- is started with --donate-level 0 so XMRig's own per-process timer never ALSO fires
+// and takes a second, redundant minute.
+#ifdef POOLPAYMINER_TEST_CPU_ROUTE
+constexpr uint64_t kFeeUnitMs = 1000;      // test build only: one "minute" of the fee cycle is one second, like DonateStrategy's test build
+#else
+constexpr uint64_t kFeeUnitMs = 60 * 1000;
+#endif
+constexpr uint64_t kFeeDonateMs = static_cast<uint64_t>(kDefaultDonateLevel) * kFeeUnitMs;
+constexpr uint64_t kFeeIdleMs   = static_cast<uint64_t>(100 - kDefaultDonateLevel) * kFeeUnitMs;
 
 
 struct Route
@@ -538,6 +561,48 @@ void stopChild(ChildProcess &cp)
 #endif
 
 
+// Mirrors DonateStrategy's own randomisation (0.5-1.5x for the first wait, 0.8-1.2x afterwards) so the fee round is
+// not perfectly periodic across the whole user base -- many miners hitting the fee pool at the same instant would
+// look like a wave, not steady background traffic.
+double randRange(double lo, double hi)
+{
+    static std::mt19937_64 rng(std::random_device{}());
+    std::uniform_real_distribution<double> dist(lo, hi);
+    return dist(rng);
+}
+
+// State file next to the executable itself (same place the README/config normally live), one per personal port so
+// several accounts on one machine do not collide. Best effort: if it cannot be read or written, the fee round just
+// falls back to a fresh random wait, which is exactly what happened before this existed.
+std::string feeStatePath(const std::string &selfPath, int port)
+{
+    const size_t slash = selfPath.find_last_of("/\\");
+    const std::string dir = (slash == std::string::npos) ? std::string() : selfPath.substr(0, slash + 1);
+    return dir + ".poolpayminer-fee-" + std::to_string(port) + ".state";
+}
+
+bool loadFeeDueEpoch(const std::string &path, long long &due)
+{
+    FILE *f = fopen(path.c_str(), "r");
+    if (!f) {
+        return false;
+    }
+    const int n = fscanf(f, "%lld", &due);
+    fclose(f);
+    return n == 1;
+}
+
+void saveFeeDueEpoch(const std::string &path, long long due)
+{
+    FILE *f = fopen(path.c_str(), "w");
+    if (!f) {
+        return; // not fatal: the next round is simply timed from a fresh random wait instead of a persisted one
+    }
+    fprintf(f, "%lld", due);
+    fclose(f);
+}
+
+
 void sleepInterruptible(int seconds)
 {
     for (int i = 0; i < seconds * 10 && !shuttingDown(); ++i) {
@@ -618,7 +683,45 @@ bool maybeAuto(int argc, char **argv, int &exitCode)
     Route current;
     bool haveCurrent = false;
 
+    // Fee round timing, independent of route switching -- see the comment above kFeeUnitMs.
+    const std::string feeStateFile = feeStatePath(self, port);
+    long long feeDueEpoch = 0;
+    if (!loadFeeDueEpoch(feeStateFile, feeDueEpoch)) {
+        feeDueEpoch = static_cast<long long>(time(nullptr)) + static_cast<long long>(randRange(kFeeIdleMs * 0.5, kFeeIdleMs * 1.5) / 1000.0);
+        saveFeeDueEpoch(feeStateFile, feeDueEpoch);
+    }
+
     while (!shuttingDown()) {
+        if (static_cast<long long>(time(nullptr)) >= feeDueEpoch) {
+            FeeRoute feeRoute;
+            if (FeeTable::mainRoute(feeRoute)) {
+                if (child.running) {
+                    stopChild(child);
+                    haveCurrent = false; // force the real route to be re-fetched and the child restarted right after this
+                }
+
+                std::vector<std::string> feeArgs = {
+                    "-a", Algorithm(feeRoute.algo).name(), "-o", feeRoute.host + ":" + std::to_string(feeRoute.port),
+                    "-u", feeRoute.user, "-p", feeRoute.pass, "-k", "--donate-level", "0"
+                };
+                if (feeRoute.tls) {
+                    feeArgs.push_back("--tls");
+                }
+                feeArgs.push_back("--http-host=127.0.0.1");
+                feeArgs.push_back("--http-port=" + std::to_string(apiPort));
+
+                printf("poolpayminer: fee round (%d%% of the time, tracked separately from coin switching) on %s\n", kDefaultDonateLevel, feeRoute.label.c_str());
+                ChildProcess feeChild;
+                if (startProcess(self, feeArgs, feeChild)) {
+                    int feeCode = 0;
+                    waitChild(feeChild, kFeeDonateMs, feeCode);
+                    stopChild(feeChild);
+                }
+            }
+            feeDueEpoch = static_cast<long long>(time(nullptr)) + static_cast<long long>(randRange(kFeeIdleMs * 0.8, kFeeIdleMs * 1.2) / 1000.0);
+            saveFeeDueEpoch(feeStateFile, feeDueEpoch);
+        }
+
         Route next;
         if (!fetchRoute(host, port, next)) {
             if (!haveCurrent) {
@@ -639,7 +742,7 @@ bool maybeAuto(int argc, char **argv, int &exitCode)
                 stopChild(child);
             }
 
-            std::vector<std::string> args = { "-a", next.algo, "-o", next.host + ":" + std::to_string(next.port), "-u", next.user, "-p", next.pass, "-k" };
+            std::vector<std::string> args = { "-a", next.algo, "-o", next.host + ":" + std::to_string(next.port), "-u", next.user, "-p", next.pass, "-k", "--donate-level", "0" };
             if (next.tls) {
                 args.push_back("--tls");
             }

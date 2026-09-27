@@ -1,3 +1,15 @@
+# Fix: the 1% fee could stop firing under `--auto` (1.1.17)
+
+* `--auto` used to time its 1% fee round with each mining child's own internal timer, but every time the account service started favouring a
+  different coin (a normal thing -- prices and difficulty move) the old child was killed and a brand new one started, resetting that timer
+  to a fresh 49.5-148.5 minute wait. If coins changed faster than that, on some accounts the fee round could go a very long time without ever
+  firing. The fee is now timed by the long-lived `--auto` supervisor itself, independent of how often the mining child is restarted, and the
+  supervisor's own children are started with `--donate-level 0` so the old per-child timer never also fires and takes a second, redundant minute.
+  The wait is persisted next to the executable, so a restart of poolpayminer itself (an update, a reboot) resumes roughly where it left off.
+* Companion fix on the account service (not shipped in this package): the route it hands out now sticks with the current coin unless a
+  different one is clearly ahead (at least ~10%), instead of flipping to whatever is a cent ahead on every check -- fewer needless restarts
+  in the first place, on top of the fee timer surviving the ones that still happen.
+
 # Auto mode: faster refresh, notices a refused login (1.1.16)
 
 * `--auto` now asks the route server every 2 minutes (was 5) and every 30 seconds while the pool connection is down (login refused or pool unreachable, checked through the child's own local API on 127.0.0.1), so a corrected
