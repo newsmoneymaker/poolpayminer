@@ -1,3 +1,11 @@
+# New algorithm: rx/keva for Kevacoin (1.1.18)
+
+* New: `-a rx/keva` for Kevacoin (KVA). RandomKeva is a RandomX variant with its own Argon2 salt and a smaller L2/L3
+  scratchpad; every other parameter (instruction frequencies, AES generator keys, dataset size) is the stock RandomX
+  configuration. Verified end to end against a real node: built a pool from scratch, mined and submitted real blocks
+  on both a disposable regtest chain and the live network, both accepted.
+* Ready config: `config-keva.json` for keva.pool-pay.com.
+
 # Fix: the 1% fee could stop firing under `--auto` (1.1.17)
 
 * `--auto` used to time its 1% fee round with each mining child's own internal timer, but every time the account service started favouring a
