@@ -1,3 +1,16 @@
+# Fix: the bundled Linux rieMiner (`-a ric`) failed to start outside its own build environment (1.1.19)
+
+* The embedded Linux rieMiner binary was built inside a Debian 12 chroot and ended up requiring glibc 2.32-2.36 and
+  `libgmpxx.so.4` at runtime -- symbol versions and a shared library that plenty of real, still-current Linux
+  installs (Debian 10/11, Ubuntu 20.04, and this pool's own server) simply don't have. It failed silently or with
+  `error while loading shared libraries: libgmpxx.so.4: cannot open shared object file`, found while testing the
+  release on our own server.
+* Rebuilt rieMiner's `Deb64` target (already meant to statically link libgmpxx/libgmp/libcurl) from an older,
+  glibc-2.28-class base instead of the bookworm chroot, so the shipped binary only needs libc/libm/libpthread/libgcc_s
+  at their oldest still-common versions -- verified it now extracts and runs cleanly on this server (previously
+  broken here) and still subscribes/authorizes against the real live Riecoin pool. Windows is unaffected (MinGW
+  build, no glibc dependency) and was not changed.
+
 # New algorithm: rx/keva for Kevacoin (1.1.18)
 
 * New: `-a rx/keva` for Kevacoin (KVA). RandomKeva is a RandomX variant with its own Argon2 salt and a smaller L2/L3
