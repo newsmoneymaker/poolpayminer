@@ -1,3 +1,9 @@
+# Add rx/arq algorithm (RandomARQ, ArQmA): RandomX with its own Argon2 salt (1.1.20)
+
+* New RandomX variant `rx/arq` for ArQmA (ARQ) mining on `arq.pool-pay.com` (ports 4500 plain / 4501-4503 TLS),
+  a Monero-based coin with its own RandomX tweak (Argon2 salt "RandomARQ", standard scratchpad sizes).
+* New packaged config: `config-arq.json` (`-a rx/arq`).
+
 # Fix: the bundled Linux rieMiner (`-a ric`) failed to start outside its own build environment (1.1.19)
 
 * The embedded Linux rieMiner binary was built inside a Debian 12 chroot and ended up requiring glibc 2.32-2.36 and
