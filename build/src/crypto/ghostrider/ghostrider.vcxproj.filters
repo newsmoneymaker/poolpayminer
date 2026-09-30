@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_blake.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_bmw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_cubehash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_echo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_groestl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_hamsi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_jh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_keccak.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_luffa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shabal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_simd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_sha2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_skein.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_whirlpool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_blake.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_bmw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_cubehash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_echo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_groestl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_hamsi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_jh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_keccak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_luffa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_sha2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shabal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_simd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_skein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_whirlpool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2306254A-30C4-31C7-91C0-9DCE2CA9556E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D1B9D90C-EB6C-3F93-AC0D-CFE4AA77CA01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

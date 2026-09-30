@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\base64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\bind.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\bitmap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\components.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\diff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\distances.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\misc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\pci-common.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\shmem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-noos.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-synthetic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-windows.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-x86.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-xml.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-xml-nolibxml.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\traversal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\cpukinds.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include\hwloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\static-components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2306254A-30C4-31C7-91C0-9DCE2CA9556E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D1B9D90C-EB6C-3F93-AC0D-CFE4AA77CA01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

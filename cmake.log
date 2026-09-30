@@ -1,0 +1,29 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+-- The C compiler identification is MSVC 19.44.35229.0
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning at CMakeLists.txt:128 (message):
+  rieMiner binary not found at /root/claude/ric/rieMiner-win64.exe: this
+  build's -a ric will not be able to extract its own copy.  Set
+  -DRIEMINER_BIN_DIR=...  or place the binaries there.
+
+
+-- Found UV: D:/a/_temp/xmrig-deps/msvc2022/x64/lib/libuv.lib
+-- Looking for _aligned_malloc
+-- Looking for _aligned_malloc - found
+-- The ASM_MASM compiler identification is MSVC
+-- Found assembler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/ml64.exe
+-- WITH_MSR=ON
+-- Found OpenSSL: D:/a/_temp/xmrig-deps/msvc2022/x64/lib/libcrypto.lib (found version "3.0.16")
+-- Configuring done (13.7s)
+-- Generating done (0.1s)
+-- Build files have been written to: D:/a/poolpayminer/poolpayminer/build

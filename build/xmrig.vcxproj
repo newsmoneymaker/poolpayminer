@@ -1,0 +1,1052 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{42E59F8A-53E1-3449-AAA5-47AC9AB5F501}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>xmrig</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\a\poolpayminer\poolpayminer\build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xmrig.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xmrig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\a\poolpayminer\poolpayminer\build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xmrig.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xmrig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\a\poolpayminer\poolpayminer\build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">xmrig.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">xmrig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\a\poolpayminer\poolpayminer\build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">xmrig.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">xmrig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="Debug";</PreprocessorDefinitions>
+      <IncludePaths>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(IncludePaths)</IncludePaths>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>					</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/bin/WinRing0/WinRing0x64.sys D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_1M.cmd D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_10M.cmd D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/pool_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/solo_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/rtm_ghostrider_example.cmd D:/a/poolpayminer/poolpayminer/build/Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>Debug\xmrig-asm.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libssl.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libcrypto.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libuv.lib;ws2_32.lib;psapi.lib;iphlpapi.lib;userenv.lib;dbghelp.lib;crypt32.lib;src\3rdparty\hwloc\Debug\hwloc.lib;src\3rdparty\argon2\Debug\argon2.lib;src\3rdparty\libethash\Debug\ethash.lib;src\crypto\ghostrider\Debug\ghostrider.lib;src\crypto\yespower\Debug\yespower.lib;src\crypto\yescrypt\Debug\yescrypt.lib;src\3rdparty\argon2\Debug\argon2-sse2.lib;src\3rdparty\argon2\Debug\argon2-ssse3.lib;src\3rdparty\argon2\Debug\argon2-xop.lib;src\3rdparty\argon2\Debug\argon2-avx2.lib;src\3rdparty\argon2\Debug\argon2-avx512f.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/a/poolpayminer/poolpayminer/build/Debug/xmrig.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/a/poolpayminer/poolpayminer/build/Debug/xmrig.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="Release";</PreprocessorDefinitions>
+      <IncludePaths>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(IncludePaths)</IncludePaths>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>					</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/bin/WinRing0/WinRing0x64.sys D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_1M.cmd D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_10M.cmd D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/pool_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/solo_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/rtm_ghostrider_example.cmd D:/a/poolpayminer/poolpayminer/build/Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>Release\xmrig-asm.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libssl.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libcrypto.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libuv.lib;ws2_32.lib;psapi.lib;iphlpapi.lib;userenv.lib;dbghelp.lib;crypt32.lib;src\3rdparty\hwloc\Release\hwloc.lib;src\3rdparty\argon2\Release\argon2.lib;src\3rdparty\libethash\Release\ethash.lib;src\crypto\ghostrider\Release\ghostrider.lib;src\crypto\yespower\Release\yespower.lib;src\crypto\yescrypt\Release\yescrypt.lib;src\3rdparty\argon2\Release\argon2-sse2.lib;src\3rdparty\argon2\Release\argon2-ssse3.lib;src\3rdparty\argon2\Release\argon2-xop.lib;src\3rdparty\argon2\Release\argon2-avx2.lib;src\3rdparty\argon2\Release\argon2-avx512f.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/a/poolpayminer/poolpayminer/build/Release/xmrig.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/a/poolpayminer/poolpayminer/build/Release/xmrig.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="MinSizeRel";</PreprocessorDefinitions>
+      <IncludePaths>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(IncludePaths)</IncludePaths>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>					</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/bin/WinRing0/WinRing0x64.sys D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_1M.cmd D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_10M.cmd D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/pool_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/solo_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/rtm_ghostrider_example.cmd D:/a/poolpayminer/poolpayminer/build/MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>MinSizeRel\xmrig-asm.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libssl.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libcrypto.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libuv.lib;ws2_32.lib;psapi.lib;iphlpapi.lib;userenv.lib;dbghelp.lib;crypt32.lib;src\3rdparty\hwloc\MinSizeRel\hwloc.lib;src\3rdparty\argon2\MinSizeRel\argon2.lib;src\3rdparty\libethash\MinSizeRel\ethash.lib;src\crypto\ghostrider\MinSizeRel\ghostrider.lib;src\crypto\yespower\MinSizeRel\yespower.lib;src\crypto\yescrypt\MinSizeRel\yescrypt.lib;src\3rdparty\argon2\MinSizeRel\argon2-sse2.lib;src\3rdparty\argon2\MinSizeRel\argon2-ssse3.lib;src\3rdparty\argon2\MinSizeRel\argon2-xop.lib;src\3rdparty\argon2\MinSizeRel\argon2-avx2.lib;src\3rdparty\argon2\MinSizeRel\argon2-avx512f.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/a/poolpayminer/poolpayminer/build/MinSizeRel/xmrig.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/a/poolpayminer/poolpayminer/build/MinSizeRel/xmrig.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization></Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary></RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;RELWITHDEBINFO;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;RELWITHDEBINFO;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <MASM>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;RELWITHDEBINFO;XMRIG_64_BIT;RAPIDJSON_SSE2;RAPIDJSON_WRITE_DEFAULT_FLAGS=6;XMRIG_FEATURE_SSE4_1;XMRIG_FEATURE_AVX2;XMRIG_OS_WIN;XMRIG_FEATURE_HTTP;XMRIG_FEATURE_API;XMRIG_FEATURE_ENV;XMRIG_FEATURE_BENCHMARK;XMRIG_FEATURE_HWLOC;XMRIG_VAES;XMRIG_MINER_PROJECT;XMRIG_JSON_SINGLE_LINE_ARRAY;__STDC_FORMAT_MACROS;UNICODE;_FILE_OFFSET_BITS=64;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;NOMINMAX;HAVE_ROTR;HAVE_ALIGNED_MALLOC;XMRIG_ALGO_RANDOMX;XMRIG_FEATURE_MSR;XMRIG_FIX_RYZEN;XMRIG_ALGO_ARGON2;XMRIG_ALGO_KAWPOW;XMRIG_ALGO_GHOSTRIDER;XMRIG_ALGO_YESPOWER;XMRIG_ALGO_YESCRYPT;XMRIG_FEATURE_TLS;XMRIG_FEATURE_ASM;XMRIG_ALGO_CN_LITE;XMRIG_ALGO_CN_HEAVY;XMRIG_ALGO_CN_PICO;XMRIG_ALGO_CN_FEMTO;XMRIG_FEATURE_DMI;CMAKE_INTDIR="RelWithDebInfo";</PreprocessorDefinitions>
+      <IncludePaths>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(IncludePaths)</IncludePaths>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\include;D:\a\_temp\xmrig-deps\msvc2022\x64\include;D:\a\poolpayminer\poolpayminer\src;D:\a\poolpayminer\poolpayminer\src\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>					</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/bin/WinRing0/WinRing0x64.sys D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_1M.cmd D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/benchmark_10M.cmd D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/pool_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/solo_mine_example.cmd D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different D:/a/poolpayminer/poolpayminer/scripts/rtm_ghostrider_example.cmd D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>RelWithDebInfo\xmrig-asm.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libssl.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libcrypto.lib;D:\a\_temp\xmrig-deps\msvc2022\x64\lib\libuv.lib;ws2_32.lib;psapi.lib;iphlpapi.lib;userenv.lib;dbghelp.lib;crypt32.lib;src\3rdparty\hwloc\RelWithDebInfo\hwloc.lib;src\3rdparty\argon2\RelWithDebInfo\argon2.lib;src\3rdparty\libethash\RelWithDebInfo\ethash.lib;src\crypto\ghostrider\RelWithDebInfo\ghostrider.lib;src\crypto\yespower\RelWithDebInfo\yespower.lib;src\crypto\yescrypt\RelWithDebInfo\yescrypt.lib;src\3rdparty\argon2\RelWithDebInfo\argon2-sse2.lib;src\3rdparty\argon2\RelWithDebInfo\argon2-ssse3.lib;src\3rdparty\argon2\RelWithDebInfo\argon2-xop.lib;src\3rdparty\argon2\RelWithDebInfo\argon2-avx2.lib;src\3rdparty\argon2\RelWithDebInfo\argon2-avx512f.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo/xmrig.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/a/poolpayminer/poolpayminer/build/RelWithDebInfo/xmrig.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\a\poolpayminer\poolpayminer\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/a/poolpayminer/poolpayminer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/a/poolpayminer/poolpayminer -BD:/a/poolpayminer/poolpayminer/build --check-stamp-file D:/a/poolpayminer/poolpayminer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompilerABI.cpp;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Determine-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\SelectLibraryConfigurations.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeASM_MASMCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCXXCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeRCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeSystem.cmake;D:\a\poolpayminer\poolpayminer\cmake\FindUV.cmake;D:\a\poolpayminer\poolpayminer\cmake\OpenSSL.cmake;D:\a\poolpayminer\poolpayminer\cmake\argon2.cmake;D:\a\poolpayminer\poolpayminer\cmake\asm.cmake;D:\a\poolpayminer\poolpayminer\cmake\cpu.cmake;D:\a\poolpayminer\poolpayminer\cmake\flags.cmake;D:\a\poolpayminer\poolpayminer\cmake\ghostrider.cmake;D:\a\poolpayminer\poolpayminer\cmake\kawpow.cmake;D:\a\poolpayminer\poolpayminer\cmake\os.cmake;D:\a\poolpayminer\poolpayminer\cmake\randomx.cmake;D:\a\poolpayminer\poolpayminer\cmake\yescrypt.cmake;D:\a\poolpayminer\poolpayminer\cmake\yespower.cmake;D:\a\poolpayminer\poolpayminer\src\backend\backend.cmake;D:\a\poolpayminer\poolpayminer\src\backend\common\common.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cpu\cpu.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cuda\cuda.cmake;D:\a\poolpayminer\poolpayminer\src\backend\opencl\opencl.cmake;D:\a\poolpayminer\poolpayminer\src\base\base.cmake;D:\a\poolpayminer\poolpayminer\src\hw\api\api.cmake;D:\a\poolpayminer\poolpayminer\src\hw\dmi\dmi.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\a\poolpayminer\poolpayminer\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/a/poolpayminer/poolpayminer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/a/poolpayminer/poolpayminer -BD:/a/poolpayminer/poolpayminer/build --check-stamp-file D:/a/poolpayminer/poolpayminer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompilerABI.cpp;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Determine-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\SelectLibraryConfigurations.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeASM_MASMCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCXXCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeRCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeSystem.cmake;D:\a\poolpayminer\poolpayminer\cmake\FindUV.cmake;D:\a\poolpayminer\poolpayminer\cmake\OpenSSL.cmake;D:\a\poolpayminer\poolpayminer\cmake\argon2.cmake;D:\a\poolpayminer\poolpayminer\cmake\asm.cmake;D:\a\poolpayminer\poolpayminer\cmake\cpu.cmake;D:\a\poolpayminer\poolpayminer\cmake\flags.cmake;D:\a\poolpayminer\poolpayminer\cmake\ghostrider.cmake;D:\a\poolpayminer\poolpayminer\cmake\kawpow.cmake;D:\a\poolpayminer\poolpayminer\cmake\os.cmake;D:\a\poolpayminer\poolpayminer\cmake\randomx.cmake;D:\a\poolpayminer\poolpayminer\cmake\yescrypt.cmake;D:\a\poolpayminer\poolpayminer\cmake\yespower.cmake;D:\a\poolpayminer\poolpayminer\src\backend\backend.cmake;D:\a\poolpayminer\poolpayminer\src\backend\common\common.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cpu\cpu.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cuda\cuda.cmake;D:\a\poolpayminer\poolpayminer\src\backend\opencl\opencl.cmake;D:\a\poolpayminer\poolpayminer\src\base\base.cmake;D:\a\poolpayminer\poolpayminer\src\hw\api\api.cmake;D:\a\poolpayminer\poolpayminer\src\hw\dmi\dmi.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\a\poolpayminer\poolpayminer\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/a/poolpayminer/poolpayminer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/a/poolpayminer/poolpayminer -BD:/a/poolpayminer/poolpayminer/build --check-stamp-file D:/a/poolpayminer/poolpayminer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompilerABI.cpp;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Determine-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\SelectLibraryConfigurations.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeASM_MASMCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCXXCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeRCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeSystem.cmake;D:\a\poolpayminer\poolpayminer\cmake\FindUV.cmake;D:\a\poolpayminer\poolpayminer\cmake\OpenSSL.cmake;D:\a\poolpayminer\poolpayminer\cmake\argon2.cmake;D:\a\poolpayminer\poolpayminer\cmake\asm.cmake;D:\a\poolpayminer\poolpayminer\cmake\cpu.cmake;D:\a\poolpayminer\poolpayminer\cmake\flags.cmake;D:\a\poolpayminer\poolpayminer\cmake\ghostrider.cmake;D:\a\poolpayminer\poolpayminer\cmake\kawpow.cmake;D:\a\poolpayminer\poolpayminer\cmake\os.cmake;D:\a\poolpayminer\poolpayminer\cmake\randomx.cmake;D:\a\poolpayminer\poolpayminer\cmake\yescrypt.cmake;D:\a\poolpayminer\poolpayminer\cmake\yespower.cmake;D:\a\poolpayminer\poolpayminer\src\backend\backend.cmake;D:\a\poolpayminer\poolpayminer\src\backend\common\common.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cpu\cpu.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cuda\cuda.cmake;D:\a\poolpayminer\poolpayminer\src\backend\opencl\opencl.cmake;D:\a\poolpayminer\poolpayminer\src\base\base.cmake;D:\a\poolpayminer\poolpayminer\src\hw\api\api.cmake;D:\a\poolpayminer\poolpayminer\src\hw\dmi\dmi.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\a\poolpayminer\poolpayminer\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/a/poolpayminer/poolpayminer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/a/poolpayminer/poolpayminer -BD:/a/poolpayminer/poolpayminer/build --check-stamp-file D:/a/poolpayminer/poolpayminer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeASM_MASMInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXCompilerABI.cpp;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestASM_MASMCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\FindOpenSSL.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeASM_MASMLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckFlagCommonConfig.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Determine-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\SelectLibraryConfigurations.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeASM_MASMCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeCXXCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeRCCompiler.cmake;D:\a\poolpayminer\poolpayminer\build\CMakeFiles\3.31.6\CMakeSystem.cmake;D:\a\poolpayminer\poolpayminer\cmake\FindUV.cmake;D:\a\poolpayminer\poolpayminer\cmake\OpenSSL.cmake;D:\a\poolpayminer\poolpayminer\cmake\argon2.cmake;D:\a\poolpayminer\poolpayminer\cmake\asm.cmake;D:\a\poolpayminer\poolpayminer\cmake\cpu.cmake;D:\a\poolpayminer\poolpayminer\cmake\flags.cmake;D:\a\poolpayminer\poolpayminer\cmake\ghostrider.cmake;D:\a\poolpayminer\poolpayminer\cmake\kawpow.cmake;D:\a\poolpayminer\poolpayminer\cmake\os.cmake;D:\a\poolpayminer\poolpayminer\cmake\randomx.cmake;D:\a\poolpayminer\poolpayminer\cmake\yescrypt.cmake;D:\a\poolpayminer\poolpayminer\cmake\yespower.cmake;D:\a\poolpayminer\poolpayminer\src\backend\backend.cmake;D:\a\poolpayminer\poolpayminer\src\backend\common\common.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cpu\cpu.cmake;D:\a\poolpayminer\poolpayminer\src\backend\cuda\cuda.cmake;D:\a\poolpayminer\poolpayminer\src\backend\opencl\opencl.cmake;D:\a\poolpayminer\poolpayminer\src\base\base.cmake;D:\a\poolpayminer\poolpayminer\src\hw\api\api.cmake;D:\a\poolpayminer\poolpayminer\src\hw\dmi\dmi.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\a\poolpayminer\poolpayminer\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\epee\span.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\interfaces\IApiListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Algorithm.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Coin.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\keccak.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\sha3.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Async.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Console.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Env.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonChain.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonRequest.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\ConsoleLog.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\FileLog.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\FileLogWriter.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Log.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Tags.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Signals.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Watcher.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Base.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseConfig.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseTransform.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\Title.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\constants.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Entry.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IAsyncListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IBaseListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IClientListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfig.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfigListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfigTransform.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConsoleListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IDnsBackend.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IDnsListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ILineListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ILogBackend.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ISignalListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IStrategy.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IStrategyListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ITimerListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IWatcherListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\Dns.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsConfig.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecord.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecords.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRequest.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsUvBackend.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Http.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\BaseClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Client.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Job.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\NetworkState.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pool.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pools.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\ProxyUrl.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Socks5.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\FailoverStrategy.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\SinglePoolStrategy.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\StrategyProxy.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SubmitResult.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Url.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\LineReader.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\MemPool.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\NetBuffer.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\Storage.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Alignment.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Arguments.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Baton.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\bswap_64.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Buffer.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Chrono.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlobReader.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlockTemplate.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\Signatures.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\umul128.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\WalletAddress.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Cvt.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Handle.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Span.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\String.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Timer.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\AutoClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\EthStratumClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchConfig.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\llhttp.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\Api.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\Httpd.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\interfaces\IApiRequest.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\ApiRequest.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\HttpApiRequest.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IHttpListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IJsonReader.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ITcpServerListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Fetch.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpApiResponse.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpContext.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpData.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpResponse.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\DaemonClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SelfSelectClient.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\TcpServer.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Hashrate.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Tags.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IBackend.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IRxListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IRxStorage.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IWorker.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\misc\PciTopology.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Thread.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Threads.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Worker.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\WorkerJob.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Workers.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\Benchmark.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState_test.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IBenchListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\Cpu.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuBackend.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig_gen.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuLaunchData.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThread.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThreads.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuWorker.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\interfaces\ICpuInfo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\BasicCpuInfo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\HwlocCpuInfo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\App.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config_default.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config_platform.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\ConfigTransform.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\usage.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Controller.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Miner.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Taskbar.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\interfaces\IJobResultListener.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\JobResult.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\JobResults.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\Network.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\DonateStrategy.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\FeeTable.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\Summary.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\version.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\api\HwApi.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiBoard.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiMemory.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiTools.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\fmt\format.cc" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Algorithm.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Coin.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\keccak.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\sha3.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Async.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Console.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Env.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonChain.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonRequest.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\ConsoleLog.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\FileLog.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\FileLogWriter.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Log.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Tags.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Signals.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Watcher.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Base.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseConfig.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseTransform.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\Title.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Entry.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\Dns.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsConfig.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecord.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecords.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsUvBackend.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Http.cpp">
+      <ObjectFileName>$(IntDir)/src/base/net/http/Http.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\BaseClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Client.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Job.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\NetworkState.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pool.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pools.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\ProxyUrl.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Socks5.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\FailoverStrategy.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\SinglePoolStrategy.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Url.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\LineReader.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\NetBuffer.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Arguments.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Chrono.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlockTemplate.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops-data.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\Signatures.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\WalletAddress.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Cvt.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\String.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Timer.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\AutoClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\EthStratumClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchConfig.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\llhttp.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\api.c">
+      <ObjectFileName>$(IntDir)/src/3rdparty/llhttp/api.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\http.c">
+      <ObjectFileName>$(IntDir)/src/3rdparty/llhttp/http.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\Api.cpp">
+      <ObjectFileName>$(IntDir)/src/base/api/Api.cpp.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\Httpd.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\ApiRequest.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\HttpApiRequest.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Fetch.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpApiResponse.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpContext.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpData.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpListener.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpResponse.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\DaemonClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SelfSelectClient.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\TcpServer.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Hashrate.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Threads.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Worker.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Workers.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\Benchmark.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\Cpu.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuBackend.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuLaunchData.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThread.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThreads.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuWorker.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\HwlocCpuInfo.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\BasicCpuInfo.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\App.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\config\ConfigTransform.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Controller.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Miner.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Taskbar.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\JobResults.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\Network.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\DonateStrategy.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\FeeTable.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\autoswitch\AutoSwitch.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\riecoin\Dispatch.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\build\generated\RieMinerBlob.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\Summary.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\xmrig.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\api\HwApi.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiBoard.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiMemory.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiTools.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform_hwloc.cpp" />
+    <ResourceCompile Include="D:\a\poolpayminer\poolpayminer\res\app.rc" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\App_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory_win.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IMemoryPool.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\asm\CryptonightR_template.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_blake256.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_groestl.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_jh.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_skein.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnAlgo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnCtx.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnHash.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_monero.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_test.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\groestl_tables.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\hash.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\skein_port.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\soft_aes.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\HugePagesInfo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\MemoryPool.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Nonce.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\portable\mm_malloc.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86_vaes.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\NUMAMemoryPool.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\Rx.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxAlgo.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxBasicStorage.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxCache.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxConfig.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxDataset.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxQueue.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxSeed.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxVm.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxNUMAStorage.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxFix.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxMsr.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\MsrItem.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Hash.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Impl.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPCache.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPHash.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_blake256.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_groestl.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_jh.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_skein.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnCtx.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnHash.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\HugePagesInfo.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\MemoryPool.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Nonce.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86_vaes.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\NUMAMemoryPool.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory_hwloc.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\aes_hash.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\allocator.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2_generator.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\blake2b.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\bytecode_machine.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\dataset.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\instructions_portable.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\randomx.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\reciprocal.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\soft_aes.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\superscalar.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\virtual_machine.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\virtual_memory.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_compiled_light.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_compiled.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_interpreted_light.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_interpreted.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\xla_hash.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\yespower\yespower-opt.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\yespower\sha256.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KangarooTwelve.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KeccakP-1600-reference.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KeccakSpongeWidth1600.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\Rx.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxAlgo.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxBasicStorage.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxCache.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxConfig.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxDataset.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxQueue.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxVm.cpp" />
+    <MASM Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\jit_compiler_x86_static.asm" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\jit_compiler_x86.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\blake2b_sse41.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\avx2\blake2b_avx2.c" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxNUMAStorage.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxFix_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr_win.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxMsr.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\MsrItem.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\aes_hash_vaes512.cpp">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Impl.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPCache.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPHash.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Tls.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Tls.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\ServerTls.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\ServerTls.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsConfig.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsConfig.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsContext.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsContext.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsGen.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsGen.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsClient.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsClient.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsContext.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsContext.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsServer.cpp" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsServer.h" />
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Assembly.h" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Assembly.cpp" />
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\r\CryptonightR_gen.cpp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\ZERO_CHECK.vcxproj">
+      <Project>{9AD148AE-C923-3E87-AD95-1C1CE4D139DE}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2.vcxproj">
+      <Project>{95F310A4-26D6-3141-897F-44E9433CB84E}</Project>
+      <Name>argon2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-avx2.vcxproj">
+      <Project>{1010FFBD-37D9-31E8-9CE6-670D830EF994}</Project>
+      <Name>argon2-avx2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-avx512f.vcxproj">
+      <Project>{3E429C63-5993-3AA8-9D17-D95741CA3D9D}</Project>
+      <Name>argon2-avx512f</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-sse2.vcxproj">
+      <Project>{4567298E-85C4-3E50-BA7A-41E555EB6213}</Project>
+      <Name>argon2-sse2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-ssse3.vcxproj">
+      <Project>{06EFEAF2-1FCB-3289-8E8B-B04CABB08812}</Project>
+      <Name>argon2-ssse3</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-xop.vcxproj">
+      <Project>{7F61FBF8-D06C-3812-9C9E-552623BF5EFD}</Project>
+      <Name>argon2-xop</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\libethash\ethash.vcxproj">
+      <Project>{3441A0C0-0AF2-3621-90DC-E4F700FCC029}</Project>
+      <Name>ethash</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj">
+      <Project>{F0E95641-BBD2-3745-9B76-A126EC910681}</Project>
+      <Name>ghostrider</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj">
+      <Project>{76EEA796-BA45-3EBD-A348-711B8DB58C57}</Project>
+      <Name>hwloc</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\xmrig-asm.vcxproj">
+      <Project>{3BC4DD10-19A9-3175-AE3C-288206ABAF1D}</Project>
+      <Name>xmrig-asm</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj">
+      <Project>{8CDE3247-D0EB-3642-A596-941DC2F9A009}</Project>
+      <Name>yescrypt</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj">
+      <Project>{AC6963F7-0239-3A37-A358-AABA08B56352}</Project>
+      <Name>yespower</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  </ImportGroup>
+</Project>

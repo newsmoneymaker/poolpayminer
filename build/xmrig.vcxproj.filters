@@ -1,0 +1,1202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuLaunchData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\fmt\format.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Algorithm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Coin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\keccak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\sha3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Async.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Env.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\ConsoleLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\FileLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\FileLogWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Tags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\Watcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\Title.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Entry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\Dns.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecords.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsUvBackend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Http.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\BaseClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Job.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\NetworkState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\ProxyUrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Socks5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\FailoverStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\SinglePoolStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Url.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\LineReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\NetBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Arguments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Chrono.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlockTemplate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops-data.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\Signatures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\WalletAddress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Cvt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\String.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\AutoClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\EthStratumClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\llhttp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\api.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\http.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\Api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\Httpd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\ApiRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\HttpApiRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Fetch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpApiResponse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpResponse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\DaemonClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SelfSelectClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\TcpServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Hashrate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Threads.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Worker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Workers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\Benchmark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\Cpu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuBackend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThreads.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\HwlocCpuInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\BasicCpuInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\config\ConfigTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Miner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\core\Taskbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\JobResults.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\Network.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\DonateStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\FeeTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\autoswitch\AutoSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\riecoin\Dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\build\generated\RieMinerBlob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\Summary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\xmrig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\api\HwApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiMemory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform_hwloc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\App_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_blake256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_groestl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_jh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_skein.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnCtx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\HugePagesInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\MemoryPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Nonce.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86_vaes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\NUMAMemoryPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory_hwloc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\aes_hash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\allocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\blake2b.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\bytecode_machine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\dataset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\instructions_portable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\randomx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\reciprocal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\soft_aes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\superscalar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\virtual_machine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\virtual_memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_compiled_light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_compiled.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_interpreted_light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\vm_interpreted.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\xla_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\yespower\yespower-opt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\yespower\sha256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KangarooTwelve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KeccakP-1600-reference.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\xla\k12\KeccakSpongeWidth1600.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\Rx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxAlgo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxBasicStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxDataset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxVm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\jit_compiler_x86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\blake2b_sse41.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\blake2\avx2\blake2b_avx2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxNUMAStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxFix_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxMsr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\MsrItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\aes_hash_vaes512.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Tls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\ServerTls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Assembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\r\CryptonightR_gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\epee\span.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\interfaces\IApiListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Algorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\Coin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\keccak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\crypto\sha3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Async.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Env.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\Json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonChain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\json\JsonRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\ConsoleLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\backends\FileLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\FileLogWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\log\Tags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Signals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\io\Watcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\BaseTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\config\Title.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IAsyncListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IBaseListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IClientListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfigListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConfigTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IConsoleListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IDnsBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IDnsListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ILineListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ILogBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ISignalListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IStrategyListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ITimerListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IWatcherListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\Process.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\Dns.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRecords.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\dns\DnsUvBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Http.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\BaseClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Job.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\NetworkState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Pools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\ProxyUrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Socks5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\FailoverStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\SinglePoolStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\strategies\StrategyProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SubmitResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Url.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\LineReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\MemPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\NetBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\Storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Alignment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Arguments.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Baton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\bswap_64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Chrono.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlobReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\BlockTemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\crypto-ops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\Signatures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\umul128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\cryptonote\WalletAddress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Cvt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Span.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\String.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\tools\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\AutoClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\EthStratumClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\benchmark\BenchConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\3rdparty\llhttp\llhttp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\Api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\Httpd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\interfaces\IApiRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\ApiRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\api\requests\HttpApiRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IHttpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\IJsonReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\kernel\interfaces\ITcpServerListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\Fetch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpApiResponse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\http\HttpResponse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\DaemonClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\SelfSelectClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tools\TcpServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Hashrate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Tags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IRxListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IRxStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\misc\PciTopology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Threads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Worker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\WorkerJob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\Workers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\Benchmark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState_test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\benchmark\BenchState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IBenchListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\Cpu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig_gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuThreads.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\interfaces\ICpuInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\BasicCpuInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\platform\HwlocCpuInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\App.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config_default.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config_platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\ConfigTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\config\usage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Miner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\core\Taskbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\interfaces\IJobResultListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\JobResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\JobResults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\Network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\DonateStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\net\strategies\FeeTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\Summary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\api\HwApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiBoard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\dmi\DmiTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\cpu\CpuLaunchData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\backend\common\interfaces\IMemoryPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\asm\CryptonightR_template.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_blake256.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_groestl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_jh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\c_skein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnAlgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnCtx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CnHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_monero.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\groestl_tables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\skein_port.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\soft_aes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\HugePagesInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\MemoryPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Nonce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\portable\mm_malloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\VirtualMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\cn\CryptoNight_x86_vaes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\NUMAMemoryPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\Rx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxAlgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxBasicStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxDataset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxSeed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxVm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxNUMAStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxFix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\rx\RxMsr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\Msr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\hw\msr\MsrItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\argon2\Impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\kawpow\KPHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\stratum\Tls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\ServerTls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\tls\TlsGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\base\net\https\HttpsServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\a\poolpayminer\poolpayminer\src\crypto\common\Assembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\a\poolpayminer\poolpayminer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="D:\a\poolpayminer\poolpayminer\src\crypto\randomx\jit_compiler_x86_static.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="D:\a\poolpayminer\poolpayminer\res\app.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2306254A-30C4-31C7-91C0-9DCE2CA9556E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D1B9D90C-EB6C-3F93-AC0D-CFE4AA77CA01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

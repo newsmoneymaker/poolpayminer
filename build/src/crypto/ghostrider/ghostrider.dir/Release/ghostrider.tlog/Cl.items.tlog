@@ -1,0 +1,17 @@
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_blake.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_blake.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_bmw.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_bmw.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_cubehash.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_cubehash.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_echo.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_echo.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_fugue.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_groestl.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_groestl.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_hamsi.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_hamsi.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_jh.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_jh.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_keccak.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_keccak.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_luffa.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_luffa.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shabal.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_shabal.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_shavite.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_simd.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_simd.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_sha2.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_sha2.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_skein.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_skein.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_whirlpool.c;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\sph_whirlpool.obj
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp;D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.dir\Release\ghostrider.obj

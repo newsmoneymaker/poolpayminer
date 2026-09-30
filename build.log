@@ -1,0 +1,218 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+cl : command line  warning D9002: ignoring unknown option '/arch:SSSE3' [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-ssse3.vcxproj]
+  argon2-ssse3.c
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+  argon2-xop.c
+  argon2-sse2.c
+cl : command line  warning D9002: ignoring unknown option '/arch:AVX512F' [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\argon2-avx512f.vcxproj]
+  argon2-avx512f.c
+  argon2-avx2.c
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/libethash/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/hwloc/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/crypto/ghostrider/CMakeLists.txt
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/CMakeLists.txt
+  ethash_internal.c
+  keccakf800.c
+  base64.c
+  sph_blake.c
+  sph_bmw.c
+  sph_cubehash.c
+  sph_echo.c
+  sph_fugue.c
+  Assembling D:\a\poolpayminer\poolpayminer\src\crypto\cn\asm\cn_main_loop.asm...
+  sph_groestl.c
+  sph_hamsi.c
+  sph_jh.c
+  sph_keccak.c
+  sph_luffa.c
+  sph_shabal.c
+  sph_shavite.c
+  sph_simd.c
+  sph_sha2.c
+  sph_skein.c
+  sph_whirlpool.c
+  argon2-avx512f.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2-avx512f.lib
+  argon2-ssse3.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2-ssse3.lib
+  argon2-sse2.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2-sse2.lib
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/crypto/yescrypt/CMakeLists.txt
+  sha256_Y.c
+  yescrypt.c
+  yescrypt-opt.c
+  yescrypt-r32.c
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/crypto/yespower/CMakeLists.txt
+  yespower-opt.c
+  sha256.c
+D:\a\poolpayminer\poolpayminer\src\3rdparty\libethash\ethash_internal.c(157,11): warning C4244: 'return': conversion from 'uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\libethash\ethash.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\libethash\ethash_internal.c(156,35): warning C4244: 'initializing': conversion from 'uint64_t' to 'const uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\libethash\ethash.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\libethash\ethash_internal.c(205,4): warning C4133: 'function': incompatible types - from 'const node *' to 'const char *' [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\libethash\ethash.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(77,14): warning C4244: '=': conversion from '__int64' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(135,33): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(135,33): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(135,49): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(137,66): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(206,45): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(206,45): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(206,61): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(206,64): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(260,20): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(260,20): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(260,36): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(260,39): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(318,20): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(318,20): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\yespower-opt.c(61,1): error C1021: invalid preprocessor command 'warning' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(318,36): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(318,39): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(370,20): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(370,20): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(370,36): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(371,38): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(409,42): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(409,47): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(423,20): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(423,20): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(423,36): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(423,39): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(450,20): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(450,20): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(450,36): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(450,74): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(471,41): error C2197: 'void _HMAC_SHA256_Final(uint8_t *,libcperciva_HMAC_SHA256_CTX *,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(491,42): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(491,52): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(493,42): error C2197: 'void _HMAC_SHA256_Final(uint8_t *,libcperciva_HMAC_SHA256_CTX *,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(503,49): error C2143: syntax error: missing ']' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(503,49): error C2143: syntax error: missing ')' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(503,65): error C2143: syntax error: missing ';' before 'constant' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(504,39): error C2059: syntax error: ')' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(560,14): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(560,26): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(567,45): error C2197: 'int SHA256_Pad_Almost(libcperciva_SHA256_CTX *,uint8_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(573,41): error C2197: 'int SHA256_Pad_Almost(libcperciva_SHA256_CTX *,uint8_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(582,39): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(583,8): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(583,19): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(586,39): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(587,8): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(587,19): error C2197: 'void SHA256_Transform(uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.c(748,2): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(597,13): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.c(809,2): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(597,25): error C2197: 'void _HMAC_SHA256_Init(libcperciva_HMAC_SHA256_CTX *,const void *,size_t,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(611,40): error C2197: 'void _HMAC_SHA256_Final(uint8_t *,libcperciva_HMAC_SHA256_CTX *,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_fugue.c(869,2): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yespower\sha256.c(621,42): error C2197: 'void _HMAC_SHA256_Final(uint8_t *,libcperciva_HMAC_SHA256_CTX *,uint32_t *)': too many arguments for call [D:\a\poolpayminer\poolpayminer\build\src\crypto\yespower\yespower.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1526,37): warning C4267: '+=': conversion from 'size_t' to 'sph_u32', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-r32.c(153,30): warning C4244: '=': conversion from 'uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1546,25): warning C4267: '=': conversion from 'size_t' to 'unsigned char', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+      D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22):
+      consider using '%zd' in the format string
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1547,25): warning C4267: '=': conversion from 'size_t' to 'unsigned char', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'size_t' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+      D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22):
+      consider using '%zd' in the format string
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1611,37): warning C4267: '+=': conversion from 'size_t' to 'sph_u32', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'size_t' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1635,26): warning C4267: '=': conversion from 'size_t' to 'unsigned char', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+      D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(201,22):
+      consider using '%zd' in the format string
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_shavite.c(1636,26): warning C4267: '=': conversion from 'size_t' to 'unsigned char', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(335,18): error C2143: syntax error: missing ';' before 'type' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_simd.c(1638,20): warning C4267: '+=': conversion from 'size_t' to 'u32', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(336,9): error C2086: 'int __thread': redefinition [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\sph_simd.c(1649,20): warning C4267: '+=': conversion from 'size_t' to 'u32', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+      D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(335,9):
+      see declaration of '__thread'
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(336,18): error C2146: syntax error: missing ';' before identifier 'yescrypt_shared_t' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(336,18): error C2275: 'yescrypt_shared_t': expected an expression instead of a type [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(336,36): error C2146: syntax error: missing ';' before identifier 'shared' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(336,36): error C2065: 'shared': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(337,9): error C2086: 'int __thread': redefinition [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+      D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(335,9):
+      see declaration of '__thread'
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(337,18): error C2146: syntax error: missing ';' before identifier 'yescrypt_local_t' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(337,18): error C2275: 'yescrypt_local_t': expected an expression instead of a type [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(337,35): error C2146: syntax error: missing ';' before identifier 'local' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(337,35): error C2065: 'local': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(342,29): error C2065: 'shared': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(342,28): warning C4133: 'function': incompatible types - from 'int *' to 'yescrypt_shared_t *' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(345,28): error C2065: 'local': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(345,27): warning C4133: 'function': incompatible types - from 'int *' to 'yescrypt_local_t *' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(346,26): error C2065: 'shared': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(346,25): warning C4133: 'function': incompatible types - from 'int *' to 'yescrypt_shared_t *' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(351,25): error C2065: 'shared': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(351,24): warning C4133: 'function': incompatible types - from 'int *' to 'const yescrypt_shared_t *' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(351,34): error C2065: 'local': undeclared identifier [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt.c(351,33): warning C4133: 'function': incompatible types - from 'int *' to 'yescrypt_local_t *' [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+  ethash.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\libethash\Release\ethash.lib
+  ghostrider.cpp
+  argon2-xop.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2-xop.lib
+  Assembling D:\a\poolpayminer\poolpayminer\src\crypto\cn\asm\CryptonightR_template.asm...
+  xmrig-asm.vcxproj -> D:\a\poolpayminer\poolpayminer\build\Release\xmrig-asm.lib
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-platform.c(147,24): error C2036: 'void *': unknown size [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+  (compiling source file '../../../../src/crypto/yescrypt/yescrypt-opt.c')
+  
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(90,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(91,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(92,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(93,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(94,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(95,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(96,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(97,2): warning C4244: '=': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\yescrypt\yescrypt-opt.c(338,17): warning C4244: 'initializing': conversion from 'const uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\yescrypt\yescrypt.vcxproj]
+  argon2-avx2.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2-avx2.lib
+  bind.c
+  Building Custom Rule D:/a/poolpayminer/poolpayminer/src/3rdparty/argon2/CMakeLists.txt
+  argon2.c
+  core.c
+  encoding.c
+  genkat.c
+  impl-select.c
+  blake2.c
+  argon2-arch.c
+  bitmap.c
+  argon2.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\argon2\Release\argon2.lib
+  components.c
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp(490,48): warning C4244: 'argument': conversion from 'int64_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp(506,50): warning C4244: 'argument': conversion from 'const int64_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp(514,40): warning C4244: 'initializing': conversion from 'hwloc_uint64_t' to 'uint32_t', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp(519,62): warning C4244: 'argument': conversion from 'const int64_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\crypto\ghostrider\ghostrider.cpp(536,43): warning C4244: 'argument': conversion from 'const int64_t' to 'unsigned int', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\ghostrider.vcxproj]
+  diff.c
+  ghostrider.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\crypto\ghostrider\Release\ghostrider.lib
+  distances.c
+  misc.c
+  pci-common.c
+  shmem.c
+  topology.c
+  topology-noos.c
+  topology-synthetic.c
+  topology-windows.c
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\topology-windows.c(1025,5): warning C4996: 'GetVersionExA': was declared deprecated [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+  topology-x86.c
+  topology-xml.c
+  topology-xml-nolibxml.c
+  traversal.c
+  memattrs.c
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1444,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1448,21): warning C4244: '=': conversion from 'double' to 'float', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1567,22): warning C4244: '=': conversion from 'double' to 'float', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1579,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1434,24): warning C4305: 'initializing': truncation from 'double' to 'float' [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+D:\a\poolpayminer\poolpayminer\src\3rdparty\hwloc\src\memattrs.c(1435,25): warning C4305: 'initializing': truncation from 'double' to 'float' [D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\hwloc.vcxproj]
+  cpukinds.c
+  Generating Code...
+  hwloc.vcxproj -> D:\a\poolpayminer\poolpayminer\build\src\3rdparty\hwloc\Release\hwloc.lib

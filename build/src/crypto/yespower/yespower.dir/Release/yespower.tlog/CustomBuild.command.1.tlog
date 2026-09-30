@@ -1,0 +1,10 @@
+^D:\A\POOLPAYMINER\POOLPAYMINER\SRC\CRYPTO\YESPOWER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/a/poolpayminer/poolpayminer -BD:/a/poolpayminer/poolpayminer/build --check-stamp-file D:/a/poolpayminer/poolpayminer/build/src/crypto/yespower/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
