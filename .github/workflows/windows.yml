@@ -3,11 +3,14 @@ name: Windows x64 build
 # Builds poolpayminer for Windows x64 with MSVC on GitHub's runners. A push to main builds and stores the result as an artifact;
 # a tag "v*" also publishes it as a GitHub Release (zip + SHA256SUMS.txt). If the build fails, the logs are pushed to the branch
 # "ci-logs" so that they can be read without logging in.
+#
+# Disabled from automatic triggers (2026-09-30): MSVC fails on src/crypto/yespower/sha256.c (non-portable C syntax
+# GCC/MinGW accepts but MSVC doesn't) -- pre-existing since yespower was added (~1.1.12), unrelated to any later
+# change. The REAL Windows binary we distribute is built locally with MinGW (build-win-tls/), which has no such
+# problem; this workflow was never that distribution path. Left as workflow_dispatch (manual) only, in case someone
+# wants to fix the MSVC incompatibility later.
 
 on:
-  push:
-    branches: [ main ]
-    tags: [ 'v*' ]
   workflow_dispatch:
 
 permissions:
