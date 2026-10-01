@@ -111,6 +111,7 @@ const char* Algorithm::kGHOSTRIDER_RTM  = "ghostrider";
 #ifdef XMRIG_ALGO_YESPOWER
 const char* Algorithm::kYESPOWER        = "yespower-r16";
 const char* Algorithm::kYESPOWER_R16    = "yespower-r16";
+const char* Algorithm::kYESPOWER_TIDE   = "yespowertide";
 #endif
 
 #ifdef XMRIG_ALGO_YESCRYPT
@@ -192,6 +193,7 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_YESPOWER
     ALGO_NAME(YESPOWER_R16),
+    ALGO_NAME(YESPOWER_TIDE),
 #   endif
 
 #   ifdef XMRIG_ALGO_YESCRYPT
@@ -332,6 +334,9 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(YESPOWER_R16),   ALGO_ALIAS(YESPOWER_R16, "yespowerr16"),
                                      ALGO_ALIAS(YESPOWER_R16, "ytn"),
                                      ALGO_ALIAS(YESPOWER_R16, "yenten"),
+
+    ALGO_ALIAS_AUTO(YESPOWER_TIDE),  ALGO_ALIAS(YESPOWER_TIDE, "tdc"),
+                                     ALGO_ALIAS(YESPOWER_TIDE, "tidecoin"),
 #   endif
 
 #   ifdef XMRIG_ALGO_YESCRYPT
@@ -420,7 +425,7 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         AR2_CHUKWA, AR2_CHUKWA_V2, AR2_WRKZ,
         KAWPOW_RVN,
         GHOSTRIDER_RTM,
-        YESPOWER_R16,
+        YESPOWER_R16, YESPOWER_TIDE,
         YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32
     };
 
