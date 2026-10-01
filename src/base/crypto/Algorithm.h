@@ -73,6 +73,7 @@ public:
         CN_GR_5         = 0x63120105,   // "cn/turtle-lite"   GhostRider
         GHOSTRIDER_RTM  = 0x6c150000,   // "ghostrider"       GhostRider
         YESPOWER_R16    = 0x79170000,   // "yespower-r16"     yespower 1.0, N=4096, r=16, 8 MB (Yenten).
+        YESPOWER_TIDE   = 0x79150000,   // "yespowertide"     yespower 1.0, N=2048, r=8, no personalization, 2 MB (Tidecoin).
         // The second byte here (as with every other id above) is log2(memory bytes) for l3()/auto thread-count sizing, NOT the
         // algorithm's "r" parameter -- 128*r*N bytes of smix scratch space: r8 N=2048 -> 2 MB (2^21), r16 N=4096 -> 8 MB (2^23),
         // r32 N=4096 -> 16 MB (2^24). An earlier version of this file used 0x08/0x16/0x32 (the literal r digits, read as hex),
@@ -190,6 +191,7 @@ public:
 #   ifdef XMRIG_ALGO_YESPOWER
     static const char* kYESPOWER;
     static const char* kYESPOWER_R16;
+    static const char* kYESPOWER_TIDE;
 #   endif
 
 #   ifdef XMRIG_ALGO_YESCRYPT
@@ -219,7 +221,7 @@ public:
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
     // the algorithms that speak Bitcoin's Stratum (mining.subscribe/notify with coinb1/coinb2, see EthStratumClient) and are mined over an 80 byte header
-    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32; }
+    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32; }
     inline bool isBitcoinStratum() const                    { return isBitcoinStratum(m_id); }
     inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
     inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };

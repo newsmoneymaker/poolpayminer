@@ -69,7 +69,7 @@ static constexpr uint32_t kReserveCount = 32768;
 
 #ifdef XMRIG_ALGO_YESPOWER
 // Yenten: yespower 1.0, N=4096, r=16, no personalization, over the 80-byte block header
-static void yespowerHash(const uint8_t *input, size_t size, uint8_t *output)
+static void yespowerR16Hash(const uint8_t *input, size_t size, uint8_t *output)
 {
     static const yespower_params_t params = { YESPOWER_1_0, 4096, 16, nullptr, 0 };
 
@@ -79,7 +79,19 @@ static void yespowerHash(const uint8_t *input, size_t size, uint8_t *output)
 }
 
 
-static bool yespowerSelfTest()
+// Tidecoin (TDC): yespower 1.0, N=2048, r=8, no personalization, over the 80-byte block header
+// (see tidecoin/src/crypto/yespower/tidecoin_pow.cpp, TidecoinYespowerHash()).
+static void yespowerTideHash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    static const yespower_params_t params = { YESPOWER_1_0, 2048, 8, nullptr, 0 };
+
+    if (yespower_tls(input, size, &params, reinterpret_cast<yespower_binary_t *>(output)) != 0) {
+        memset(output, 0xFF, 32);
+    }
+}
+
+
+static bool yespowerR16SelfTest()
 {
     // header of a real Yenten block (height 2287592) and its yespower 1.0 hash (equal to the pool's helper and to the node)
     static const uint8_t input[80] = {
@@ -95,7 +107,31 @@ static bool yespowerSelfTest()
     };
 
     uint8_t output[32];
-    yespowerHash(input, sizeof(input), output);
+    yespowerR16Hash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+
+
+static bool yespowerTideSelfTest()
+{
+    // header of a real Tidecoin mainnet block (height 1000) and its yespowertide hash (equal to the pool's own
+    // hasher helper's output on the same header, independently built from Tidecoin's own vendored yespower
+    // source -- not borrowed from another coin, see the critical-wrong-randomx-variant-bug lesson).
+    static const uint8_t input[80] = {
+        0x00, 0x00, 0x00, 0x20, 0x08, 0xee, 0x5b, 0xf8, 0x74, 0x18, 0x9e, 0x2c, 0x20, 0x38, 0x5e, 0x62,
+        0xa2, 0x66, 0xfb, 0xf9, 0x9e, 0x99, 0xce, 0x7f, 0xcd, 0x74, 0x7c, 0xd0, 0x71, 0x81, 0xd7, 0xc3,
+        0x82, 0x62, 0x9f, 0x6c, 0xd9, 0x92, 0xca, 0xdd, 0x0b, 0xf5, 0x89, 0x2b, 0x03, 0x12, 0x1e, 0x12,
+        0xfb, 0xde, 0x75, 0x7c, 0x56, 0x85, 0x18, 0x17, 0x6d, 0x47, 0xae, 0x7d, 0x7a, 0xf6, 0x50, 0x57,
+        0x85, 0x2d, 0xdd, 0x1a, 0x95, 0xc0, 0xe8, 0x5f, 0xff, 0xff, 0x01, 0x20, 0xb2, 0x01, 0x00, 0x00
+    };
+    static const uint8_t expected[32] = {
+        0x22, 0x5c, 0x4e, 0x62, 0x1d, 0xcc, 0x4e, 0x11, 0x7f, 0xb2, 0x4c, 0x0e, 0x25, 0x53, 0xce, 0x0f,
+        0x3e, 0x07, 0xcb, 0xe9, 0x17, 0x25, 0xb2, 0xf1, 0x1a, 0xda, 0x6f, 0xaa, 0x87, 0x97, 0xa6, 0x01
+    };
+
+    uint8_t output[32];
+    yespowerTideHash(input, sizeof(input), output);
 
     return memcmp(output, expected, sizeof(output)) == 0;
 }
@@ -312,7 +348,18 @@ bool xmrig::CpuWorker<N>::selfTest()
 
 #   ifdef XMRIG_ALGO_YESPOWER
     if (m_algorithm.family() == Algorithm::YESPOWER) {
-        return (N == 1) && yespowerSelfTest();
+        if (N != 1) {
+            return false;
+        }
+
+        switch (m_algorithm.id()) {
+        case Algorithm::YESPOWER_R16:
+            return yespowerR16SelfTest();
+        case Algorithm::YESPOWER_TIDE:
+            return yespowerTideSelfTest();
+        default:
+            return false;
+        }
     }
 #   endif
 
@@ -519,7 +566,16 @@ void xmrig::CpuWorker<N>::start()
 #               ifdef XMRIG_ALGO_YESPOWER
                 case Algorithm::YESPOWER:
                     if (N == 1) {
-                        yespowerHash(m_job.blob(), job.size(), m_hash);
+                        switch (job.algorithm().id()) {
+                        case Algorithm::YESPOWER_R16:
+                            yespowerR16Hash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        case Algorithm::YESPOWER_TIDE:
+                            yespowerTideHash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        default:
+                            valid = false;
+                        }
                     }
                     else {
                         valid = false;

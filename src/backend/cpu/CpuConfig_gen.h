@@ -155,7 +155,13 @@ size_t inline generate<Algorithm::GHOSTRIDER>(Threads<CpuThreads>& threads, uint
 template<>
 size_t inline generate<Algorithm::YESPOWER>(Threads<CpuThreads>& threads, uint32_t limit)
 {
-    return generate(Algorithm::kYESPOWER, threads, Algorithm::YESPOWER_R16, limit);
+    // Two differently-sized members now (R16 8 MB, TIDE 2 MB): register each under its own exact name, same fix
+    // as yescrypt below -- a single shared "yespower" profile would leave profileName("yespowertide") with
+    // nothing to find whenever a user doesn't pass --threads explicitly, reporting it "disabled".
+    size_t count = 0;
+    count += generate(Algorithm::kYESPOWER_R16, threads, Algorithm::YESPOWER_R16, limit);
+    count += generate(Algorithm::kYESPOWER_TIDE, threads, Algorithm::YESPOWER_TIDE, limit);
+    return count;
 }
 #endif
 
