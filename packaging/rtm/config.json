@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "gr",
+            "url": "rtm.pool-pay.com:4801",
+            "user": "YOUR_RTM_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
