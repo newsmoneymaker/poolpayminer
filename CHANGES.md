@@ -1,3 +1,17 @@
+# Add yespowertide algorithm (Tidecoin): yespower 1.0, N=2048, r=8 (1.1.21)
+
+* New yespower variant `yespowertide` for Tidecoin (TDC) mining on `tdc.pool-pay.com` (ports 4700 plain /
+  4701-4703 TLS), fixed from block 0 (no time-based version switch like Yenten's `yespower-r16`). Its own
+  algorithm id (separate memory footprint from yespower-r16: 2 MB vs 8 MB per thread) and its own registered
+  CPU thread profile, same fix `yescryptr8`/`r16`/`r32` already needed for differently-sized family members.
+* New packaged config: `config-tdc.json` (`-a yespowertide`).
+
+# Add rx/arq algorithm (RandomARQ, ArQmA): RandomX with its own Argon2 salt (1.1.20)
+
+* New RandomX variant `rx/arq` for ArQmA (ARQ) mining on `arq.pool-pay.com` (ports 4500 plain / 4501-4503 TLS),
+  a Monero-based coin with its own RandomX tweak (Argon2 salt "RandomARQ", standard scratchpad sizes).
+* New packaged config: `config-arq.json` (`-a rx/arq`).
+
 # Fix: the bundled Linux rieMiner (`-a ric`) failed to start outside its own build environment (1.1.19)
 
 * The embedded Linux rieMiner binary was built inside a Debian 12 chroot and ended up requiring glibc 2.32-2.36 and

@@ -1,0 +1,15 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/0",
+            "url": "sal.pool-pay.com:4601",
+            "user": "YOUR_SAL_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}

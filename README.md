@@ -220,10 +220,92 @@ unlike every other pool-pay.com coin, adding `+rig1`/`+worker` to the username b
    fees into), then resumes rieMiner on your pool. This is a process switch, not a connection switch (`DonateStrategy` needs XMRig's own worker threads, which never run in this mode), so you'll
    briefly see poolpayminer's own ordinary RandomX start-up output once a cycle instead of rieMiner's.
 
+## ArQmA (ARQ) quick start
+
+poolpayminer knows the ArQmA algorithm `rx/arq` (RandomARQ: reference RandomX with its own Argon2 salt, standard scratchpad sizes). The pool `arq.pool-pay.com` (source:
+[arqma-nodejs-pool](https://github.com/newsmoneymaker/arqma-nodejs-pool)) speaks the usual XMRig stratum with the extension `algo`.
+
+1. Get an ArQmA address (`ar...`, 97 characters) from the ArQmA wallet (`address`).
+2. `config.json` (also `config-arq.json` in the package):
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/arq",
+            "url": "arq.pool-pay.com:4501",
+            "user": "YOUR_ARQ_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/arq --tls -o arq.pool-pay.com:4501 -u ADDRESS+rig1 -p x -k`.
+
+## Salvium (SAL) quick start
+
+poolpayminer mines Salvium with the reference RandomX (`rx/0`, no changes needed). The pool `sal.pool-pay.com` (source:
+[sal-nodejs-pool](https://github.com/newsmoneymaker/sal-nodejs-pool)) speaks the usual XMRig stratum with the extension `algo`. Salvium needs a Carrot-format address to mine (a plain legacy
+address is rejected by the wallet).
+
+1. Get a Salvium Carrot address (`S...`) from the Salvium wallet (`address`).
+2. `config.json` (also `config-sal.json` in the package):
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/0",
+            "url": "sal.pool-pay.com:4601",
+            "user": "YOUR_SAL_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/0 --tls -o sal.pool-pay.com:4601 -u ADDRESS+rig1 -p x -k`.
+
+## Kevacoin (KVA) quick start
+
+poolpayminer knows the Kevacoin algorithm `rx/keva` (RandomKeva, the RandomX variant of the Kevacoin node). The pool `keva.pool-pay.com` (source:
+[keva-nodejs-pool](https://github.com/newsmoneymaker/keva-nodejs-pool)) speaks the usual XMRig stratum with the extension `algo`.
+
+1. Get a Kevacoin address (bech32, `kva1q...`) from the Kevacoin wallet (`address`).
+2. `config.json` (also `config-keva.json` in the package):
+```json
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "randomx": { "mode": "auto" },
+    "pools": [
+        {
+            "algo": "rx/keva",
+            "url": "keva.pool-pay.com:4401",
+            "user": "YOUR_KVA_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+3. Start `poolpayminer`. Command line: `poolpayminer -a rx/keva --tls -o keva.pool-pay.com:4401 -u ADDRESS+rig1 -p x -k`.
+
 ## FewBit (FBIT) quick start
 
 FewBit is mined with GhostRider, the CPU algorithm of Raptoreum, which poolpayminer has as `-a gr` (XMRig's own implementation; the pool of `fbit.pool-pay.com` speaks the standard Bitcoin Stratum
 protocol that GhostRider miners use). Login is your FewBit address (`F...`), optionally with a worker name (`ADDRESS+rig1`); ports: 3800 plain TCP, 3801/3802/3803 TLS.
+
+Raptoreum itself also has its own pool here, `rtm.pool-pay.com` (same `-a gr`, same GhostRider): login is your Raptoreum address (`R...`), optionally with a worker name (`ADDRESS+rig1`); ports: 4800
+plain TCP, 4801/4802/4803 TLS. The package has it as `config-rtm.json`.
 
 ```json
 {
@@ -267,6 +349,31 @@ bundled, build option `WITH_YESPOWER`). The pool of `ytn.pool-pay.com` speaks th
 Command line: `poolpayminer -a yespower-r16 --tls -o ytn.pool-pay.com:3901 -u ADDRESS+rig1 -p x -k`. The package has it as `config-ytn.json`. A CPU self-test against a real Yenten block header runs at start.
 About 270 H/s per thread on an Intel i7-7700. The fee (see "FEE: please read" above) is the usual 1% of the time.
 
+## Tidecoin (TDC) quick start
+
+Tidecoin is mined with yespowertide, yespower 1.0 (N=2048, r=8) fixed from block 0 (no time-based version switch like Yenten's `yespower-r16`, and its own memory footprint: 2 MB per thread, not
+Yenten's 8 MB). poolpayminer has it as `-a yespowertide` (alias `tdc`, `tidecoin`; built from Tidecoin's own vendored yespower source, not reused from Yenten's). The pool of `tdc.pool-pay.com`
+speaks the standard Bitcoin Stratum protocol. Login is your Tidecoin address (bech32, `tbc1q...`; not the post-quantum `q1...` family), optionally with a worker name (`ADDRESS+rig1`); ports: 4700
+plain TCP, 4701/4702/4703 TLS.
+
+```json
+{
+    "pools": [
+        {
+            "algo": "yespowertide",
+            "url": "tdc.pool-pay.com:4701",
+            "user": "YOUR_TDC_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
+```
+
+Command line: `poolpayminer -a yespowertide --tls -o tdc.pool-pay.com:4701 -u ADDRESS+rig1 -p x -k`. The package has it as `config-tdc.json`. yespower needs no GPU, 2 MB of memory per thread. The
+fee (see "FEE: please read" above) is the usual 1% of the time.
+
 ## yescrypt family (MTBC, FNNC / GOLD, LPEPE) quick start
 
 poolpayminer also mines the pwxform-based yescrypt algorithm (a different, larger algorithm than yespower above, even though yespower is described as "a proven-secure subset" of it) used by three
@@ -304,10 +411,11 @@ expected value, we keep 5%) or directly in each coin to your own address. Then s
 
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `yespower-r16` and the
-`yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `rx/arq`, `rx/keva`, `ghostrider`,
+`yespower-r16`, `yespowertide` and the `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
-**Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **Yenten (`yespower-r16`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
+**Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **ArQmA (`rx/arq`)**, **Salvium (`rx/0`)**, **Raptoreum (`ghostrider`)**, **Yenten (`yespower-r16`)**, **Tidecoin (`yespowertide`)**,
+**MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
 end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
 documented above or are XMRig's own code, unchanged.
 
@@ -318,6 +426,7 @@ documented above or are XMRig's own code, unchanged.
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
 | **`rx/scash`** | **Satoshi Cash (SCASH)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target | RandomX | CPU |
 | **`rx/xla`** | **Scala (XLA)**: Panthera, RandomX variant with its own parameters and blake2b + yespower + KangarooTwelve as the input hash | RandomX | CPU |
+| **`rx/keva`** | **Kevacoin (KVA)**: RandomKeva, the RandomX variant of the Kevacoin node | RandomX | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
 | `rx/wow` | Wownero (WOW) | RandomX | CPU |
@@ -325,7 +434,12 @@ documented above or are XMRig's own code, unchanged.
 | `rx/graft` | Graft (GRFT) | RandomX | CPU |
 | `rx/sfx` | Safex Cash (SFX) | RandomX | CPU |
 | `rx/yada` | YadaCoin (YDA) | RandomX | CPU |
-| `ghostrider` (`gr`) | Raptoreum (RTM) | GhostRider | CPU |
+| **`ghostrider`** (`gr`) | **Raptoreum (RTM)**, **FewBit (FBIT)** | GhostRider | CPU |
+| **`yespower-r16`** | **Yenten (YTN)**: yespower 1.0, N=4096, r=16 | yespower | CPU |
+| **`yespowertide`** | **Tidecoin (TDC)**: yespower 1.0, N=2048, r=8, fixed from block 0 | yespower | CPU |
+| **`yescryptr8`** | **MateableCoin (MTBC)**: yescrypt, N=2048, r=8 | yescrypt | CPU |
+| **`yescryptr16`** | **Fennec (FNNC)**, Gold Cash (GOLD): yescrypt, N=4096, r=16 | yescrypt | CPU |
+| **`yescryptr32`** | **LuckyPepe (LPEPE)**: yescrypt, N=4096, r=32, personalization `WaviBanana` | yescrypt | CPU |
 | `argon2/chukwa`, `argon2/chukwav2` | Chukwa (Turtlecoin-family Argon2id coins) | Argon2 | CPU |
 | `argon2/wrkz` | WRKZ (Wrkzcoin) | Argon2 | CPU |
 | `cn/ccx` | Conceal (CCX) | CryptoNight | CPU |

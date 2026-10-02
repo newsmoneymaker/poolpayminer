@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "yespowertide",
+            "url": "tdc.pool-pay.com:4701",
+            "user": "YOUR_TDC_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
