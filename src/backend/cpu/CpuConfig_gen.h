@@ -185,6 +185,15 @@ size_t inline generate<Algorithm::YESCRYPT>(Threads<CpuThreads>& threads, uint32
 #endif
 
 
+#ifdef XMRIG_ALGO_FLEX
+template<>
+size_t inline generate<Algorithm::FLEX>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate(Algorithm::kFLEX_KCN, threads, Algorithm::FLEX_KCN, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 

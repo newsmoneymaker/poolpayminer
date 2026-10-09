@@ -1,3 +1,22 @@
+# Add Flex algorithm (Kylacoin): 18 chained SPH/CryptoNight-family rounds (1.1.22)
+
+* New algorithm `flex` (aliases `kcn`, `kylacoin`) for Kylacoin (KCN): a header-selected chain of 18 classic SPH
+  hash rounds (blake/bmw/groestl/keccak/skein/luffa/cubehash/shavite/simd/echo/hamsi/fugue/shabal/whirlpool) with
+  3 CryptoNight-family rounds mixed in at fixed points, over the standard 80-byte Bitcoin-style block header.
+  Self-test vector is a real Kylacoin mainnet block (height 2356500), verified to independently satisfy that
+  block's own recorded difficulty target before being used as the known-good answer.
+* Three separate real bugs found and fixed while wiring this up, each one worth knowing about for the next
+  Bitcoin-stratum-style algorithm added to this fork: (1) the client-class selector in `Pool.cpp` had a hardcoded
+  algorithm-family whitelist that decides whether to use the Bitcoin-stratum-capable client at all -- a coin
+  whose family isn't on that list silently uses the wrong (Monero-style) client and never logs in; (2) a new
+  algorithm that vendors its own copy of the classic SPH hash library (as Flex does) can silently call a
+  DIFFERENT already-vendored copy of the exact same functions (GhostRider already ships one) if both are
+  statically linked under the same symbol names -- no linker error, just a confidently wrong hash; (3) `Job.cpp`'s
+  `nonceOffset()` has its own separate hardcoded family whitelist for where the 80-byte header's nonce field
+  lives -- missing from it, a new algorithm's nonce gets written into the middle of the merkle root instead.
+* No packaged config shipped for this one yet (Kylacoin's own pool isn't open to the public yet) -- run manually
+  with `-a flex -o <host:port> -u <your KCN address>` once it is.
+
 # Add yespowertide algorithm (Tidecoin): yespower 1.0, N=2048, r=8 (1.1.21)
 
 * New yespower variant `yespowertide` for Tidecoin (TDC) mining on `tdc.pool-pay.com` (ports 4700 plain /
