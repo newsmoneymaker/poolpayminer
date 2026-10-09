@@ -1,0 +1,8 @@
+if (WITH_FLEX)
+    add_definitions(/DXMRIG_ALGO_FLEX)
+    add_subdirectory(src/crypto/flex)
+    set(FLEX_LIBRARY flex)
+else()
+    remove_definitions(/DXMRIG_ALGO_FLEX)
+    set(FLEX_LIBRARY "")
+endif()

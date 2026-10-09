@@ -166,6 +166,7 @@ size_t xmrig::Job::nonceOffset() const
     case Algorithm::GHOSTRIDER:
     case Algorithm::YESPOWER:
     case Algorithm::YESCRYPT:
+    case Algorithm::FLEX:
         return 76;
 
     default:

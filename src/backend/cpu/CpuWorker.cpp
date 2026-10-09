@@ -50,6 +50,10 @@ extern "C" {
 #   include "crypto/yescrypt/yescrypt.h"
 }
 #endif
+
+#ifdef XMRIG_ALGO_FLEX
+#   include "crypto/flex/flex.h"
+#endif
 #include "net/JobResults.h"
 
 
@@ -234,6 +238,45 @@ static bool yescryptR32SelfTest()
 #endif
 
 
+#ifdef XMRIG_ALGO_FLEX
+// Kylacoin (KCN): Flex -- 18 chained SPH/CryptoNight-family rounds selected by the header's own keccak512
+// (see crypto/flex/flex.cpp, flex_hash()); own vendored source, not borrowed from any other coin (see
+// critical-wrong-randomx-variant-bug lesson). flex_hash() takes the raw 80-byte block header and writes the
+// 32-byte PoW hash directly -- no separate context/scratchpad setup needed on our side (it manages its own
+// thread_local scratchpad internally).
+static void flexKcnHash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    flex_hash(reinterpret_cast<const char *>(input), static_cast<int>(size), output);
+}
+
+
+static bool flexKcnSelfTest()
+{
+    // Real Kylacoin mainnet block (height 2356500) header and its Flex PoW hash -- NOT the RPC "hash" field
+    // (that's a separate SHA256d block identifier, confirmed different from the PoW hash by direct check), but
+    // independently verified to satisfy that block's own recorded difficulty target (bits 1e016cfb) when
+    // interpreted as a big-endian number, i.e. a real accepted PoW solution, not a guessed vector.
+    static const uint8_t input[80] = {
+        0x00, 0x80, 0x00, 0x20, 0x70, 0x84, 0xd4, 0x10, 0xe3, 0x31, 0x43, 0x6a, 0x93, 0xc0, 0x44, 0xc6,
+        0x5a, 0xb5, 0xe4, 0xe4, 0x2b, 0x3a, 0x23, 0x4e, 0x3b, 0x9c, 0x49, 0x32, 0xc4, 0x4e, 0x39, 0x89,
+        0x96, 0xb8, 0xe7, 0x00, 0x63, 0x51, 0x22, 0xe3, 0xdd, 0xec, 0x70, 0x71, 0x2d, 0xe9, 0x9c, 0xef,
+        0x7f, 0x40, 0x53, 0xac, 0x94, 0xc9, 0x9a, 0x03, 0xb9, 0x5b, 0x46, 0x5a, 0x8f, 0x92, 0x2c, 0xf4,
+        0xe1, 0x1c, 0xf3, 0x02, 0xd3, 0x32, 0xc9, 0x6a, 0xfb, 0x6c, 0x01, 0x1e, 0xec, 0xf6, 0x08, 0x23,
+    };
+
+    static const uint8_t expected[32] = {
+        0xe6, 0xc7, 0x28, 0xa5, 0x3c, 0x28, 0x8e, 0xe6, 0x05, 0xc1, 0xeb, 0xb0, 0xdf, 0x83, 0x9a, 0xae,
+        0x81, 0x47, 0xea, 0x2c, 0xc8, 0x8b, 0x76, 0xb8, 0x35, 0x56, 0x0f, 0x7e, 0x73, 0x00, 0x00, 0x00,
+    };
+
+    uint8_t output[32];
+    flexKcnHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
+
 
 #ifdef XMRIG_ALGO_CN_HEAVY
 static std::mutex cn_heavyZen3MemoryMutex;
@@ -379,6 +422,12 @@ bool xmrig::CpuWorker<N>::selfTest()
         default:
             return false;
         }
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_FLEX
+    if (m_algorithm.family() == Algorithm::FLEX) {
+        return (N == 1) && flexKcnSelfTest();
     }
 #   endif
 
@@ -600,6 +649,17 @@ void xmrig::CpuWorker<N>::start()
                             valid = false;
                             break;
                         }
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_FLEX
+                case Algorithm::FLEX:
+                    if (N == 1) {
+                        flexKcnHash(m_job.blob(), job.size(), m_hash);
                     }
                     else {
                         valid = false;

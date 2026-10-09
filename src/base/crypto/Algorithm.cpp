@@ -121,6 +121,11 @@ const char* Algorithm::kYESCRYPT_R16    = "yescryptr16";
 const char* Algorithm::kYESCRYPT_R32    = "yescryptr32";
 #endif
 
+#ifdef XMRIG_ALGO_FLEX
+const char* Algorithm::kFLEX            = "flex";
+const char* Algorithm::kFLEX_KCN        = "flex";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -200,6 +205,10 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
     ALGO_NAME(YESCRYPT_R8),
     ALGO_NAME(YESCRYPT_R16),
     ALGO_NAME(YESCRYPT_R32),
+#   endif
+
+#   ifdef XMRIG_ALGO_FLEX
+    ALGO_NAME(FLEX_KCN),
 #   endif
 };
 
@@ -350,6 +359,11 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(YESCRYPT_R32),   ALGO_ALIAS(YESCRYPT_R32, "lpepe"),
                                      ALGO_ALIAS(YESCRYPT_R32, "luckypepe"),
 #   endif
+
+#   ifdef XMRIG_ALGO_FLEX
+    ALGO_ALIAS_AUTO(FLEX_KCN),       ALGO_ALIAS(FLEX_KCN, "kcn"),
+                                     ALGO_ALIAS(FLEX_KCN, "kylacoin"),
+#   endif
 };
 
 
@@ -426,7 +440,8 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         KAWPOW_RVN,
         GHOSTRIDER_RTM,
         YESPOWER_R16, YESPOWER_TIDE,
-        YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32
+        YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32,
+        FLEX_KCN
     };
 
     Algorithms out;

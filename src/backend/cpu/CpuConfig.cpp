@@ -181,6 +181,7 @@ void xmrig::CpuConfig::generate()
     count += xmrig::generate<Algorithm::GHOSTRIDER>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::YESPOWER>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::YESCRYPT>(m_threads, m_limit);
+    count += xmrig::generate<Algorithm::FLEX>(m_threads, m_limit);
 
     m_shouldSave |= count > 0;
 }
