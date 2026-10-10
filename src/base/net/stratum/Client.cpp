@@ -1327,6 +1327,14 @@ int64_t xmrig::Client::submitHacash(const JobResult &result)
 
 void xmrig::Client::ping()
 {
+    // startTimeout() also computes the interval, so it doubles as "reschedule the next ping" here --
+    // without this, once m_keepAlive first elapses, tick()'s "now > m_keepAlive" stays true forever
+    // and ping() fires on every tick instead of once per interval (a real flood, silently harmless on
+    // pools that just answer "keepalive"/"keepalived" with no complaint, loudly visible as a repeating
+    // "unknown method" error on a pool that doesn't recognize it, e.g. hac-nodejs-pool before it learned
+    // to answer "keepalived" -- see hac-nodejs-pool/lib/pool.js).
+    startTimeout();
+
     if (m_pool.mode() == Pool::MODE_EPIC) {
         send(snprintf(m_sendBuf.data(), m_sendBuf.size(), "{\"id\":%" PRId64 ",\"jsonrpc\":\"2.0\",\"method\":\"keepalive\"}\n", m_sequence));
         return;
