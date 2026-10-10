@@ -113,6 +113,14 @@ private:
     bool parseEpicJob(const rapidjson::Value &params, int *code);
     int64_t submitEpic(const JobResult &result);
     void parseEpicResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error);
+
+    // Hacash: no Stratum at all, own small newline-delimited JSON-RPC (mining.subscribe/authorize/notify/submit)
+    // -- see hac-nodejs-pool/lib/pool.js (authoritative) and Pool::MODE_HACASH.
+    void loginHacash();
+    int64_t submitHacash(const JobResult &result);
+    void parseHacashResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error);
+    void parseHacashNotification(const char *method, const rapidjson::Value &params);
+    bool m_hacashAuthorized = false;
     void requestEpicJob();
     bool send(BIO *bio);
     bool verifyAlgorithm(const Algorithm &algorithm, const char *algo) const;

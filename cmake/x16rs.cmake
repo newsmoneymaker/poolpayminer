@@ -1,0 +1,8 @@
+if (WITH_X16RS)
+    add_definitions(/DXMRIG_ALGO_X16RS)
+    add_subdirectory(src/crypto/x16rs)
+    set(X16RS_LIBRARY x16rs)
+else()
+    remove_definitions(/DXMRIG_ALGO_X16RS)
+    set(X16RS_LIBRARY "")
+endif()

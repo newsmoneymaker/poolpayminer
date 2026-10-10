@@ -48,6 +48,7 @@ public:
         MODE_SELF_SELECT,
         MODE_AUTO_ETH,
         MODE_EPIC,
+        MODE_HACASH,
 #       ifdef XMRIG_FEATURE_BENCHMARK
         MODE_BENCHMARK,
 #       endif
