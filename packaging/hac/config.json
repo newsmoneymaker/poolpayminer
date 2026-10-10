@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "x16rs",
+            "url": "hac.pool-pay.com:5100",
+            "user": "YOUR_HAC_ADDRESS",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ]
+}
