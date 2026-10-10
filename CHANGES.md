@@ -1,3 +1,22 @@
+# Add X16RS algorithm (Hacash): a wholly new mining protocol, not just a new hash (1.1.23)
+
+* New algorithm `x16rs` (aliases `hac`, `hacash`) for Hacash (HAC): 16 chained classic hash rounds selected by a
+  SHA3-256-derived index, repeated a height-dependent number of times (no CryptoNight-family rounds mixed in,
+  unlike Kylacoin's Flex). Self-test vector independently verified against the hasher crate's own published test
+  vectors and against a real live block's own internally-computed hash.
+* Hacash has no Stratum at all -- its node only exposes a plain HTTP polling API meant for a single solo miner.
+  This release adds a wholly new client protocol (a small newline-delimited JSON-RPC TCP scheme, deliberately
+  shaped like Stratum's own subscribe/authorize/notify/submit) on top of the new algorithm, not just a new hash
+  function inside existing Bitcoin-stratum machinery -- the bigger lift of the two.
+* Two real bugs found only by testing end-to-end against the live pool, not by code inspection: (1) the new
+  login path never called `setRpcId()`, so `Client::submit()`'s own generic guard silently discarded every
+  single share before it ever reached the new protocol code -- no network traffic went out in either direction,
+  nothing was logged; hashing still visibly ran at a plausible rate the whole time. (2) response parsing assumed
+  `error` was always a JSON object (`{"error":{"message":...}}`), but this pool sends it as a plain string or
+  `null` -- every real rejection would have silently fallen through and been reported as accepted.
+* Verified against the real live hac.pool-pay.com pool: 173,226 accepted / 5,834 rejected ("stale job") shares.
+* Packaged config: `config-hac.json` (`-a x16rs`, no TLS port exists on this pool yet).
+
 # Add Flex algorithm (Kylacoin): 18 chained SPH/CryptoNight-family rounds (1.1.22)
 
 * New algorithm `flex` (aliases `kcn`, `kylacoin`) for Kylacoin (KCN): a header-selected chain of 18 classic SPH

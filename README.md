@@ -412,12 +412,12 @@ expected value, we keep 5%) or directly in each coin to your own address. Then s
 ## Supported algorithms
 
 poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `rx/arq`, `rx/keva`, `ghostrider`,
-`yespower-r16`, `yespowertide`, `flex` and the `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
+`yespower-r16`, `yespowertide`, `flex`, `x16rs` and the `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **ArQmA (`rx/arq`)**, **Salvium (`rx/0`)**, **Raptoreum (`ghostrider`)**, **Yenten (`yespower-r16`)**, **Tidecoin (`yespowertide`)**,
-**Kylacoin (`flex`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
+**Kylacoin (`flex`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
 end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
-documented above or are XMRig's own code, unchanged. Kylacoin's own pool is not yet open to the public, so `flex` has no packaged config yet -- run it with `-a flex` manually.
+documented above or are XMRig's own code, unchanged. Hacash has no Stratum of its own at all -- `x16rs` runs over a custom TCP JSON-RPC protocol this fork built from scratch for it (see CHANGES.md 1.1.23), not standard Bitcoin/Monero stratum like every other algorithm here.
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
@@ -438,6 +438,7 @@ documented above or are XMRig's own code, unchanged. Kylacoin's own pool is not 
 | **`yespower-r16`** | **Yenten (YTN)**: yespower 1.0, N=4096, r=16 | yespower | CPU |
 | **`yespowertide`** | **Tidecoin (TDC)**: yespower 1.0, N=2048, r=8, fixed from block 0 | yespower | CPU |
 | **`flex`** (`kcn`, `kylacoin`) | **Kylacoin (KCN)**: 18 chained SPH/CryptoNight-family rounds, selected by the header's own keccak512 | Flex | CPU |
+| **`x16rs`** (`hac`, `hacash`) | **Hacash (HAC)**: 16 chained classic hash rounds selected by a SHA3-256-derived index, repeated a height-dependent number of times; no Stratum of its own, runs over a custom TCP JSON-RPC protocol this fork built from scratch | X16RS | CPU |
 | **`yescryptr8`** | **MateableCoin (MTBC)**: yescrypt, N=2048, r=8 | yescrypt | CPU |
 | **`yescryptr16`** | **Fennec (FNNC)**, Gold Cash (GOLD): yescrypt, N=4096, r=16 | yescrypt | CPU |
 | **`yescryptr32`** | **LuckyPepe (LPEPE)**: yescrypt, N=4096, r=32, personalization `WaviBanana` | yescrypt | CPU |
