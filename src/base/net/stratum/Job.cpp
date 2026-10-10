@@ -169,6 +169,12 @@ size_t xmrig::Job::nonceOffset() const
     case Algorithm::FLEX:
         return 76;
 
+    case Algorithm::X16RS:
+        // Hacash block_intro: version(1)+height(5)+timestamp(5)+prevhash(32)+mrklroot(32)+transaction_count(4) = 79,
+        // then the 4-byte BIG-ENDIAN nonce (see Client::parseHacashNotification / CpuWorker's X16RS_HAC case for
+        // the endian fixup -- this generic increment machinery writes/reads native (little-endian) order here).
+        return 79;
+
     default:
         break;
     }

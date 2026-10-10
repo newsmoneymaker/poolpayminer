@@ -160,6 +160,11 @@ xmrig::Pool::Pool(const rapidjson::Value &object) :
         // XMRig protocol would log in and never get a job (a very easy mistake: the connection looks fine and nothing happens)
         m_mode = MODE_EPIC;
     }
+    else if (m_algorithm == Algorithm::X16RS_HAC) {
+        // x16rs exists only for Hacash, which has no Stratum at all -- the pool (hac-nodejs-pool) speaks its own
+        // small newline-delimited JSON-RPC protocol (mining.subscribe/authorize/notify/submit), see Client::loginHacash.
+        m_mode = MODE_HACASH;
+    }
 }
 
 
@@ -249,6 +254,9 @@ xmrig::IClient *xmrig::Pool::createClient(int id, IClientListener *listener) con
         }
     }
     else if (m_mode == MODE_EPIC) {
+        client = new Client(id, Platform::userAgent(), listener);
+    }
+    else if (m_mode == MODE_HACASH) {
         client = new Client(id, Platform::userAgent(), listener);
     }
 #   ifdef XMRIG_FEATURE_HTTP

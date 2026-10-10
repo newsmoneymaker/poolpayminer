@@ -16,6 +16,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <thread>
 #include <mutex>
@@ -53,6 +54,13 @@ extern "C" {
 
 #ifdef XMRIG_ALGO_FLEX
 #   include "crypto/flex/flex.h"
+#endif
+
+#ifdef XMRIG_ALGO_X16RS
+extern "C" {
+#   include "crypto/x16rs/x16rs.h"
+}
+#   include "base/crypto/sha3.h"
 #endif
 #include "net/JobResults.h"
 
@@ -277,6 +285,58 @@ static bool flexKcnSelfTest()
 #endif
 
 
+#ifdef XMRIG_ALGO_X16RS
+// Hacash (HAC): x16rs_hash(repeat(height), sha3_256(89-byte block_intro with nonce spliced in)) -- see
+// hac-nodejs-pool/lib/blockBuilder.js (authoritative). repeat(height) = min(floor(height/50000)+1, 16),
+// recomputed here from the job's own height rather than threaded through from mining.notify's "repeat"
+// field: it's a pure function of height, so there is nothing to disagree about.
+//
+// The generic nonce-splicing machinery (WorkerJob::nextRound/readUnaligned/writeUnaligned) treats the 4
+// nonce bytes at blob offset 79 as a native in-memory uint32 (little-endian on x86), but Hacash's consensus
+// hashes those same 4 bytes big-endian -- same value, opposite byte order. Fix up a local copy right before
+// hashing instead of touching the generic increment path (see Client::submitHacash, which already formats
+// the *submitted* nonce as plain big-endian hex directly from the uint32 value, matching this).
+static void x16rsHacHash(const uint8_t *input, size_t size, uint8_t *output, uint32_t repeat)
+{
+    uint8_t blob[96];
+    memcpy(blob, input, size);
+    std::swap(blob[79], blob[82]);
+    std::swap(blob[80], blob[81]);
+
+    uint8_t sha3out[32];
+    sha3_HashBuffer(256, SHA3_FLAGS_NONE, blob, static_cast<unsigned>(size), sha3out, sizeof(sha3out));
+
+    c_x16rs_hash(static_cast<int>(repeat), sha3out, output);
+}
+
+
+static bool x16rsHacSelfTest()
+{
+    // Real Hacash mainnet pending-work (height 789517), nonce=12345 spliced in at offset 79 in the native
+    // (little-endian) form the generic splicer actually produces, repeat=16. Expected output independently
+    // verified via both the proven x16rshash CLI and a standalone test against this project's own renamed
+    // x16rs object (see critical-vendored-lib-symbol-collision) against the real big-endian consensus bytes.
+    static const uint8_t input[89] = {
+        0x01, 0x00, 0x00, 0x0c, 0x0c, 0x0d, 0x00, 0x6a, 0xca, 0x10, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x6e, 0x50, 0xaa, 0x23, 0x6d, 0xfd, 0xc6, 0xca, 0xe6, 0x98, 0x7b, 0x53, 0x36, 0x25, 0xe4, 0x2e,
+        0x2c, 0xe8, 0xf0, 0xfe, 0x24, 0x37, 0x26, 0xf0, 0xab, 0x43, 0x32, 0xc8, 0x53, 0xa7, 0x83, 0x3f,
+        0x8a, 0x0b, 0x49, 0xc2, 0x32, 0x60, 0xe8, 0x83, 0x54, 0xd7, 0x1a, 0x83, 0x1c, 0x8f, 0x6f, 0xf7,
+        0x1a, 0x57, 0xb4, 0x0e, 0x86, 0xb8, 0xf1, 0x56, 0x4b, 0x08, 0x0e, 0x00, 0x00, 0x00, 0x03, 0x39,
+        0x30, 0x00, 0x00, 0xd7, 0xfd, 0x54, 0xee, 0x00, 0x00,
+    };
+
+    static const uint8_t expected[32] = {
+        0x7e, 0xa4, 0xb1, 0x42, 0x9d, 0x44, 0x81, 0x02, 0x1d, 0x0f, 0x86, 0xb7, 0x44, 0xea, 0x75, 0x65,
+        0x39, 0xf3, 0x82, 0x88, 0x1c, 0xea, 0x43, 0x68, 0xc1, 0xad, 0xbf, 0xaa, 0x3f, 0x39, 0xc9, 0xdb,
+    };
+
+    uint8_t output[32];
+    x16rsHacHash(input, sizeof(input), output, 16);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
 
 #ifdef XMRIG_ALGO_CN_HEAVY
 static std::mutex cn_heavyZen3MemoryMutex;
@@ -428,6 +488,12 @@ bool xmrig::CpuWorker<N>::selfTest()
 #   ifdef XMRIG_ALGO_FLEX
     if (m_algorithm.family() == Algorithm::FLEX) {
         return (N == 1) && flexKcnSelfTest();
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_X16RS
+    if (m_algorithm.family() == Algorithm::X16RS) {
+        return (N == 1) && x16rsHacSelfTest();
     }
 #   endif
 
@@ -660,6 +726,19 @@ void xmrig::CpuWorker<N>::start()
                 case Algorithm::FLEX:
                     if (N == 1) {
                         flexKcnHash(m_job.blob(), job.size(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_X16RS
+                case Algorithm::X16RS:
+                    if (N == 1) {
+                        // repeat(height) = min(floor(height/50000)+1, 16) -- see x16rsHacHash's comment.
+                        const uint32_t repeat = std::min<uint32_t>(static_cast<uint32_t>(job.height() / 50000) + 1, 16);
+                        x16rsHacHash(m_job.blob(), job.size(), m_hash, repeat);
                     }
                     else {
                         valid = false;

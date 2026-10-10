@@ -82,6 +82,7 @@ public:
         YESCRYPT_R16    = 0x7a170000,   // "yescryptr16"      yescrypt (pwxform), N=4096, r=16, p=1, 8 MB (Fennec / FNNC, Gold Cash / GOLD).
         YESCRYPT_R32    = 0x7a180000,   // "yescryptr32"      yescrypt (pwxform), N=4096, r=32, p=1, 16 MB, pers "WaviBanana" (LuckyPepe / LPEPE).
         FLEX_KCN        = 0x66150000,   // "flex"             Flex: 18 chained SPH/CryptoNight rounds selected by the header's own keccak512, 2 MB scratchpad (Kylacoin). Lyncoin uses its own, not-yet-ported Flex variant -- do not alias it to this id.
+        X16RS_HAC       = 0x78010000,   // "x16rs"            X16RS: x16rs_hash(repeat, sha3_256(data)), repeat = min(height/50000+1, 16); no real memory requirement, not Bitcoin Stratum -- see Pool::MODE_HACASH (Hacash).
         RX_0            = 0x72151200,   // "rx/0"             RandomX (reference configuration).
         RX_V2           = 0x72151202,   // "rx/2"             RandomX (Monero v2).
         RX_WOW          = 0x72141177,   // "rx/wow"           RandomWOW (Wownero).
@@ -115,7 +116,8 @@ public:
         GHOSTRIDER      = 0x6c000000,
         YESPOWER        = 0x79000000,
         YESCRYPT        = 0x7a000000,
-        FLEX            = 0x66000000
+        FLEX            = 0x66000000,
+        X16RS           = 0x78000000
     };
 
     static const char *kINVALID;
@@ -206,6 +208,11 @@ public:
 #   ifdef XMRIG_ALGO_FLEX
     static const char* kFLEX;
     static const char* kFLEX_KCN;
+#   endif
+
+#   ifdef XMRIG_ALGO_X16RS
+    static const char* kX16RS;
+    static const char* kX16RS_HAC;
 #   endif
 
     inline Algorithm() = default;

@@ -64,6 +64,11 @@ public:
     size_t nonceOffset() const;
     bool setEpicBlob(const char *prePow, uint32_t nonceHigh);
     void setDiff(uint64_t diff);
+    // Hacash's pool sends a raw 64-hex-char (32-byte, big-endian) share target directly, not a "diff" number to
+    // derive one from -- this stores the already-computed top-8-bytes-as-uint64 value verbatim (see
+    // Client::parseHacashNotification). Named distinctly from setDiff/setTarget so nobody mistakes this for
+    // either of those two different conventions later.
+    inline void setRawTarget(uint64_t target)           { m_target = target; }
     void setSigKey(const char *sig_key);
 
     inline bool isNicehash() const                      { return m_nicehash; }
@@ -84,7 +89,9 @@ public:
     inline bool isVeil() const                          { return m_algorithm.id() == Algorithm::RX_VEIL; }
     inline bool isDiardi() const                        { return m_diardi; }               // Scala: nobody but the allow-listed miners can find this block
     inline void setDiardi(bool diardi)                  { m_diardi = diardi; }
-    inline bool bigEndianValue() const                  { return m_epic || isVeil(); }
+    // Hacash's consensus reads block_hash as a big-endian 256-bit number too (x16rs_hash's output), same
+    // top-8-bytes convention as Epic/Veil -- see CpuWorker's X16RS_HAC case and blockBuilder.js's meetsTarget().
+    inline bool bigEndianValue() const                  { return m_epic || isVeil() || m_algorithm.id() == Algorithm::X16RS_HAC; }
     inline bool isValid() const                         { return (m_size > 0 && m_diff > 0) || !m_poolWallet.isEmpty(); }
     inline bool setId(const char *id)                   { return (m_id = id); }
     inline const Algorithm &algorithm() const           { return m_algorithm; }

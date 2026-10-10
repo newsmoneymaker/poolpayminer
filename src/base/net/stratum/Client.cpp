@@ -195,6 +195,10 @@ int64_t xmrig::Client::submit(const JobResult &result)
         return submitEpic(result);
     }
 
+    if (m_pool.mode() == Pool::MODE_HACASH) {
+        return submitHacash(result);
+    }
+
     using namespace rapidjson;
 
 #   ifdef XMRIG_PROXY_PROJECT
@@ -647,6 +651,10 @@ bool xmrig::Client::parseLogin(const rapidjson::Value &result, int *code)
 
 void xmrig::Client::login()
 {
+    if (m_pool.mode() == Pool::MODE_HACASH) {
+        return loginHacash();
+    }
+
     using namespace rapidjson;
     m_results.clear();
 
@@ -822,6 +830,10 @@ void xmrig::Client::parseExtensions(const rapidjson::Value &result)
 
 void xmrig::Client::parseNotification(const char *method, const rapidjson::Value &params, const rapidjson::Value &)
 {
+    if (m_pool.mode() == Pool::MODE_HACASH) {
+        return parseHacashNotification(method, params);
+    }
+
     if (strcmp(method, "job") == 0) {
         int code = -1;
         const bool epic = m_pool.mode() == Pool::MODE_EPIC;
@@ -849,6 +861,10 @@ void xmrig::Client::parseResponse(int64_t id, const rapidjson::Value &result, co
 
     if (m_pool.mode() == Pool::MODE_EPIC) {
         return parseEpicResponse(id, result, error);
+    }
+
+    if (m_pool.mode() == Pool::MODE_HACASH) {
+        return parseHacashResponse(id, result, error);
     }
 
     if (error.IsObject()) {
@@ -1118,6 +1134,194 @@ void xmrig::Client::parseEpicResponse(int64_t id, const rapidjson::Value &result
     }
 
     handleSubmitResponse(id);
+}
+
+
+void xmrig::Client::loginHacash()
+{
+    using namespace rapidjson;
+    m_results.clear();
+    m_hacashAuthorized = false;
+
+    // Hacash's handshake has no server-assigned session/rpc id to adopt (unlike the generic Stratum
+    // login this fork otherwise expects, where parseLogin() calls setRpcId() from the server's own
+    // response). Leaving m_rpcId null made every single submit() call bail out silently and immediately
+    // (its "result.clientId != m_rpcId || m_rpcId.isNull()" guard, long before reaching MODE_HACASH's own
+    // dispatch) -- no share was ever actually sent, with nothing logged either way. A stable non-null
+    // placeholder here, set before any Job is created, is all that guard actually needs.
+    setRpcId("hacash");
+
+    Document doc(kObjectType);
+    auto &allocator = doc.GetAllocator();
+
+    Value params(kArrayType);
+    params.PushBack(StringRef(m_agent), allocator);
+
+    JsonRequest::create(doc, 1, "mining.subscribe", params);
+    send(doc);
+}
+
+
+void xmrig::Client::parseHacashResponse(int64_t id, const rapidjson::Value &result, const rapidjson::Value &error)
+{
+    // Unlike the generic Stratum convention this fork otherwise assumes ({"error":{"message":...}}),
+    // hac-nodejs-pool's own reply() (lib/pool.js) always sends error as a plain STRING or null -- e.g.
+    // {"id":3,"result":false,"error":"stale job"} -- never an object. Checking IsObject() here let every
+    // rejection (stale job/low difficulty share/bad nonce/...) silently fall through to the generic
+    // handleSubmitResponse(id) with no error text, which reports it as an *accepted* share.
+    if (error.IsString()) {
+        const char *message = error.GetString();
+        if (!handleSubmitResponse(id, message) && !isQuiet()) {
+            LOG_ERR("%s " RED("error: ") RED_BOLD("\"%s\""), tag(), message);
+        }
+
+        if (id == 1 || id == 2) {
+            close();
+        }
+
+        return;
+    }
+
+    if (id == 1) {
+        // subscribe accepted -- send authorize next. The project's usual CLI convention for this fork is
+        // "-u <address>+<worker>" (same as every Bitcoin-stratum coin here); Hacash's own protocol wants the
+        // address and worker as two separate array elements, so split on '+' or '.' client-side.
+        using namespace rapidjson;
+        Document doc(kObjectType);
+        auto &allocator = doc.GetAllocator();
+
+        String user = m_user;
+        String address = user;
+        String worker;
+        const char *raw = user.data();
+        const char *sep = raw ? strpbrk(raw, "+.") : nullptr;
+        if (sep) {
+            address = String(raw, static_cast<size_t>(sep - raw));
+            worker  = String(sep + 1);
+        }
+
+        Value params(kArrayType);
+        params.PushBack(address.toJSON(), allocator);
+        if (!worker.isNull() && worker.size() > 0) {
+            params.PushBack(worker.toJSON(), allocator);
+        }
+        else {
+            params.PushBack(Value(kNullType), allocator);
+        }
+
+        JsonRequest::create(doc, 2, "mining.authorize", params);
+        send(doc);
+        return;
+    }
+
+    if (id == 2) {
+        if (!result.IsBool() || !result.GetBool()) {
+            if (!isQuiet()) {
+                LOG_ERR("%s " RED("Hacash pool rejected authorize"), tag());
+            }
+            close();
+            return;
+        }
+
+        m_hacashAuthorized = true;
+        m_failures  = 0;
+        m_confirmed = true;
+        m_listener->onLoginSuccess(this);
+        // A job may already be queued on the pool's side and will arrive as its own mining.notify
+        // notification right after this -- there is nothing to deliver synchronously here, unlike the
+        // generic login()'s embedded-job case.
+        return;
+    }
+
+    handleSubmitResponse(id);
+}
+
+
+// Hacash mining.notify params: {job_id, height, intro (178 hex chars, nonce field already zeroed by the
+// pool), target (64 hex chars, the pool's own easier share target), repeat}. See hac-nodejs-pool/lib/pool.js
+// (authoritative) and blockBuilder.js for the real consensus facts behind these fields.
+void xmrig::Client::parseHacashNotification(const char *method, const rapidjson::Value &params)
+{
+    if (strcmp(method, "mining.notify") != 0 || !m_hacashAuthorized) {
+        return;
+    }
+
+    const char *jobId  = Json::getString(params, "job_id");
+    const char *intro  = Json::getString(params, "intro");
+    const char *target = Json::getString(params, "target");
+    if (!jobId || !intro || !target || strlen(intro) != 178 || strlen(target) != 64) {
+        if (!isQuiet()) {
+            LOG_ERR("%s " RED("invalid mining.notify"), tag());
+        }
+        return;
+    }
+
+    // Top 8 bytes of the 32-byte big-endian target, as a uint64 -- the same reduced comparison
+    // bigEndianValue()'s hash-side reading already uses for Epic/Veil (see Job::epicValue()).
+    uint64_t rawTarget = 0;
+    for (int i = 0; i < 16; ++i) {
+        int c = target[i];
+        int v = (c >= '0' && c <= '9') ? (c - '0') : (c >= 'a' && c <= 'f') ? (c - 'a' + 10) : (c >= 'A' && c <= 'F') ? (c - 'A' + 10) : -1;
+        if (v < 0) {
+            if (!isQuiet()) {
+                LOG_ERR("%s " RED("invalid mining.notify: bad target hex"), tag());
+            }
+            return;
+        }
+        rawTarget = (rawTarget << 4) | static_cast<uint64_t>(v);
+    }
+
+    Job job(false, Algorithm(Algorithm::X16RS_HAC), m_rpcId);
+    if (!job.setBlob(intro)) {
+        if (!isQuiet()) {
+            LOG_ERR("%s " RED("invalid mining.notify: bad intro"), tag());
+        }
+        return;
+    }
+
+    job.setRawTarget(rawTarget);
+    job.setDiff(Job::toDiff(rawTarget)); // display-only -- share-finding itself compares against target() directly
+    job.setHeight(Json::getUint64(params, "height"));
+    job.setId(jobId);
+
+    m_jobs++;
+    m_job = std::move(job);
+
+    m_listener->onJobReceived(this, m_job, params);
+}
+
+
+int64_t xmrig::Client::submitHacash(const JobResult &result)
+{
+    using namespace rapidjson;
+
+    Document doc(kObjectType);
+    auto &allocator = doc.GetAllocator();
+
+    // result.nonce is the plain uint32 VALUE poolpayminer ground -- format it as a standard big-endian 8-hex-char
+    // number directly (do NOT hex-encode its raw in-memory bytes the way the generic path does for other coins:
+    // those blobs store the nonce in native/little-endian order on disk, consistent with how it's spliced into
+    // the blob; Hacash's wire protocol and consensus both want the nonce's plain big-endian value instead -- see
+    // CpuWorker's X16RS_HAC case for the matching byte-swap applied before hashing the same candidate).
+    char nonceHex[9];
+    snprintf(nonceHex, sizeof(nonceHex), "%08x", static_cast<uint32_t>(result.nonce));
+
+    String user = m_user;
+    const char *raw = user.data();
+    const char *sep = raw ? strpbrk(raw, "+.") : nullptr;
+    String worker = sep ? String(sep + 1) : String("");
+
+    Value params(kArrayType);
+    params.PushBack(worker.toJSON(), allocator);
+    params.PushBack(StringRef(result.jobId.data()), allocator);
+    Value nonceVal;
+    nonceVal.SetString(nonceHex, static_cast<SizeType>(strlen(nonceHex)), allocator); // copy: nonceHex is a stack buffer
+    params.PushBack(nonceVal, allocator);
+
+    JsonRequest::create(doc, m_sequence, "mining.submit", params);
+    m_results[m_sequence] = SubmitResult(m_sequence, result.diff, result.actualDiff(), 0, result.backend);
+
+    return send(doc);
 }
 
 

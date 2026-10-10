@@ -194,6 +194,15 @@ size_t inline generate<Algorithm::FLEX>(Threads<CpuThreads>& threads, uint32_t l
 #endif
 
 
+#ifdef XMRIG_ALGO_X16RS
+template<>
+size_t inline generate<Algorithm::X16RS>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate(Algorithm::kX16RS_HAC, threads, Algorithm::X16RS_HAC, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 
