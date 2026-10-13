@@ -1,0 +1,1 @@
+void lcnflex_hash(const char* input, int size, unsigned char* output);

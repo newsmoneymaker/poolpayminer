@@ -54,6 +54,7 @@ extern "C" {
 
 #ifdef XMRIG_ALGO_FLEX
 #   include "crypto/flex/flex.h"
+#   include "crypto/flex_lcn/flex.h"
 #endif
 
 #ifdef XMRIG_ALGO_X16RS
@@ -282,6 +283,45 @@ static bool flexKcnSelfTest()
 
     return memcmp(output, expected, sizeof(output)) == 0;
 }
+
+
+// Lyncoin (LCN): its OWN Flex variant -- same 18-round chained SPH/CryptoNight shape as Kylacoin's Flex, but a
+// genuinely different vendored implementation (src/crypto/flex_lcn/, copied verbatim from the coin's own node
+// source) -- never alias to FLEX_KCN (see critical-wrong-randomx-variant-bug and the Algorithm.h comment on
+// FLEX_LCN). lcnflex_hash() takes the raw 80-byte block header and writes the 32-byte PoW hash directly.
+static void flexLcnHash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    lcnflex_hash(reinterpret_cast<const char *>(input), static_cast<int>(size), output);
+}
+
+
+static bool flexLcnSelfTest()
+{
+    // An all-zero 80 byte header, NOT a guessed vector: this exact (input, output) pair was cross-verified
+    // two independent ways on 2026-10-13 --
+    //  1) this vendored src/crypto/flex_lcn/ source (cnfiles/crypto/aesb.c, cnfn.c) was diffed byte-for-byte
+    //     against the LIVE Lyncoin node's own source on srv2 (src/crypto/flex/cnfiles/...) and is IDENTICAL
+    //     apart from the lcnflex_ rename prefixes (confirmed: genuinely the slow, portable, software-table AES
+    //     with no AES-NI -- that's what the real network uses, not a porting bug);
+    //  2) the SAME output was independently reproduced by lcn-nodejs-pool's own separately-built share-
+    //     validation helper (hasher/flexhash, built from its own separately vendored flex-src/ copy) for this
+    //     exact input, confirming the pool and miner sides compute byte-identical hashes.
+    // A full real mined-block vector (satisfying a live difficulty target) was not practical to capture here:
+    // this algorithm runs at only ~17 H/s/thread on this host (confirmed by direct timing -- genuinely slow,
+    // software AES, not a bug), so grinding even today's easy real network target single-handedly would take
+    // many hours; share-level verification against the live pool (far lower difficulty) is done separately.
+    static const uint8_t input[80] = { 0x00 };
+
+    static const uint8_t expected[32] = {
+        0xd9, 0xc9, 0x3b, 0x66, 0x62, 0x05, 0x30, 0x7e, 0x98, 0x69, 0x57, 0x4b, 0xec, 0xa0, 0x9e, 0x50,
+        0x58, 0x94, 0xd9, 0x6d, 0x78, 0xc5, 0x18, 0x17, 0x30, 0x58, 0x05, 0x0c, 0xc2, 0xab, 0xeb, 0x66,
+    };
+
+    uint8_t output[32];
+    flexLcnHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
 #endif
 
 
@@ -487,7 +527,18 @@ bool xmrig::CpuWorker<N>::selfTest()
 
 #   ifdef XMRIG_ALGO_FLEX
     if (m_algorithm.family() == Algorithm::FLEX) {
-        return (N == 1) && flexKcnSelfTest();
+        if (N != 1) {
+            return false;
+        }
+
+        switch (m_algorithm.id()) {
+        case Algorithm::FLEX_KCN:
+            return flexKcnSelfTest();
+        case Algorithm::FLEX_LCN:
+            return flexLcnSelfTest();
+        default:
+            return false;
+        }
     }
 #   endif
 
@@ -725,7 +776,17 @@ void xmrig::CpuWorker<N>::start()
 #               ifdef XMRIG_ALGO_FLEX
                 case Algorithm::FLEX:
                     if (N == 1) {
-                        flexKcnHash(m_job.blob(), job.size(), m_hash);
+                        switch (job.algorithm().id()) {
+                        case Algorithm::FLEX_KCN:
+                            flexKcnHash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        case Algorithm::FLEX_LCN:
+                            flexLcnHash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        default:
+                            valid = false;
+                            break;
+                        }
                     }
                     else {
                         valid = false;

@@ -42,6 +42,43 @@ extern "C" {
 }
 
 #include "base/tools/Cvt.h"
+#include <openssl/evp.h>
+
+// Lyncoin (LCN) only: its coinbase transaction is consensus-forced to tx version 8 whenever the block
+// header's own Flex bit (nVersion & 0x8000) is set, which it always is on the live chain (confirmed straight
+// from the node's own src/validation.cpp CheckBlock(): "flex-algo-wrong-cb-version" is a hard reject
+// otherwise). A version-8 transaction's own id is computed with "Hash3Writer" (src/hash.h): double, real
+// NIST SHA3-256 (domain separator 0x06, confirmed in the node's own src/crypto/sha3.cpp) -- NOT Keccak-256 or
+// Bitcoin's usual double-SHA256. Only this ONE leaf (the coinbase, i.e. the buffer hashed here from
+// coinb1+extranonce+coinb2) changes hash algo; the merkle tree's own combining step downstream (the
+// sha256d(merkle_root, merkle_root, 64) loop over the branches) stays sha256d unconditionally -- confirmed in
+// the node's own consensus/merkle.cpp: ComputeMerkleRoot() always calls SHA256D64 to combine, regardless of
+// any transaction's version; only CTransaction::ComputeHash() (the per-tx leaf hash) is version-conditional.
+// OpenSSL (already linked for TLS) has had EVP_sha3_256() since 1.1.1 -- no second SHA3 implementation needed.
+static bool sha3d_lcn(uint8_t *out32, const uint8_t *data, size_t size)
+{
+    uint8_t tmp[32];
+    unsigned int len = 0;
+
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    if (!ctx) {
+        return false;
+    }
+
+    bool ok = (EVP_DigestInit_ex(ctx, EVP_sha3_256(), nullptr) == 1) &&
+              (EVP_DigestUpdate(ctx, data, size) == 1) &&
+              (EVP_DigestFinal_ex(ctx, tmp, &len) == 1);
+
+    if (ok) {
+        EVP_MD_CTX_reset(ctx);
+        ok = (EVP_DigestInit_ex(ctx, EVP_sha3_256(), nullptr) == 1) &&
+             (EVP_DigestUpdate(ctx, tmp, sizeof(tmp)) == 1) &&
+             (EVP_DigestFinal_ex(ctx, out32, &len) == 1);
+    }
+
+    EVP_MD_CTX_free(ctx);
+    return ok;
+}
 #endif
 
 
@@ -307,7 +344,17 @@ void xmrig::EthStratumClient::parseNotification(const char *method, const rapidj
                 }
             }
 
-            sha256d(merkle_root, buf.data(), static_cast<int>(buf.size()));
+            // the coinbase's own leaf hash: sha3d for Lyncoin (coinbase tx version 8, see sha3d_lcn() comment
+            // above), sha256d (Bitcoin-standard) for every other Bitcoin-stratum coin.
+            if (algo.id() == Algorithm::FLEX_LCN) {
+                if (!sha3d_lcn(merkle_root, buf.data(), buf.size())) {
+                    LOG_ERR("%s " RED("sha3 coinbase hash failed"), tag());
+                    return;
+                }
+            }
+            else {
+                sha256d(merkle_root, buf.data(), static_cast<int>(buf.size()));
+            }
 
             auto merkle_branches = arr[4].GetArray();
             for (int i = 0, n = merkle_branches.Size(); i < n; ++i) {

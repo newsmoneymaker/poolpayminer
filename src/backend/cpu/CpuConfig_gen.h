@@ -189,7 +189,10 @@ size_t inline generate<Algorithm::YESCRYPT>(Threads<CpuThreads>& threads, uint32
 template<>
 size_t inline generate<Algorithm::FLEX>(Threads<CpuThreads>& threads, uint32_t limit)
 {
-    return generate(Algorithm::kFLEX_KCN, threads, Algorithm::FLEX_KCN, limit);
+    size_t count = 0;
+    count += generate(Algorithm::kFLEX_KCN, threads, Algorithm::FLEX_KCN, limit);
+    count += generate(Algorithm::kFLEX_LCN, threads, Algorithm::FLEX_LCN, limit);
+    return count;
 }
 #endif
 
