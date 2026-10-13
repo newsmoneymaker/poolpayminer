@@ -44,18 +44,22 @@ extern "C" {
 #include "base/tools/Cvt.h"
 #include <openssl/evp.h>
 
-// Lyncoin (LCN) only: its coinbase transaction is consensus-forced to tx version 8 whenever the block
-// header's own Flex bit (nVersion & 0x8000) is set, which it always is on the live chain (confirmed straight
-// from the node's own src/validation.cpp CheckBlock(): "flex-algo-wrong-cb-version" is a hard reject
-// otherwise). A version-8 transaction's own id is computed with "Hash3Writer" (src/hash.h): double, real
-// NIST SHA3-256 (domain separator 0x06, confirmed in the node's own src/crypto/sha3.cpp) -- NOT Keccak-256 or
-// Bitcoin's usual double-SHA256. Only this ONE leaf (the coinbase, i.e. the buffer hashed here from
-// coinb1+extranonce+coinb2) changes hash algo; the merkle tree's own combining step downstream (the
-// sha256d(merkle_root, merkle_root, 64) loop over the branches) stays sha256d unconditionally -- confirmed in
-// the node's own consensus/merkle.cpp: ComputeMerkleRoot() always calls SHA256D64 to combine, regardless of
-// any transaction's version; only CTransaction::ComputeHash() (the per-tx leaf hash) is version-conditional.
+// Kylacoin (KCN) and Lyncoin (LCN) only: both forks' CTransaction::ComputeHash()/CMutableTransaction::GetHash()
+// use "Hash3Writer" (src/hash.h): double, real NIST SHA3-256 (domain separator 0x06, confirmed in each node's
+// own src/crypto/sha3.cpp) -- NOT Keccak-256 or Bitcoin's usual double-SHA256. Confirmed directly from both
+// nodes' sources (kcn-src, lcn-src): Kylacoin applies this to EVERY transaction's id unconditionally; Lyncoin
+// only to transactions whose own version field is 8, which is why Lyncoin's pool (lcn-nodejs-pool) forces the
+// coinbase to tx version 8 while Kylacoin's (kcn-nodejs-pool) does not need to -- the client here doesn't need
+// to know that detail, it only needs to know WHICH algorithm's coinbase leaf hash is sha3d instead of sha256d.
+// Only this ONE leaf (the coinbase, i.e. the buffer hashed here from coinb1+extranonce+coinb2) changes hash
+// algo; the merkle tree's own combining step downstream (the sha256d(merkle_root, merkle_root, 64) loop over
+// the branches) stays sha256d unconditionally on both coins -- confirmed in each node's own consensus/merkle.cpp:
+// ComputeMerkleRoot() always calls SHA256D64 to combine, regardless of any transaction's version; only the
+// per-tx leaf hash is coin/version-conditional, and any OTHER (non-coinbase) transaction in a block already
+// arrives from the node's own getblocktemplate with its real, already-correctly-hashed txid -- only the
+// coinbase is built fresh here and needs its hash computed to match.
 // OpenSSL (already linked for TLS) has had EVP_sha3_256() since 1.1.1 -- no second SHA3 implementation needed.
-static bool sha3d_lcn(uint8_t *out32, const uint8_t *data, size_t size)
+static bool sha3d_flex_coinbase(uint8_t *out32, const uint8_t *data, size_t size)
 {
     uint8_t tmp[32];
     unsigned int len = 0;
@@ -344,10 +348,10 @@ void xmrig::EthStratumClient::parseNotification(const char *method, const rapidj
                 }
             }
 
-            // the coinbase's own leaf hash: sha3d for Lyncoin (coinbase tx version 8, see sha3d_lcn() comment
+            // the coinbase's own leaf hash: sha3d for Kylacoin and Lyncoin (see sha3d_flex_coinbase() comment
             // above), sha256d (Bitcoin-standard) for every other Bitcoin-stratum coin.
-            if (algo.id() == Algorithm::FLEX_LCN) {
-                if (!sha3d_lcn(merkle_root, buf.data(), buf.size())) {
+            if (algo.id() == Algorithm::FLEX_KCN || algo.id() == Algorithm::FLEX_LCN) {
+                if (!sha3d_flex_coinbase(merkle_root, buf.data(), buf.size())) {
                     LOG_ERR("%s " RED("sha3 coinbase hash failed"), tag());
                     return;
                 }
