@@ -1,3 +1,23 @@
+# Fix two Stratum client bugs: keepalive re-ping storm and false "write error" disconnects (1.1.24)
+
+* `Client::ping()` never rescheduled its own keepalive timer: once `tick()`'s `now > m_keepAlive` check first
+  went true, it stayed true forever, so every later tick fired another ping instead of one per interval. Silent
+  on pools that just answer "keepalive"/"keepalived" (Epic, Veil); would be loudly visible as a repeating
+  "unknown method" error on any pool that doesn't. Fix: `ping()` now calls `startTimeout()` again after sending,
+  which recomputes the correct next interval.
+* `Client::write()` used `uv_try_write()` (non-blocking) and treated ANY short result -- including a plain
+  `UV_EAGAIN`, which just means the OS socket send buffer is momentarily full, normal under a burst of shares
+  from a many-thread miner -- as a fatal error and closed the connection. Confirmed live on a 16-thread Kylacoin
+  session: a "write error" and full reconnect roughly every 15-20s, which in turn kept resetting the pool's own
+  vardiff retarget timer on every reconnect -- looked exactly like "difficulty never adjusts" from the outside,
+  when the real cause was this reconnect loop. Fix: queue the unsent remainder via a real `uv_write()` (which
+  waits/retries internally) instead of giving up; only a genuine non-`EAGAIN` negative status still closes the
+  connection. Verified: 140 accepted / 0 rejected shares, 0 write errors, 1 connection (no reconnects) over a
+  60-second, 8-thread run against the live KCN pool, versus a reconnect roughly every 15-35s before the fix.
+* `Client::write()` is shared by both the plain-TCP path and the TLS path (`Tls.cpp`'s `send()` ->
+  `Client::send(BIO*)` -> `write()`), so this affected every coin's pool with many-threaded miners under either
+  plain or TLS Stratum, not just Kylacoin's.
+
 # Add X16RS algorithm (Hacash): a wholly new mining protocol, not just a new hash (1.1.23)
 
 * New algorithm `x16rs` (aliases `hac`, `hacash`) for Hacash (HAC): 16 chained classic hash rounds selected by a
