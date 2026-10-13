@@ -415,7 +415,7 @@ poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/cry
 `yespower-r16`, `yespowertide`, `flex`, `x16rs` and the `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **ArQmA (`rx/arq`)**, **Salvium (`rx/0`)**, **Raptoreum (`ghostrider`)**, **Yenten (`yespower-r16`)**, **Tidecoin (`yespowertide`)**,
-**Kylacoin (`flex`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
+**Kylacoin (`flex`)**, **Lyncoin (`flex-lcn`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)** and **LuckyPepe (`yescryptr32`)** have been tested
 end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
 documented above or are XMRig's own code, unchanged. Hacash has no Stratum of its own at all -- `x16rs` runs over a custom TCP JSON-RPC protocol this fork built from scratch for it (see CHANGES.md 1.1.23), not standard Bitcoin/Monero stratum like every other algorithm here.
 
@@ -438,6 +438,7 @@ documented above or are XMRig's own code, unchanged. Hacash has no Stratum of it
 | **`yespower-r16`** | **Yenten (YTN)**: yespower 1.0, N=4096, r=16 | yespower | CPU |
 | **`yespowertide`** | **Tidecoin (TDC)**: yespower 1.0, N=2048, r=8, fixed from block 0 | yespower | CPU |
 | **`flex`** (`kcn`, `kylacoin`) | **Kylacoin (KCN)**: 18 chained SPH/CryptoNight-family rounds, selected by the header's own keccak512 | Flex | CPU |
+| **`flex-lcn`** (`lcn`, `lyncoin`) | **Lyncoin (LCN)**: Lyncoin's own Flex variant -- same 18-round shape as Kylacoin's but a genuinely different vendored hasher (own `cnfn.c`/`aesb.c`/`flex.cpp`), never interchangeable with `flex`. Coinbase transactions use version 8 and a double-SHA3-256 txid (not SHA256d) under this coin's own consensus rule | Flex | CPU |
 | **`x16rs`** (`hac`, `hacash`) | **Hacash (HAC)**: 16 chained classic hash rounds selected by a SHA3-256-derived index, repeated a height-dependent number of times; no Stratum of its own, runs over a custom TCP JSON-RPC protocol this fork built from scratch | X16RS | CPU |
 | **`yescryptr8`** | **MateableCoin (MTBC)**: yescrypt, N=2048, r=8 | yescrypt | CPU |
 | **`yescryptr16`** | **Fennec (FNNC)**, Gold Cash (GOLD): yescrypt, N=4096, r=16 | yescrypt | CPU |

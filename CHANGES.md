@@ -1,3 +1,25 @@
+# Add Lyncoin (LCN): its own Flex variant, `flex-lcn` (1.1.25)
+
+* New algorithm `flex-lcn` (aliases `lcn`, `lyncoin`) for Lyncoin: the same 18-chained SPH/CryptoNight-family
+  round shape as Kylacoin's `flex`, but a genuinely different vendored hasher -- Lyncoin's own `cnfn.c`/`aesb.c`/
+  `flex.cpp`, confirmed byte-for-byte against the live node's own source, never interchangeable with `flex`
+  despite the shared shape (see `critical-wrong-randomx-variant-bug`).
+* Found and fixed a new symbol-collision shape while vendoring it: `cnfn.h`'s thin wrapper functions
+  (`cnfn_dark_hash`, `cnfn_cnfast_hash`, etc.) are declared `inline` + `extern "C"`, which strips C++ namespacing
+  and let them collide as plain global symbols with Kylacoin's identically-named-but-different wrappers despite
+  both nominally living inside a `crypto::` namespace -- renamed to an `lcnflex_` prefix, confirmed zero overlap
+  afterward via `nm -g --defined-only` across every vendored crypto lib.
+* Lyncoin's coinbase transactions are mandatorily version 8 and hash their own txid with double SHA3-256 (not
+  SHA256d) under this coin's consensus rule (confirmed directly in the node's own `validation.cpp`, rule name
+  `flex-algo-wrong-cb-version`) -- the miner's own independent coinbase/merkle-root reconstruction (used to check
+  its own submitted shares) now does the same, gated strictly on `flex-lcn`'s own algorithm id so it never
+  affects Kylacoin's `flex` handling.
+* Real end-to-end mining verified against the live Lyncoin pool: shares accepted, vardiff climbing normally.
+  Self-test is a cross-check against the pool's own independently-built reference hasher for the same input,
+  not a real mined block -- Lyncoin's Flex variant runs at only ~30 H/s per thread on this reference CPU (no
+  AES-NI path in the real node's own source either), so a genuine block-level grind was judged impractical for
+  a self-test vector.
+
 # Fix two Stratum client bugs: keepalive re-ping storm and false "write error" disconnects (1.1.24)
 
 * `Client::ping()` never rescheduled its own keepalive timer: once `tick()`'s `now > m_keepAlive` check first
