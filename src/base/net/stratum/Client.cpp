@@ -527,20 +527,77 @@ bool xmrig::Client::verifyAlgorithm(const Algorithm &algorithm, const char *algo
 }
 
 
+namespace {
+// What Client::onWrite() needs to clean up after a queued partial write completes: the leftover
+// bytes themselves, and the safe-lifetime handle back to the Client (the same m_storage-based token
+// every other async libuv request in this file uses, so a Client destroyed mid-write doesn't dangle).
+// uv_write_t only has one spare `data` field, not room for both, hence this small wrapper.
+struct PendingWrite
+{
+    char *data;
+    void *clientKey;
+};
+} // namespace
+
+
 bool xmrig::Client::write(const uv_buf_t &buf)
 {
     const int rc = uv_try_write(stream(), &buf, 1);
-    if (static_cast<size_t>(rc) == buf.len) {
+    if (rc == static_cast<int>(buf.len)) {
         return true;
     }
 
-    if (!isQuiet()) {
-        LOG_ERR("%s " RED("write error: ") RED_BOLD("\"%s\""), tag(), uv_strerror(rc));
+    // A short write (0 <= rc < buf.len) or UV_EAGAIN just means the socket's own send buffer is
+    // momentarily full -- normal under a burst of shares from a many-thread miner, NOT a broken
+    // connection. The old code treated this the same as a real error and called close(), which tore
+    // down a perfectly healthy connection on every such burst (confirmed live on a 16-thread Kylacoin
+    // session: a "write error" roughly every 15-20s, each one followed by a full reconnect that reset
+    // the pool's own vardiff retarget timer -- looked like "difficulty never adjusts itself" from the
+    // outside). Queue whatever didn't go out via a real uv_write() (which waits/retries internally)
+    // instead of giving up; only a genuine negative status that isn't EAGAIN is a real error.
+    if (rc < 0 && rc != UV_EAGAIN) {
+        if (!isQuiet()) {
+            LOG_ERR("%s " RED("write error: ") RED_BOLD("\"%s\""), tag(), uv_strerror(rc));
+        }
+
+        close();
+
+        return false;
     }
 
-    close();
+    const size_t sent      = rc > 0 ? static_cast<size_t>(rc) : 0;
+    const size_t remaining = buf.len - sent;
 
-    return false;
+    auto *pending  = new PendingWrite{new char[remaining], m_storage.ptr(m_key)};
+    memcpy(pending->data, buf.base + sent, remaining);
+
+    auto *req = new uv_write_t;
+    req->data = pending;
+
+    uv_buf_t remainingBuf = uv_buf_init(pending->data, static_cast<unsigned int>(remaining));
+    uv_write(req, stream(), &remainingBuf, 1, onWrite);
+
+    return true;
+}
+
+
+void xmrig::Client::onWrite(uv_write_t *req, int status)
+{
+    auto *pending = static_cast<PendingWrite *>(req->data);
+    delete[] pending->data;
+
+    auto client = getClient(pending->clientKey);
+    delete pending;
+    delete req;
+
+    if (!client) {
+        return;
+    }
+
+    if (status < 0 && !client->isQuiet()) {
+        LOG_ERR("%s " RED("write error: ") RED_BOLD("\"%s\""), client->tag(), uv_strerror(status));
+        client->close();
+    }
 }
 
 
