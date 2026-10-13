@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "flex-lcn",
+            "url": "lcn.pool-pay.com:4201",
+            "user": "YOUR_LCN_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}

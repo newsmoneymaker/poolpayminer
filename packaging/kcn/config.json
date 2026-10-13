@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "flex",
+            "url": "kcn.pool-pay.com:5001",
+            "user": "YOUR_KCN_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}
