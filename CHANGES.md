@@ -1,3 +1,18 @@
+# Fix Kylacoin (KCN) coinbase/merkle-root hashing: sha3d, matching the pool (1.1.26)
+
+* Kylacoin's own `CTransaction::ComputeHash()` uses double SHA3-256 (`Hash3Writer`), unconditionally for every
+  transaction, not Bitcoin's standard double-SHA256 -- confirmed directly in the node's own source. The miner's
+  own independent coinbase/merkle-root reconstruction (used to check its own submitted shares) now does the
+  same for `flex`'s `FLEX_KCN` id, reusing the same helper added for Lyncoin below (now generalized as
+  `sha3d_flex_coinbase()`).
+* This is the matching client-side half of a pool-side fix that was briefly applied and reverted on 2026-10-13
+  (pool-only sha3d broke live share acceptance, since the client still rebuilt its own merkle root with plain
+  sha256d) -- re-applying both sides together this time. Every block Kylacoin's pool actually finds was being
+  submitted and rejected by the node (`"bad-txnmrklroot"`) until this; verified live after this fix that shares
+  are accepted normally (pool's vardiff retargeted upward from the share rate, not downward from rejections).
+* **Anyone mining Kylacoin (`flex`/`kcn`/`kylacoin`) must update to this version or newer** -- older miner builds
+  will have their shares rejected as "Low difficulty share" against a pool running the matching pool-side fix.
+
 # Add Lyncoin (LCN): its own Flex variant, `flex-lcn` (1.1.25)
 
 * New algorithm `flex-lcn` (aliases `lcn`, `lyncoin`) for Lyncoin: the same 18-chained SPH/CryptoNight-family
