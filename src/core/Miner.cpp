@@ -38,6 +38,11 @@
 #include "crypto/common/Nonce.h"
 #include "version.h"
 
+#ifdef XMRIG_ALGO_XCB
+#   include "crypto/rx/RxConfig.h"
+#   include "crypto/xcb_randomy/xcb_randomy.h"
+#endif
+
 
 #ifdef XMRIG_FEATURE_API
 #   include "base/api/Api.h"
@@ -362,6 +367,21 @@ public:
 #   endif
 
 
+#   ifdef XMRIG_ALGO_XCB
+    // Core Blockchain (XCB) "RandomY" bypasses the shared RxQueue/RxCache/RxDataset machinery entirely
+    // (own fixed, never-rotated key -- see xcb_randomy.cpp), but still reuses the SAME
+    // "randomx":{"mode":"light"/"fast"/"auto"} config convention every other RandomX-family coin here
+    // exposes, rather than inventing a new config key. Only the FIRST call before any worker thread's
+    // first xcb_randomy::createVm() has any effect (std::call_once-latched) -- setJob() runs before
+    // CpuBackend ever (re)creates worker threads for the new job, same ordering Rx::init() above relies
+    // on, so this is safe to call on every job, not just the first one.
+    inline void initXcbRandomY() const
+    {
+        xcb_randomy::setFullMode(controller->config()->rx().mode() != RxConfig::LightMode);
+    }
+#   endif
+
+
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     inline void initGhostRider() const { ghostrider::benchmark(); }
 #   endif
@@ -566,6 +586,12 @@ void xmrig::Miner::setJob(const Job &job, bool donate)
             Nonce::pause(true);
             Nonce::touch();
         }
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    if (job.algorithm().family() == Algorithm::RANDOMY) {
+        d_ptr->initXcbRandomY();
     }
 #   endif
 

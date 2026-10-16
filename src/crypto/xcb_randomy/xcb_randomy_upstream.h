@@ -34,8 +34,31 @@
  * 0e9ab13e4b337c866e17445621be8d180c0a18a325932078dc33f7ac69ff17e8) after renaming -- the Windows PE
  * binary confirmed by actually executing it under wine64, not just checking that it links.
  *
- * Only the handful of functions this project's own wrapper (xcb_randomy.cpp) actually calls are declared
- * here -- cache-only (light) mode only, no dataset/FULL_MEM (see xcb_randomy.cpp for why).
+ * Updated again 2026-10-17: extended with the real upstream DATASET/FULL_MEM functions
+ * (alloc_dataset/dataset_item_count/init_dataset/get_dataset_memory/release_dataset) plus
+ * get_flags -- the single-key RandomY cache was previously only ever used in CACHE-ONLY ("light")
+ * mode (RANDOMX_FLAG_DEFAULT), which is correct but ~10-50x slower than real RandomX-family hashrate,
+ * since light mode recomputes large chunks of the dataset on the fly for every single hash. Confirmed
+ * these dataset functions exist in the real upstream source (github.com/core-coin/RandomY's
+ * src/randomx.h has the IDENTICAL public C API shape as stock tevador/RandomX -- alloc_dataset,
+ * dataset_item_count, init_dataset with startItem/itemCount for parallel init across threads,
+ * get_dataset_memory, release_dataset, and create_vm accepting a dataset pointer + RANDOMX_FLAG_FULL_MEM)
+ * and that every one of them survived the SAME strong-symbol-only objcopy rename already used for the
+ * cache-only functions (confirmed via `nm`/`objdump` on both the Linux .a and the Windows .a actually
+ * deployed here -- both already contain xcbrndy_randomx_alloc_dataset/dataset_item_count/init_dataset/
+ * get_dataset_memory/release_dataset/vm_set_dataset, built as part of the SAME 2026-10-16 from-source
+ * rebuild that added the Windows library, so NO new library rebuild or rename was needed for this). A
+ * real, isolated standalone test (gcc, linked directly against the deployed librandomy_xcb.a, no xmrig
+ * involved) proved light (cache-only) and full (dataset) mode give BYTE-IDENTICAL output for the same
+ * key+input, for TWO independent real test vectors (go-randomy's own documented vector, and the
+ * key="56789"/header=zeros/nonce=42 cross-check vector) -- see xcb_randomy.cpp's initOnce()/createVm()
+ * and xcb-project.md for the real numbers.
+ *
+ * `xcbrndy_randomx_get_flags()` is used as the baseline for cache-alloc AND vm-create flags (it
+ * auto-detects RANDOMX_FLAG_HARD_AES/RANDOMX_FLAG_JIT/ARGON2_AVX2/ARGON2_SSSE3 support on the running
+ * CPU -- confirmed via the same standalone test that enabling these (JIT included) still reproduces the
+ * exact real test vector, not just FULL_MEM alone). RANDOMX_FLAG_FULL_MEM is OR'd in separately only
+ * when full/dataset mode is active.
  */
 
 #ifndef XMRIG_XCB_RANDOMY_UPSTREAM_H
@@ -47,16 +70,28 @@
 extern "C" {
 
 struct xcbrndy_randomx_cache;
+struct xcbrndy_randomx_dataset;
 struct xcbrndy_randomx_vm;
 
 typedef int xcbrndy_randomx_flags;
-#define XCBRNDY_RANDOMX_FLAG_DEFAULT 0
+#define XCBRNDY_RANDOMX_FLAG_DEFAULT   0
+#define XCBRNDY_RANDOMX_FLAG_HARD_AES  2
+#define XCBRNDY_RANDOMX_FLAG_FULL_MEM  4
+#define XCBRNDY_RANDOMX_FLAG_JIT       8
+
+xcbrndy_randomx_flags xcbrndy_randomx_get_flags(void);
 
 xcbrndy_randomx_cache *xcbrndy_randomx_alloc_cache(xcbrndy_randomx_flags flags);
 void xcbrndy_randomx_init_cache(xcbrndy_randomx_cache *cache, const void *key, size_t keySize);
 void xcbrndy_randomx_release_cache(xcbrndy_randomx_cache *cache);
 
-xcbrndy_randomx_vm *xcbrndy_randomx_create_vm(xcbrndy_randomx_flags flags, xcbrndy_randomx_cache *cache, void *dataset);
+xcbrndy_randomx_dataset *xcbrndy_randomx_alloc_dataset(xcbrndy_randomx_flags flags);
+unsigned long xcbrndy_randomx_dataset_item_count(void);
+void xcbrndy_randomx_init_dataset(xcbrndy_randomx_dataset *dataset, xcbrndy_randomx_cache *cache, unsigned long startItem, unsigned long itemCount);
+void *xcbrndy_randomx_get_dataset_memory(xcbrndy_randomx_dataset *dataset);
+void xcbrndy_randomx_release_dataset(xcbrndy_randomx_dataset *dataset);
+
+xcbrndy_randomx_vm *xcbrndy_randomx_create_vm(xcbrndy_randomx_flags flags, xcbrndy_randomx_cache *cache, xcbrndy_randomx_dataset *dataset);
 void xcbrndy_randomx_destroy_vm(xcbrndy_randomx_vm *machine);
 
 void xcbrndy_randomx_calculate_hash(xcbrndy_randomx_vm *machine, const void *input, size_t inputSize, void *output);

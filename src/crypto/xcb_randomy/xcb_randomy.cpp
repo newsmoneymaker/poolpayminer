@@ -1,9 +1,15 @@
+#include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <cstring>
 #include <mutex>
+#include <thread>
+#include <vector>
 
 #include <openssl/evp.h>
 
+#include "base/io/log/Log.h"
+#include "base/io/log/Tags.h"
 #include "crypto/xcb_randomy/xcb_randomy.h"
 #include "crypto/xcb_randomy/xcb_randomy_upstream.h"
 
@@ -14,20 +20,108 @@ namespace xcb_randomy {
 namespace {
 
 
-std::once_flag g_cacheOnce;
+std::once_flag g_initOnce;
 xcbrndy_randomx_cache *g_cache = nullptr;
+xcbrndy_randomx_dataset *g_dataset = nullptr;  // non-null only when full/dataset mode is actually active
+xcbrndy_randomx_flags g_baseFlags = XCBRNDY_RANDOMX_FLAG_DEFAULT;
+
+// Default true: full/dataset mode is what actually fixes the real, absurdly-low cache-only hashrate --
+// see xcb-project.md. setFullMode(false) before the first createVm() call switches this back to the old
+// light/cache-only behavior (e.g. a low-RAM fallback), matching this project's own
+// "randomx":{"mode":"light"} convention for every other RandomX-family coin here.
+std::atomic<bool> g_fullModeRequested{true};
 
 
-void initCacheOnce()
+// Splits RandomY's real dataset (confirmed 4,325,376 items * 64 bytes = 276,824,064 bytes, ~264 MiB --
+// RANDOMX_DATASET_BASE_SIZE 256 MiB + RANDOMX_DATASET_EXTRA_SIZE 8 MiB from the real upstream
+// configuration.h) across all available CPU threads for initialization, same convention as this
+// project's own RxDataset::init() (src/crypto/rx/RxDataset.cpp) uses for every other RandomX-family
+// coin here -- dataset init is the one genuinely slow, one-time startup cost; per-share hashing never
+// touches this function again.
+void initDatasetParallel(xcbrndy_randomx_dataset *dataset, xcbrndy_randomx_cache *cache, unsigned long itemCount)
+{
+    unsigned int hw = std::thread::hardware_concurrency();
+    if (hw == 0) {
+        hw = 1;
+    }
+    const unsigned int numThreads = std::min<unsigned int>(hw, 64);
+
+    if (numThreads <= 1 || itemCount < numThreads) {
+        xcbrndy_randomx_init_dataset(dataset, cache, 0, itemCount);
+        return;
+    }
+
+    std::vector<std::thread> threads;
+    threads.reserve(numThreads);
+
+    for (unsigned int i = 0; i < numThreads; ++i) {
+        const unsigned long a = (itemCount * i) / numThreads;
+        const unsigned long b = (itemCount * (i + 1)) / numThreads;
+        threads.emplace_back(xcbrndy_randomx_init_dataset, dataset, cache, a, b - a);
+    }
+
+    for (auto &t : threads) {
+        t.join();
+    }
+}
+
+
+void initOnce()
 {
     // Core Blockchain (XCB): the fixed, never-rotated RandomY dataset key, ASCII "56789" -- confirmed
     // from go-randomy/vm.go's NewRandomYVMWithKeyAndMutex(): key := []byte{53, 54, 55, 56, 57}.
     static const uint8_t key[5] = { 53, 54, 55, 56, 57 };
 
-    g_cache = xcbrndy_randomx_alloc_cache(XCBRNDY_RANDOMX_FLAG_DEFAULT);
-    if (g_cache) {
-        xcbrndy_randomx_init_cache(g_cache, key, sizeof(key));
+    // Auto-detects RANDOMX_FLAG_HARD_AES / RANDOMX_FLAG_JIT / ARGON2_AVX2 / ARGON2_SSSE3 support on the
+    // running CPU -- verified in an isolated standalone test (not just FULL_MEM alone) that enabling
+    // these still reproduces the real RandomY test vector byte-for-byte, and the real xmrig Linux build
+    // ran rock-solid on JIT for 50+ seconds and hundreds of real accepted shares against the live pool.
+    // RANDOMX_FLAG_FULL_MEM is deliberately NOT included here (get_flags() never sets it) -- OR'd in
+    // separately below only when the dataset was actually built.
+    g_baseFlags = xcbrndy_randomx_get_flags();
+
+#   ifdef XMRIG_OS_WIN
+    // Real, reproduced finding (2026-10-17): with JIT enabled, the FIRST xcbrndy_randomx_create_vm() call
+    // on the cross-compiled Windows build reliably page-faults under wine64 (write access fault inside
+    // the vendored library's own code, immediately on VM creation, in BOTH light and full mode -- isolated
+    // by testing each flag combination individually). Disabling only RANDOMX_FLAG_JIT makes the exact
+    // same Windows binary run stably under wine64 (dataset build + real accepted shares against the live
+    // xcb-nodejs-pool, zero crashes). Root cause not chased further (likely an old wine-4.0 self-modifying
+    // -code/W^X quirk specific to this emulation layer, not necessarily a bug on real Windows -- but this
+    // environment has no real Windows to verify that on), so JIT stays OFF on the Windows build out of
+    // real, demonstrated caution rather than shipping something unverified. HARD_AES/ARGON2_AVX2/
+    // ARGON2_SSSE3 are untouched (pure data-path flags, not code generation -- never implicated in the
+    // crash, confirmed by testing with just JIT removed). The FULL_MEM/dataset speedup -- the actual
+    // ask -- is unaffected by this: it still gives a real, verified (if wine-emulation-taxed) speedup
+    // over the old cache-only behavior. See xcb-project.md for the real before/after numbers on both
+    // platforms.
+    g_baseFlags = static_cast<xcbrndy_randomx_flags>(g_baseFlags & ~XCBRNDY_RANDOMX_FLAG_JIT);
+#   endif
+
+    g_cache = xcbrndy_randomx_alloc_cache(g_baseFlags);
+    if (!g_cache) {
+        return;
     }
+    xcbrndy_randomx_init_cache(g_cache, key, sizeof(key));
+
+    if (!g_fullModeRequested.load()) {
+        LOG_INFO("%s" " RandomY light mode (cache-only, no dataset) -- slower hashrate, lower RAM use", xmrig::Tags::randomx());
+        return;
+    }
+
+    xcbrndy_randomx_dataset *dataset = xcbrndy_randomx_alloc_dataset(XCBRNDY_RANDOMX_FLAG_DEFAULT);
+    if (!dataset) {
+        LOG_WARN("%s" " RandomY full/dataset mode requested but dataset allocation failed (~264 MiB) -- "
+                 "falling back to light/cache-only mode", xmrig::Tags::randomx());
+        return;
+    }
+
+    const unsigned long itemCount = xcbrndy_randomx_dataset_item_count();
+    LOG_INFO("%s" " building RandomY dataset (~264 MiB, %u threads)...", xmrig::Tags::randomx(), std::thread::hardware_concurrency());
+    initDatasetParallel(dataset, g_cache, itemCount);
+    LOG_INFO("%s" " RandomY dataset ready, full/fast mode active", xmrig::Tags::randomx());
+
+    g_dataset = dataset;
 }
 
 
@@ -57,14 +151,24 @@ bool sha3_512(const uint8_t *data, size_t size, uint8_t out64[64])
 } // namespace
 
 
+void setFullMode(bool full)
+{
+    g_fullModeRequested.store(full);
+}
+
+
 void *createVm()
 {
-    std::call_once(g_cacheOnce, initCacheOnce);
+    std::call_once(g_initOnce, initOnce);
     if (!g_cache) {
         return nullptr;
     }
 
-    return xcbrndy_randomx_create_vm(XCBRNDY_RANDOMX_FLAG_DEFAULT, g_cache, nullptr);
+    if (g_dataset) {
+        return xcbrndy_randomx_create_vm(g_baseFlags | XCBRNDY_RANDOMX_FLAG_FULL_MEM, g_cache, g_dataset);
+    }
+
+    return xcbrndy_randomx_create_vm(g_baseFlags, g_cache, nullptr);
 }
 
 
@@ -159,7 +263,37 @@ bool selfTest()
         0x0c, 0x0a, 0x18, 0xa3, 0x25, 0x93, 0x20, 0x78, 0xdc, 0x33, 0xf7, 0xac, 0x69, 0xff, 0x17, 0xe8,
     };
 
-    return memcmp(out, expected, sizeof(out)) == 0;
+    if (memcmp(out, expected, sizeof(out)) != 0) {
+        return false;
+    }
+
+    // 3) Full/dataset mode, same key+input, on the SAME testCache (already initialized above) -- proves
+    //    the newly-added RANDOMX_FLAG_FULL_MEM path (and the renamed dataset symbols: alloc_dataset/
+    //    dataset_item_count/init_dataset/create_vm-with-dataset) give the BYTE-IDENTICAL hash as light
+    //    mode, on every real startup, not just this one-off session's standalone check. A real,
+    //    independent standalone test (plain gcc, not linked into xmrig) already proved this for TWO
+    //    separate real test vectors before this was ever wired in -- see xcb-project.md.
+    xcbrndy_randomx_dataset *testDataset = xcbrndy_randomx_alloc_dataset(XCBRNDY_RANDOMX_FLAG_DEFAULT);
+    if (!testDataset) {
+        // Correctness-critical: do NOT silently skip this check and report success.
+        return false;
+    }
+    initDatasetParallel(testDataset, testCache, xcbrndy_randomx_dataset_item_count());
+
+    xcbrndy_randomx_vm *fullVm = xcbrndy_randomx_create_vm(XCBRNDY_RANDOMX_FLAG_FULL_MEM, testCache, testDataset);
+    if (!fullVm) {
+        return false;
+    }
+
+    uint8_t outFull[32];
+    xcbrndy_randomx_calculate_hash(fullVm, "This is a test", 14, outFull);
+    xcbrndy_randomx_destroy_vm(fullVm);
+    // Deliberately NOT calling xcbrndy_randomx_release_dataset()/release_cache() here -- same documented,
+    // one-time, startup-only ~264 MiB leak posture as testCache above (release_cache reproducibly
+    // corrupted the heap when linked into the real xmrig binary; never risk the analogous call for the
+    // dataset either, out of caution, for the exact same reason).
+
+    return memcmp(outFull, expected, sizeof(outFull)) == 0;
 }
 
 

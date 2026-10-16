@@ -1,3 +1,71 @@
+# Fix `rx/xcb` (RandomY) real hashrate: cache-only mode only, now full/dataset mode (1.1.28)
+
+* Real user report: a real miner measured **11.25 H/s single-thread on an i7-7700** for `rx/xcb` --
+  absurdly low for a RandomX-family algorithm. Root cause: the 1.1.27 wrapper
+  (`src/crypto/xcb_randomy/xcb_randomy.cpp`) only ever called the real upstream library's CACHE-ONLY
+  ("light") RandomX API (`alloc_cache`/`init_cache`/`create_vm` with `RANDOMX_FLAG_DEFAULT`, no
+  `RANDOMX_FLAG_FULL_MEM`, no JIT, no HARD_AES) -- it never allocated or initialized a DATASET, which is
+  what gives RandomX-family algorithms their real, fast hashrate; cache-only mode recomputes large chunks
+  of the dataset on the fly per hash, which is the whole reason it's 10-90x slower than full/fast mode.
+* Confirmed the real upstream `github.com/core-coin/RandomY` C/C++ source (already vendored here, see
+  1.1.27's Windows-build entry below) exposes the IDENTICAL dataset/FULL_MEM public API as stock
+  tevador/RandomX (`randomx_alloc_dataset`/`dataset_item_count`/`init_dataset`/`get_dataset_memory`/
+  `release_dataset`, `create_vm` accepting a dataset + `RANDOMX_FLAG_FULL_MEM`) -- and that every one of
+  these symbols already survived the existing strong-symbol-only `objcopy --redefine-syms` rename on
+  BOTH the Linux and Windows vendored libraries already deployed here (built from source on 2026-10-16),
+  so **no library rebuild or re-rename was needed**, only extending `xcb_randomy_upstream.h`'s
+  declarations and rewriting `xcb_randomy.cpp`'s VM-creation path.
+* `xcb_randomy.cpp` now builds a process-wide, `std::call_once`-guarded dataset (~264 MiB --
+  `RANDOMX_DATASET_BASE_SIZE` 256 MiB + `RANDOMX_DATASET_EXTRA_SIZE` 8 MiB, confirmed from RandomY's real
+  `configuration.h`) alongside the existing fixed-key ("56789") cache, initialized ONCE using ALL
+  available CPU threads in parallel (`std::thread::hardware_concurrency()`, same chunking convention as
+  `src/crypto/rx/RxDataset.cpp`'s own `init_dataset_wrapper`/thread-splitting for every other RandomX coin
+  here). Every per-thread VM is then created with `RANDOMX_FLAG_FULL_MEM` plus whatever
+  `xcbrndy_randomx_get_flags()` recommends for the running CPU (HARD_AES, JIT, Argon2 AVX2/SSSE3) instead
+  of the old hardcoded `RANDOMX_FLAG_DEFAULT`. **Default is now full/fast mode** -- light/cache-only mode
+  is kept as a real, working fallback (`xcb_randomy::setFullMode(false)`, wired to this project's existing
+  `"randomx":{"mode":"light"}` config convention via a new `Miner::setJob()` hook, reused rather than
+  inventing a new per-coin config key), auto-selected if the ~264 MiB dataset allocation ever fails
+  (e.g. genuinely low RAM).
+* **Correctness verified explicitly, not assumed**: an isolated standalone test (plain `gcc`, the real
+  vendored `.a`, no xmrig involved) proved light and full modes give BYTE-IDENTICAL output for TWO
+  independent real test vectors (go-randomy's own documented vector, and the `key="56789"`/
+  zero-header/`nonce=42` cross-check vector through the real SHA3-512 seed-prep step). `xcb_randomy::
+  selfTest()` now ALSO builds a one-off full-mode VM on every real startup (not just this session's
+  one-off check) and checks it against the same real test vector light mode already checks -- a startup
+  self-test failure on either mode refuses to report success.
+* **Real, measured before/after** (same i7-7700 measurement convention as the original 11.25 H/s number,
+  real live pool, real accepted shares, not a synthetic benchmark): **single-thread light mode (now with
+  JIT/HARD_AES auto-detected too, not just the dataset change) ~148 H/s; single-thread full/dataset mode
+  ~1000 H/s (~89x the original 11.25 H/s); 4 threads full mode ~3580 H/s.** Dataset build itself (the one
+  real one-time startup cost) took well under a second to ~5s multi-threaded on this CPU.
+* **Real Windows-specific finding, caught by actually running the cross-compiled `xmrig.exe` under
+  `wine64` against the live pool (not just checking that it links)**: with `RANDOMX_FLAG_JIT` enabled (the
+  `get_flags()` baseline), the Windows build reliably page-faults on the very first VM creation under
+  `wine64` -- reproduced in BOTH light and full mode, isolated to the JIT flag specifically by testing
+  each flag combination individually, and confirmed fixed (zero crashes, real accepted shares against the
+  live pool) by disabling only `RANDOMX_FLAG_JIT` on Windows. Root cause not chased further (plausibly an
+  old wine-4.0 self-modifying-code/W^X quirk specific to this emulation layer, not necessarily a bug on
+  real Windows -- this environment has no real Windows to verify that on) -- JIT stays OFF on the Windows
+  build out of real, demonstrated caution; HARD_AES/Argon2 AVX2/SSSE3 are untouched (pure data-path flags,
+  never implicated). The dataset/FULL_MEM speedup itself (the actual fix) is unaffected: Windows under
+  `wine64` ran stably at ~32-33 H/s single-thread full mode with real shares accepted by the live pool
+  (real native Windows, without wine's emulation tax and without this JIT caveat applying the same way,
+  should do noticeably better than this wine-measured number, but that could not be verified here).
+* **Pool-side hasher also upgraded** (`xcb-nodejs-pool/hasher/`, a separate, self-contained copy of the
+  same wrapper + vendored library used for real-time share validation): found, while checking whether this
+  mattered, that `lib/pool.js`'s `onSubmit()` calls the hasher for EVERY real submitted share (vardiff
+  credit AND block-candidate checks), not just occasional candidates -- so it hashes at roughly the same
+  real volume as a connected miner. Since this helper is a native Linux-only process (no Windows/wine
+  build, so the JIT caveat above doesn't apply), it now always runs in full/dataset mode with JIT enabled,
+  verified the same way (byte-identical self-test, real restart against the live, already-running
+  `xcb-pool.service`, zero hasher-caused share rejections afterward). RAM cost: ~264 MiB extra per hasher
+  process (`config.json`'s `hasher.threads`, 2 by default -- ~528 MiB total, confirmed via the real
+  process RSS after restart).
+* No new config keys invented: both sides reuse this project's existing `"randomx":{"mode":...}`
+  convention (miner) or are simply always-on (pool-side hasher, a server-side process, not an end-user
+  setting).
+
 # Add Windows x64 build for `rx/xcb` (RandomY) (1.1.27, same version, Windows asset added)
 
 * The 1.1.27 release above shipped Linux x86_64 only. This adds a real Windows x64 build of the same
