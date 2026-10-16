@@ -417,7 +417,7 @@ bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is n
 **Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **ArQmA (`rx/arq`)**, **Salvium (`rx/0`)**, **Raptoreum (`ghostrider`)**, **Yenten (`yespower-r16`)**, **Tidecoin (`yespowertide`)**,
 **Kylacoin (`flex`)**, **Lyncoin (`flex-lcn`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)**, **LuckyPepe (`yescryptr32`)** and **Core Blockchain (`rx/xcb`)** have been tested
 end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
-documented above or are XMRig's own code, unchanged. Hacash has no Stratum of its own at all -- `x16rs` runs over a custom TCP JSON-RPC protocol this fork built from scratch for it (see CHANGES.md 1.1.23), not standard Bitcoin/Monero stratum like every other algorithm here. Core Blockchain's node builds the whole block itself (no coinbase/merkle tree at all) and only hands out a 32-byte sealhash via a classic geth/ethash-family `cryptore_getWork`/`submitWork` RPC -- `rx/xcb` uses its own invented 5-field `mining.notify`/3-field `mining.submit` wire shape (no `mixHash`, RandomY has no DAG-mixing concept) and is built on Linux x86_64 only (`WITH_XCB`, default ON on that platform, see CHANGES.md).
+documented above or are XMRig's own code, unchanged. Hacash has no Stratum of its own at all -- `x16rs` runs over a custom TCP JSON-RPC protocol this fork built from scratch for it (see CHANGES.md 1.1.23), not standard Bitcoin/Monero stratum like every other algorithm here. Core Blockchain's node builds the whole block itself (no coinbase/merkle tree at all) and only hands out a 32-byte sealhash via a classic geth/ethash-family `cryptore_getWork`/`submitWork` RPC -- `rx/xcb` uses its own invented 5-field `mining.notify`/3-field `mining.submit` wire shape (no `mixHash`, RandomY has no DAG-mixing concept) and is built on Linux x86_64 and Windows x64 (`WITH_XCB`, default ON on both platforms, see CHANGES.md).
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
@@ -427,7 +427,7 @@ documented above or are XMRig's own code, unchanged. Hacash has no Stratum of it
 | **`rx/scash`** | **Satoshi Cash (SCASH)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target | RandomX | CPU |
 | **`rx/xla`** | **Scala (XLA)**: Panthera, RandomX variant with its own parameters and blake2b + yespower + KangarooTwelve as the input hash | RandomX | CPU |
 | **`rx/keva`** | **Kevacoin (KVA)**: RandomKeva, the RandomX variant of the Kevacoin node | RandomX | CPU |
-| **`rx/xcb`** (`xcb`, `randomy`, `--coin=xcb`) | **Core Blockchain (XCB)**: RandomY, a tuned RandomX fork (different Argon2 iterations/salt, program size, scratchpad sizing) with a fixed, never-rotated dataset key and a SHA3-512(sealhash\|\|nonce) seed step before the RandomX hash itself. Linux x86_64 only | RandomX-family | CPU |
+| **`rx/xcb`** (`xcb`, `randomy`, `--coin=xcb`) | **Core Blockchain (XCB)**: RandomY, a tuned RandomX fork (different Argon2 iterations/salt, program size, scratchpad sizing) with a fixed, never-rotated dataset key and a SHA3-512(sealhash\|\|nonce) seed step before the RandomX hash itself. Linux x86_64 and Windows x64 | RandomX-family | CPU |
 | `rx/0` | Monero (XMR) and other RandomX coins with the reference configuration | RandomX | CPU |
 | `rx/2` | Monero, RandomX v2 | RandomX | CPU |
 | `rx/wow` | Wownero (WOW) | RandomX | CPU |

@@ -1,3 +1,36 @@
+# Add Windows x64 build for `rx/xcb` (RandomY) (1.1.27, same version, Windows asset added)
+
+* The 1.1.27 release above shipped Linux x86_64 only. This adds a real Windows x64 build of the same
+  `rx/xcb` algorithm, without ever downloading a prebuilt Windows binary from go-randomy's own releases
+  (an earlier attempt at that was correctly blocked by this environment's own safety classifier and was
+  not re-attempted).
+* Instead, both `librandomy_xcb.a` libraries (Linux and Windows) are now compiled by this project itself
+  from the real, unmodified upstream RandomY C/C++ source tree (`github.com/core-coin/RandomY` -- the
+  actual source go-randomy's own CI compiles into its prebuilt releases), using the system GCC for Linux
+  and this project's existing mingw-w64 cross-compiler (`toolchain-mingw64.cmake`, the same toolchain
+  every other coin's Windows build already uses here) for Windows. Building the real upstream source
+  tree unmodified, rather than reconstructing RandomY's config inside this project's own differently-laid
+  -out RandomX engine, turned out to reproduce the correct test vector on the first try on Linux -- the
+  earlier mismatch documented above was specific to this project's own reimplementation, not to any
+  missing/wrong documented config constant.
+* Symbol rename (`objcopy --redefine-syms`, `randomx_*` -> `xcbrndy_*`) now excludes PE/COFF
+  COMDAT-folded sections (`.text$<mangled-name>` etc. with the `LINK_ONCE_DISCARD` flag, found via
+  `objdump -h`) on Windows, mirroring the existing ELF weak-symbol exclusion used on Linux -- both are
+  the C++ ABI's vague-linkage mechanism (template instantiations, inline member functions,
+  typeinfo/vtables) and must stay mergeable with this project's own identically-named RandomX engine
+  symbols, or the result is an ODR violation.
+* Verified on both platforms: the renamed library still reproduces the real go-randomy test vector
+  (`key="test key 000"`, `input="This is a test"` -> `0e9ab13e...`). The Windows PE library was confirmed
+  by actually executing it under `wine64` (installed for this verification), not just checking that it
+  links; the full cross-compiled `xmrig.exe` (`-DWITH_XCB=ON`) passed its own internal self-test
+  (`cpu READY`, not a self-test-failed error) and exchanged real `rx/xcb` stratum traffic with the live
+  `xcb-nodejs-pool`, at 1 and 4 threads, under `wine64`.
+* `WITH_XCB` now defaults ON on Windows x86_64 too (previously Linux x86_64 only).
+* Windows asset (`poolpayminer-1.1.27-win64.zip`) added to the existing `v1.1.27` GitHub release (no new
+  tag/release created); `SHA256SUMS-1.1.27.txt` updated to include it. All coin sites' `/downloads/` pages
+  (the 21 sites whose win64 row was still on stale 1.1.26, plus a brand-new win64 row added to
+  xcb.pool-pay.com, which never had one) updated to the new 1.1.27 Windows build.
+
 # Add Core Blockchain (XCB): new `rx/xcb` algorithm, RandomY (1.1.27)
 
 * New `Algorithm::RANDOMY` family and `rx/xcb` algorithm id (aliases `xcb`, `randomy`, `--coin=xcb`) for
@@ -24,7 +57,8 @@
   `FATAL_ERROR` on anything else rather than silently skipping), default OFF everywhere else so this
   change doesn't break a plain `cmake ..` on Windows/other targets. **Windows build not done this pass**
   -- the Windows build of the vendored static library itself is a known, explicitly deferred gap; `xcb`
-  mining is Linux x86_64 only for now.
+  mining is Linux x86_64 only for now. (Addressed in the follow-up entry above this one, same version:
+  Windows x64 now also supported.)
 * Real end-to-end test against the live, fully-synced Core Blockchain mainnet node (via `xcb-nodejs-pool`,
   itself polling the real node over an SSH tunnel): real jobs at advancing block heights, real shares
   accepted at 1 and 2 threads, both over localhost and the public `xcb.pool-pay.com:6200` hostname.
