@@ -15,14 +15,15 @@ option(WITH_YESCRYPT        "Enable yescryptr8/r16/r32 algorithms (MTBC, FNNC, L
 option(WITH_FLEX            "Enable Flex algorithm (Kylacoin, Lyncoin)" ON)
 option(WITH_X16RS           "Enable X16RS algorithm (Hacash)" ON)
 option(WITH_VERUSHASH       "Enable VerusHash2.2 algorithm (VerusCoin) -- hash function only, mining loop not yet wired, see vrsc-project.md" OFF)
-# Default ON for a plain Linux x86_64 build (the only platform the vendored librandomy is built for --
-# src/crypto/xcb_randomy/CMakeLists.txt FATAL_ERRORs on anything else), default OFF everywhere else so a
-# Windows/other-arch build's bare `cmake ..` isn't broken by that FATAL_ERROR just because this option's
-# own default changed -- see xcb-project.md.
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux x86_64 only, see xcb-project.md" ON)
+# Default ON for Linux x86_64 and Windows x86_64 builds (the two platforms the vendored librandomy is
+# built for -- src/crypto/xcb_randomy/CMakeLists.txt FATAL_ERRORs on anything else), default OFF
+# everywhere else so an other-arch build's bare `cmake ..` isn't broken by that FATAL_ERROR just because
+# this option's own default changed -- see xcb-project.md. (Updated 2026-10-16: Windows added, now built
+# from real upstream source + mingw cross-compile rather than a downloaded prebuilt binary.)
+if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Windows"))
+    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux/Windows x86_64 only, see xcb-project.md" ON)
 else()
-    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux x86_64 only, see xcb-project.md" OFF)
+    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux/Windows x86_64 only, see xcb-project.md" OFF)
 endif()
 option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
