@@ -117,6 +117,61 @@ int64_t xmrig::EthStratumClient::submit(const JobResult& result)
     params.PushBack(m_user.toJSON(), allocator);
     params.PushBack(result.jobId.toJSON(), allocator);
 
+#   ifdef XMRIG_ALGO_XCB
+    if (m_pool.algorithm().id() == Algorithm::RX_XCB) {
+        // Core Blockchain (XCB): [user, job_id, nonce]. Pool already knows the job's sealhash from
+        // job_id, no need to echo a header/mix hash back (there is no "mix digest" concept here at all --
+        // RandomY has no DAG). nonce is sent as plain big-endian hex text of the integer value this
+        // miner searched -- "0x" + 16 hex digits, most-significant-digit-first -- which is EXACTLY what
+        // go-core's hexutil decodes back into the same 8 raw bytes BigEndian.PutUint64() would produce,
+        // so the pool can forward it to cryptore_submitWork() unchanged (see xcb-nodejs-pool's pool.js
+        // and xcb-project.md for the full byte-order derivation: this miner's own nonce-splicing
+        // machinery writes the SAME integer value as LittleEndian bytes into the hash seed, which is
+        // what go-core's own RandomY() does internally too -- no reversal needed anywhere on this path).
+        std::stringstream s;
+        s << "0x" << std::hex << std::setw(16) << std::setfill('0') << result.nonce;
+        params.PushBack(Value(s.str().c_str(), allocator), allocator);
+
+        JsonRequest::create(doc, m_sequence, "mining.submit", params);
+        // RX_XCB's hash is read big-endian (bigEndianValue(), top 8 bytes), not little-endian bytes
+        // 24..31 like result.actualDiff() assumes -- compute the display-only "actual diff" the same way
+        // Job::bigEndianValue() consumers do, so logs show a sane number instead of a bytes-24..31 read
+        // of the wrong end of the hash.
+        m_results[m_sequence] = SubmitResult(m_sequence, result.diff, Job::toDiff(Job::epicValue(result.result())), 0, result.backend);
+
+        return send(doc);
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_VERUSHASH
+    if (m_pool.algorithm().id() == Algorithm::VERUSHASH) {
+        // VerusCoin's real submit shape (equi_stratum_submit(), see vrsc-project.md): [worker, job_id,
+        // ntime, nonce, solution]. `nonce` here is the client's FULL extranonce2 region (EN2_SIZE bytes,
+        // matching m_extraNonce2Size) -- this miner only ever varies the first 4 bytes of it (its own
+        // per-job search counter, result.nonce) and leaves the rest zero, which is a protocol-valid
+        // choice (the server only cares that the submitted bytes are internally consistent with what it
+        // gets hashed, not that the miner used the entire assigned search space).
+        params.PushBack(Value(m_ntime.data(), allocator), allocator);
+
+        std::stringstream s;
+        s << std::hex << std::setw(8) << std::setfill('0') << result.nonce;
+        for (uint64_t i = 8; i < m_extraNonce2Size * 2; ++i) s << '0';
+        params.PushBack(Value(s.str().c_str(), allocator), allocator);
+
+        // Solution is fixed per job and not threaded through JobResult (which only carries the fields it
+        // needs to build the submit, not a full Job copy) -- read it from m_job directly, same as m_ntime
+        // above. A race against a brand new job arriving between "share found" and "submit sent" is
+        // already accepted by this file for m_ntime; the pool-side job_id check (vrsc-nodejs-pool's
+        // pool.js onSubmit()) rejects a truly stale submit either way.
+        params.PushBack(Value(Cvt::toHex(m_job.verusSolution()).data(), allocator), allocator);
+
+        JsonRequest::create(doc, m_sequence, "mining.submit", params);
+        m_results[m_sequence] = SubmitResult(m_sequence, result.diff, result.actualDiff(), 0, result.backend);
+
+        return send(doc);
+    }
+#   endif
+
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     if (Algorithm::isBitcoinStratum(m_pool.algorithm().id())) {
         params.PushBack(Value("00000000000000000000000000000000", static_cast<uint32_t>(m_extraNonce2Size * 2)), allocator);
@@ -217,6 +272,30 @@ bool xmrig::EthStratumClient::handleResponse(int64_t id, const rapidjson::Value 
 void xmrig::EthStratumClient::parseNotification(const char *method, const rapidjson::Value &params, const rapidjson::Value &)
 {
     if (strcmp(method, "mining.set_target") == 0) {
+        // VERUSHASH and RX_XCB only (every other Bitcoin-stratum coin here uses mining.set_difficulty
+        // instead, handled below) -- see vrsc-nodejs-pool's pool.js / xcb-nodejs-pool's pool.js: a real
+        // 256 bit target, plain big-endian hex text (not byte-reversed, it's a number not a buffer), 64
+        // hex chars. Reused as-is for XCB -- same "keep the top 8 bytes as a uint64" simplification.
+        bool wantsTarget = m_pool.algorithm().id() == Algorithm::VERUSHASH;
+#       ifdef XMRIG_ALGO_XCB
+        wantsTarget = wantsTarget || m_pool.algorithm().id() == Algorithm::RX_XCB;
+#       endif
+        if (wantsTarget && params.IsArray() && params.Size() > 0 && params[0].IsString()) {
+            const char *targetHex = params[0].GetString();
+            if (strlen(targetHex) == 64) {
+                uint64_t top = 0;
+                bool ok = true;
+                for (int i = 0; i < 16 && ok; ++i) {
+                    int c = targetHex[i];
+                    int v = (c >= '0' && c <= '9') ? (c - '0') : (c >= 'a' && c <= 'f') ? (c - 'a' + 10) : (c >= 'A' && c <= 'F') ? (c - 'A' + 10) : -1;
+                    if (v < 0) { ok = false; break; }
+                    top = (top << 4) | static_cast<uint64_t>(v);
+                }
+                if (ok) {
+                    m_nextTarget = top;
+                }
+            }
+        }
         return;
     }
 
@@ -277,7 +356,7 @@ void xmrig::EthStratumClient::parseNotification(const char *method, const rapidj
             algo = m_pool.coin().algorithm();
         }
 
-        const size_t min_arr_size = (Algorithm::isBitcoinStratum(algo.id())) ? 8 : 6;
+        const size_t min_arr_size = (algo.id() == Algorithm::VERUSHASH) ? 9 : (algo.id() == Algorithm::RX_XCB) ? 5 : (Algorithm::isBitcoinStratum(algo.id()) ? 8 : 6);
 
         if (arr.Size() < min_arr_size) {
             LOG_ERR("%s " RED("invalid mining.notify notification: params array has wrong size"), tag());
@@ -296,6 +375,164 @@ void xmrig::EthStratumClient::parseNotification(const char *method, const rapidj
         job.setExtraNonce(m_extraNonce.second);
 
         std::stringstream s;
+
+#       ifdef XMRIG_ALGO_XCB
+        if (algo.id() == Algorithm::RX_XCB) {
+            // Core Blockchain (XCB): this project's OWN invented wire shape (xcb-nodejs-pool's pool.js
+            // controls both ends, no third-party compatibility needed) mirroring the node's real
+            // cryptore_getWork() shape ([sealHash, seedHash(vestigial, not sent), target, blockNumber]):
+            // [job_id, sealHashHex(64 chars), targetHex(64 chars), heightHex, clean_jobs]. No
+            // coinbase/merkle/header packing at all -- the node builds the whole block, the pool/miner
+            // only ever handle a 32 byte sealhash + an 8 byte nonce (see RX_XCB's nonceOffset()=32).
+            if (!arr[1].IsString() || strlen(arr[1].GetString()) != 64) {
+                LOG_ERR("%s " RED("invalid mining.notify notification: invalid sealhash"), tag());
+                return;
+            }
+
+            // blob = sealhash(32 bytes) || nonce placeholder(8 bytes). extranonce1 (assigned per miner in
+            // mining.subscribe's response, see xcb-nodejs-pool's pool.js onSubscribe()) is copied into
+            // the START of that 8 byte field so different miners don't redundantly search the same nonce
+            // range -- same anti-collision pattern as VERUSHASH's own notify branch above. The generic
+            // nonce-splicing machinery (WorkerJob::nextRound) only varies the bits nonceMask() leaves free
+            // (everything below extranonce1's own bits, via Job::nonceMask()'s extraNonce().size()*4
+            // shift), never touching the extranonce1 bytes already written here.
+            std::string blob = arr[1].GetString();
+            blob.resize(80, '0'); // 40 bytes: 32 byte sealhash + 8 byte nonce field
+            job.setBlob(blob.c_str());
+
+            const size_t enSize = m_extraNonce.second.size() / 2;
+            if (enSize > 0 && enSize <= 8) {
+                Buffer en1 = Cvt::fromHex(m_extraNonce.second.data(), m_extraNonce.second.size());
+                memcpy(job.blob() + 32, en1.data(), en1.size());
+            }
+
+            if (m_nextTarget) {
+                job.setRawTarget(m_nextTarget);
+                job.setDiff(Job::toDiff(m_nextTarget));
+            }
+
+            if (arr.Size() > 3 && arr[3].IsString()) {
+                job.setHeight(strtoull(arr[3].GetString(), nullptr, 16));
+            }
+
+            m_job = std::move(job);
+
+            bool ok = true;
+            m_listener->onVerifyAlgorithm(this, algo, &ok);
+            if (!ok) {
+                if (!isQuiet()) {
+                    LOG_ERR("[%s] incompatible/disabled algorithm \"%s\" detected, reconnect", url(), algo.name());
+                }
+                close();
+                return;
+            }
+
+            if (!m_authorized) {
+                m_authorized = true;
+                m_listener->onLoginSuccess(this);
+            }
+
+            m_listener->onJobReceived(this, m_job, params);
+            return;
+        }
+#       endif
+
+#       ifdef XMRIG_ALGO_VERUSHASH
+        if (algo.id() == Algorithm::VERUSHASH) {
+            // VerusCoin's REAL wire protocol (confirmed from monkins1010/ccminer's equi/equi-stratum.cpp,
+            // NOT classic Bitcoin stratum -- see vrsc-project.md): [job_id, version, prevhash, merkleroot,
+            // finalSaplingRoot, ntime, nbits, clean_jobs, solution]. No coinb1/coinb2/branches -- the pool
+            // already computed the whole merkle root server-side from its own fixed coinbase. Byte-order
+            // convention (big endian hex text for version/ntime/nbits, every 4 byte word reversed for the
+            // three hash fields, solution passed through as plain hex) is this pool's OWN choice, matching
+            // vrsc-nodejs-pool's blockBuilder.js notifyParams() exactly -- there is no third-party wire
+            // compatibility requirement to satisfy here, only agreement with this project's own pool.
+            if (!arr[1].IsString() || !arr[2].IsString() || !arr[3].IsString() || !arr[4].IsString() ||
+                !arr[5].IsString() || !arr[6].IsString() || !arr[8].IsString()) {
+                LOG_ERR("%s " RED("invalid mining.notify notification: invalid param array"), tag());
+                return;
+            }
+
+            if (strlen(arr[1].GetString()) != 8 || strlen(arr[2].GetString()) != 64 ||
+                strlen(arr[3].GetString()) != 64 || strlen(arr[4].GetString()) != 64 ||
+                strlen(arr[5].GetString()) != 8 || strlen(arr[6].GetString()) != 8) {
+                LOG_ERR("%s " RED("invalid mining.notify notification: wrong field length"), tag());
+                return;
+            }
+
+            if (!job.setVerusSolution(arr[8].GetString())) {
+                LOG_ERR("%s " RED("invalid mining.notify notification: bad solution (expected 1344 bytes)"), tag());
+                return;
+            }
+
+            // version (4) | prevhash (32) | merkleroot (32) | finalSaplingRoot (32), each hash field
+            // word-reversed on the wire -- undo that reversal while writing, same convention every other
+            // Bitcoin-stratum coin here already uses for its own hash fields.
+            constexpr size_t kVerusHeaderSize = 140; // version(4)+prevhash(32)+merkleroot(32)+finalSaplingRoot(32)+ntime(4)+nbits(4)+nonce(32)
+            Buffer blob(kVerusHeaderSize, 0);
+
+            auto writeBigEndianHexAsLE32 = [](uint8_t *dst, const char *hex) {
+                const uint32_t v = static_cast<uint32_t>(strtoul(hex, nullptr, 16));
+                dst[0] = static_cast<uint8_t>(v);
+                dst[1] = static_cast<uint8_t>(v >> 8);
+                dst[2] = static_cast<uint8_t>(v >> 16);
+                dst[3] = static_cast<uint8_t>(v >> 24);
+            };
+            auto writeWordReversedHash = [](uint8_t *dst, const char *hex) {
+                Buffer buf = Cvt::fromHex(hex, 64);
+                for (size_t i = 0; i < 32; i += 4) {
+                    dst[i + 0] = buf[i + 3];
+                    dst[i + 1] = buf[i + 2];
+                    dst[i + 2] = buf[i + 1];
+                    dst[i + 3] = buf[i + 0];
+                }
+            };
+
+            writeBigEndianHexAsLE32(blob.data() + 0, arr[1].GetString());      // version
+            writeWordReversedHash(blob.data() + 4, arr[2].GetString());        // hashPrevBlock
+            writeWordReversedHash(blob.data() + 36, arr[3].GetString());       // hashMerkleRoot
+            writeWordReversedHash(blob.data() + 68, arr[4].GetString());       // hashFinalSaplingRoot
+            writeBigEndianHexAsLE32(blob.data() + 100, arr[5].GetString());    // nTime
+            writeBigEndianHexAsLE32(blob.data() + 104, arr[6].GetString());    // nBits
+
+            // nNonce (32 bytes, offset 108): extranonce1 at the start, the rest (this miner's own
+            // extranonce2 -- EN2_SIZE bytes, matching m_extraNonce2Size) left zero here; CpuWorker fills
+            // in its own per-thread search nonce within that zeroed region at hash time (see
+            // CpuWorker.cpp's VERUSHASH case) -- extranonce1/extranonce2 have NO relationship to the
+            // coinbase/merkle root under this protocol, unlike classic Bitcoin stratum.
+            const size_t enSize = m_extraNonce.second.size() / 2;
+            if (enSize > 0 && enSize <= 12) {
+                Buffer en1 = Cvt::fromHex(m_extraNonce.second.data(), m_extraNonce.second.size());
+                memcpy(blob.data() + 108, en1.data(), en1.size());
+            }
+
+            job.setBlob(Cvt::toHex(blob.data(), blob.size()).data());
+            m_ntime = arr[5].GetString();
+            if (m_nextTarget) {
+                job.setRawTarget(m_nextTarget);
+                job.setDiff(Job::toDiff(m_nextTarget));
+            }
+            m_job = std::move(job);
+
+            bool ok = true;
+            m_listener->onVerifyAlgorithm(this, algo, &ok);
+            if (!ok) {
+                if (!isQuiet()) {
+                    LOG_ERR("[%s] incompatible/disabled algorithm \"%s\" detected, reconnect", url(), algo.name());
+                }
+                close();
+                return;
+            }
+
+            if (!m_authorized) {
+                m_authorized = true;
+                m_listener->onLoginSuccess(this);
+            }
+
+            m_listener->onJobReceived(this, m_job, params);
+            return;
+        }
+#       endif
 
 #       ifdef XMRIG_ALGO_GHOSTRIDER
         if (Algorithm::isBitcoinStratum(algo.id())) {

@@ -40,6 +40,10 @@
 #include "crypto/rx/RxVm.h"
 #include "crypto/ghostrider/ghostrider.h"
 
+#ifdef XMRIG_ALGO_XCB
+#include "crypto/xcb_randomy/xcb_randomy.h"
+#endif
+
 #ifdef XMRIG_ALGO_YESPOWER
 extern "C" {
 #   include "crypto/yespower/yespower.h"
@@ -62,6 +66,10 @@ extern "C" {
 #   include "crypto/x16rs/x16rs.h"
 }
 #   include "base/crypto/sha3.h"
+#endif
+
+#ifdef XMRIG_ALGO_VERUSHASH
+#   include "crypto/verus/verus.h"
 #endif
 #include "net/JobResults.h"
 
@@ -325,6 +333,58 @@ static bool flexLcnSelfTest()
 #endif
 
 
+#ifdef XMRIG_ALGO_VERUSHASH
+// VerusCoin (VRSC): VerusHash2.2 over the 140 byte header (job.blob(), extranonce1+this miner's own 4
+// byte search counter at offset 112, see Job::nonceOffset()) concatenated with the job's own fixed 1344
+// byte solution, prefixed with its compactsize length -- the EXACT bytes the real node's
+// SerializeVerusHashV2b() hashes (see src/hash.h, confirmed from source and byte-verified against the
+// real node's own compiled output, see vrsc-project.md). The compactsize prefix for a constant 1344 byte
+// solution is always the same 3 bytes (0xfd + 1344 as a 2 byte LE integer = 0x40, 0x05) -- hardcoded
+// rather than computed generically since VerusHash2.2's solution size never varies.
+static void verusHash(const uint8_t *header, const Buffer &solution, uint8_t *output)
+{
+    // CVerusHashV2 (unlike every other hash function here) needs a real one-time init call --
+    // verushash2_2_init() loads its Haraka round constants and picks the AES-NI/PCLMUL function
+    // pointers; skipping it leaves those pointers null and segfaults on the first real hash. Multiple
+    // CPU worker threads can reach here concurrently on their first job, so guard with call_once
+    // rather than relying on any single safe call site elsewhere.
+    static std::once_flag initOnce;
+    std::call_once(initOnce, [] { verushash2_2_init(); });
+
+    static constexpr uint8_t kSolutionLenPrefix[3] = { 0xfd, 0x40, 0x05 }; // compactsize(1344)
+
+    uint8_t buf[140 + 3 + 1344];
+    memcpy(buf, header, 140);
+    memcpy(buf + 140, kSolutionLenPrefix, sizeof(kSolutionLenPrefix));
+    memcpy(buf + 140 + sizeof(kSolutionLenPrefix), solution.data(), solution.size());
+
+    verushash2_2(buf, sizeof(buf), output);
+}
+
+
+static bool verusHashSelfTest()
+{
+    // Byte-verified 2026-10-15 by actually running this exact header+prefix+solution buffer (140 zero
+    // bytes + compactsize(1344) + 1344 bytes of 0xaa) through the project's own `verushash` binary
+    // (vrsc-nodejs-pool/hasher/), which is itself byte-verified against the real node's own compiled
+    // VerusHash2.2 code (linked straight from its build artifacts on srv2) -- not a guessed vector, see
+    // vrsc-project.md.
+    uint8_t header[140] = { 0 };
+    Buffer solution(1344, 0xaa);
+
+    static const uint8_t expected[32] = {
+        0x87, 0xf4, 0xac, 0x82, 0xaf, 0x26, 0x4c, 0xf7, 0xc3, 0x5a, 0xcc, 0xe0, 0xf7, 0xc9, 0x33, 0x27,
+        0x59, 0x0b, 0xbc, 0x93, 0xdb, 0xc2, 0x96, 0x39, 0x24, 0xa0, 0xcb, 0x0b, 0xde, 0x79, 0xa8, 0xd8,
+    };
+
+    uint8_t output[32];
+    verusHash(header, solution, output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
+
 #ifdef XMRIG_ALGO_X16RS
 // Hacash (HAC): x16rs_hash(repeat(height), sha3_256(89-byte block_intro with nonce spliced in)) -- see
 // hac-nodejs-pool/lib/blockBuilder.js (authoritative). repeat(height) = min(floor(height/50000)+1, 16),
@@ -431,6 +491,10 @@ xmrig::CpuWorker<N>::~CpuWorker()
 {
 #   ifdef XMRIG_ALGO_RANDOMX
     RxVm::destroy(m_vm);
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    xcb_randomy::destroyVm(m_xcbVm);
 #   endif
 
     CnCtx::release(m_ctx, N);
@@ -545,6 +609,18 @@ bool xmrig::CpuWorker<N>::selfTest()
 #   ifdef XMRIG_ALGO_X16RS
     if (m_algorithm.family() == Algorithm::X16RS) {
         return (N == 1) && x16rsHacSelfTest();
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_VERUSHASH
+    if (m_algorithm.family() == Algorithm::VERUS) {
+        return (N == 1) && verusHashSelfTest();
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    if (m_algorithm.family() == Algorithm::RANDOMY) {
+        return (N == 1) && xcb_randomy::selfTest();
     }
 #   endif
 
@@ -786,6 +862,36 @@ void xmrig::CpuWorker<N>::start()
                         default:
                             valid = false;
                             break;
+                        }
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_VERUSHASH
+                case Algorithm::VERUS:
+                    if (N == 1) {
+                        verusHash(m_job.blob(), job.verusSolution(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_XCB
+                case Algorithm::RANDOMY:
+                    if (N == 1) {
+                        if (!m_xcbVm) {
+                            m_xcbVm = xcb_randomy::createVm();
+                        }
+                        if (m_xcbVm) {
+                            xcb_randomy::hash(m_xcbVm, m_job.blob(), m_hash);
+                        }
+                        else {
+                            valid = false;
                         }
                     }
                     else {

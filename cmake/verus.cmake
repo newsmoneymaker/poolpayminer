@@ -1,0 +1,8 @@
+if (WITH_VERUSHASH)
+    add_definitions(/DXMRIG_ALGO_VERUSHASH)
+    add_subdirectory(src/crypto/verus)
+    set(VERUS_LIBRARY verus)
+else()
+    remove_definitions(/DXMRIG_ALGO_VERUSHASH)
+    set(VERUS_LIBRARY "")
+endif()

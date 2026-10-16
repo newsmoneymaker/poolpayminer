@@ -1,3 +1,34 @@
+# Add Core Blockchain (XCB): new `rx/xcb` algorithm, RandomY (1.1.27)
+
+* New `Algorithm::RANDOMY` family and `rx/xcb` algorithm id (aliases `xcb`, `randomy`, `--coin=xcb`) for
+  **Core Blockchain (XCB)**, an account-based, EVM-like chain (geth v2 fork) -- structurally different
+  from every other coin here: the node builds the whole block itself (no coinbase/merkle tree at all)
+  and hands out mining work over a classic geth/ethash-family `cryptore_getWork`/`submitWork` RPC, not a
+  Bitcoin-style block template.
+* RandomY is a tuned fork of Monero's RandomX (different Argon2 iteration count/salt, program size,
+  scratchpad sizing vs. the reference/Monero configuration), with two coin-specific wrinkles: a fixed,
+  never-rotated dataset key (`"56789"`, no per-epoch DAG logic needed) and a `SHA3-512(sealHash ||
+  nonce)` seed-prep step fed into the hash in place of the raw header RandomX normally hashes. Vendors
+  the real, prebuilt `librandomy` the upstream `go-core` node itself links (binary-renamed via `objcopy
+  --redefine-syms` to avoid colliding with this project's own, differently-configured RandomX engine),
+  not a reimplementation -- reconstructing RandomY's config inside this project's own RandomX engine was
+  tried first and produced a wrong hash against the real library's own documented test vector, so that
+  approach was abandoned in favor of vendoring the real library directly.
+* `Pool.cpp`: added the `RANDOMY` family to the `EthStratumClient` selection whitelist. A dedicated
+  `RX_XCB`-only branch (not the shared default ethash-style path) handles this coin's own invented wire
+  shape: 5-field `mining.notify` (`job_id, sealHashHex, targetHex, heightHex, clean_jobs`), 3-field
+  `mining.submit` (`worker, job_id, nonceHex`) -- no `mixHash` param at all, since RandomY has no
+  DAG-mixing concept the way real ethash/KawPow do.
+* `CMakeLists.txt`: new `WITH_XCB` option, **default ON on Linux x86_64** (the only platform the
+  vendored static library is built for -- `src/crypto/xcb_randomy/CMakeLists.txt` fails loudly with a
+  `FATAL_ERROR` on anything else rather than silently skipping), default OFF everywhere else so this
+  change doesn't break a plain `cmake ..` on Windows/other targets. **Windows build not done this pass**
+  -- the Windows build of the vendored static library itself is a known, explicitly deferred gap; `xcb`
+  mining is Linux x86_64 only for now.
+* Real end-to-end test against the live, fully-synced Core Blockchain mainnet node (via `xcb-nodejs-pool`,
+  itself polling the real node over an SSH tunnel): real jobs at advancing block heights, real shares
+  accepted at 1 and 2 threads, both over localhost and the public `xcb.pool-pay.com:6200` hostname.
+
 # Fix Kylacoin (KCN) coinbase/merkle-root hashing: sha3d, matching the pool (1.1.26)
 
 * Kylacoin's own `CTransaction::ComputeHash()` uses double SHA3-256 (`Hash3Writer`), unconditionally for every

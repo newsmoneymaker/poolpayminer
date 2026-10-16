@@ -105,6 +105,14 @@ private:
     ghostrider::HelperThread* m_ghHelper = nullptr;
 #   endif
 
+#   ifdef XMRIG_ALGO_XCB
+    // Core Blockchain (XCB) "RandomY": one real randomx_vm (from the vendored, symbol-renamed
+    // go-randomy library, NOT this project's own randomx_vm type -- kept as void* to avoid pulling that
+    // header into every translation unit that includes this one) per worker thread, lazily created on
+    // first use. Shares ONE process-wide cache (fixed key, lazily built once) -- see xcb_randomy.h.
+    void *m_xcbVm = nullptr;
+#   endif
+
 #   ifdef XMRIG_FEATURE_BENCHMARK
     uint32_t m_benchSize    = 0;
 #   endif

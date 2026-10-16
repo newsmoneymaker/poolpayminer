@@ -65,6 +65,10 @@ private:
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     uint64_t m_extraNonce2Size = 0;
     uint64_t m_nextDifficulty = 0;
+    // VERUSHASH: mining.set_target sends a real 256 bit target (plain big-endian hex text, see
+    // vrsc-nodejs-pool's pool.js); like Hacash's own rawTarget, only the top 8 bytes are kept here as
+    // an approximation -- real block acceptance is always re-checked properly pool-side.
+    uint64_t m_nextTarget = 0;
     String m_ntime;
 #   endif
 };

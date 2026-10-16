@@ -1,0 +1,8 @@
+if (WITH_XCB)
+    add_definitions(/DXMRIG_ALGO_XCB)
+    add_subdirectory(src/crypto/xcb_randomy)
+    set(XCB_LIBRARY xcb_randomy)
+else()
+    remove_definitions(/DXMRIG_ALGO_XCB)
+    set(XCB_LIBRARY "")
+endif()

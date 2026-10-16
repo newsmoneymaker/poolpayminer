@@ -101,6 +101,47 @@ public:
         AR2_CHUKWA_V2   = 0x61140000,   // "argon2/chukwav2"  Argon2id (Chukwa v2).
         AR2_WRKZ        = 0x61120000,   // "argon2/wrkz"      Argon2id (WRKZ)
         KAWPOW_RVN      = 0x6b0f0000,   // "kawpow/rvn"       KawPow (RVN)
+        VERUSHASH       = 0x760e0000,   // "verushash"        VerusHash2.2 (VerusCoin / VRSC). The second byte (0x0e -> 1<<14 = 16 KB, NOT the literal "2.2"
+                                        // version this id originally and wrongly used -- see critical-wrong-coin-unit-scale-style lesson, this byte is
+                                        // log2(memory bytes) for l3()/auto thread-count sizing, same convention noted on YESPOWER_R16 above) reflects
+                                        // VerusHash2.2's real, tiny memory footprint (VERUSKEYSIZE ~8.8 KB, the CLMUL key table) -- it is CPU-bound
+                                        // (Haraka+CLMUL), not memory-hard like RandomX/CN. The original 0x32 byte made CpuBackend compute a ~1 PB
+                                        // "scratchpad" and hang on first real job -- found+fixed the same session this algorithm was added, see
+                                        // vrsc-project.md. Hash function ported+byte-verified against the real node's own
+                                        // compiled output (see vrsc-project.md). Wire format is VRSC's real "Equihash-compatible" stratum protocol (see
+                                        // vrsc-nodejs-pool's pool.js and EthStratumClient.cpp's VERUSHASH-specific mining.notify/submit branches), NOT classic
+                                        // Bitcoin-stratum -- 9 field mining.notify (no coinb1/coinb2/branches, the pool already computed the merkle root),
+                                        // mining.set_target instead of set_difficulty, 5 field mining.submit, 140 byte Zcash-style header with a 32 byte nonce
+                                        // field (extranonce1+extranonce2 fill it completely) and a separate 1344 byte "solution" (Job::verusSolution(), kept
+                                        // outside the shared m_blob -- see Job.h).
+        RX_XCB          = 0x43120001,   // "rx/xcb"           "RandomY" (Core Blockchain / XCB, coreblockchain.net): the real RandomX engine, but NOT this
+                                        // project's own vendored RandomX (src/crypto/randomx/) and NOT the RANDOM_X family -- RandomY's real
+                                        // configuration.h differs from the reference config in more than the Argon2 salt (ArgonIterations,
+                                        // ProgramSize, ProgramIterations, ScratchpadL1/L2/L3 all differ too); reconstructing it inside this
+                                        // project's own heavily-refactored engine produced a DIFFERENT hash than the real library for the
+                                        // standard RandomX README test vector -- a real [[critical-wrong-randomx-variant-bug]] instance caught
+                                        // before being wired in (see xcb-project.md). Fixed instead: this coin's own real prebuilt
+                                        // go-randomy/librandomx.a, vendored byte-for-byte under src/crypto/xcb_randomy/ with every randomx_*
+                                        // symbol renamed xcbrndy_* (objcopy --redefine-syms on the .a itself, not a recompile) to avoid colliding
+                                        // with this project's own randomx_* symbols -- see critical-vendored-lib-symbol-collision. Own
+                                        // dedicated family (not RANDOM_X) since it bypasses RxQueue/RxCache/RxDataset entirely: a single,
+                                        // process-wide, lazily-built cache keyed with the fixed, NEVER-rotated ASCII key "56789" (go-randomy's
+                                        // own NewRandomYVMWithKeyAndMutex()), one randomx_vm per CPU worker thread (see CpuWorker's m_xcbVm).
+                                        // Hash input is SHA3-512(sealhash(32 bytes) || nonce(8 bytes, native x86 little-endian)) -- real NIST
+                                        // SHA3 (OpenSSL EVP_sha3_512, 0x06 padding), NOT this project's other vendored Keccak-512 (0x01 padding)
+                                        // -- fed as RandomX's input buffer, matching go-randomy's own RandomY() in vm.go exactly. Verified: (1)
+                                        // a real NIST SHA3-512 test vector, (2) the vendored library's own real test vector (randomy_test.go),
+                                        // (3) a full end-to-end cross-check of THIS wrapper against a live Go program linked against the SAME
+                                        // real go-randomy module (fixed key, 32 zero byte header, nonce=42) -- byte-identical output both ways.
+                                        // L3 byte 0x12 (256 KB) is a deliberately small, VERUSHASH-style placeholder for l3()/thread-count
+                                        // sizing -- the real ~256 MiB Argon2 cache is ONE SHARED allocation across all threads, not a per-thread
+                                        // cost, same reasoning as VERUSHASH's own tiny-footprint byte above. Cache-only (light) mode only for
+                                        // now -- FULL_MEM/dataset mode not attempted (would need faithfully reconstructing RandomY's dataset
+                                        // addressing too, not just re-vendoring the cache-only path); slower than a full-dataset miner would be,
+                                        // but verified-correct, which full-dataset mode is not yet. Wire protocol: a dedicated EthStratumClient
+                                        // branch (gated on this exact id, not family) speaking THIS project's own invented eth-getWork-shaped
+                                        // mining.notify/submit (5/3 fields respectively) matching xcb-nodejs-pool's pool.js -- see
+                                        // EthStratumClient.cpp and Pool.cpp's createClient().
     };
 
     enum Family : uint32_t {
@@ -118,7 +159,9 @@ public:
         YESPOWER        = 0x79000000,
         YESCRYPT        = 0x7a000000,
         FLEX            = 0x66000000,
-        X16RS           = 0x78000000
+        X16RS           = 0x78000000,
+        VERUS           = 0x76000000,
+        RANDOMY         = 0x43000000
     };
 
     static const char *kINVALID;
@@ -217,6 +260,14 @@ public:
     static const char* kX16RS_HAC;
 #   endif
 
+#   ifdef XMRIG_ALGO_VERUSHASH
+    static const char* kVERUSHASH;
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    static const char* kRX_XCB;
+#   endif
+
     inline Algorithm() = default;
     inline Algorithm(const char *algo) : m_id(parse(algo))  {}
     inline Algorithm(Id id) : m_id(id)                      {}
@@ -237,7 +288,7 @@ public:
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
     // the algorithms that speak Bitcoin's Stratum (mining.subscribe/notify with coinb1/coinb2, see EthStratumClient) and are mined over an 80 byte header
-    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN; }
+    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN || id == VERUSHASH; }
     inline bool isBitcoinStratum() const                    { return isBitcoinStratum(m_id); }
     inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
     inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };

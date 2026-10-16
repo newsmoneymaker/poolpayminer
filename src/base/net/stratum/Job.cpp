@@ -108,6 +108,20 @@ bool xmrig::Job::setSeedHash(const char *hash)
 }
 
 
+bool xmrig::Job::setVerusSolution(const char *hex)
+{
+    static constexpr size_t kVerusSolutionSize = 1344;
+
+    if (!hex || (strlen(hex) != kVerusSolutionSize * 2)) {
+        return false;
+    }
+
+    m_verusSolution = Cvt::fromHex(hex, kVerusSolutionSize * 2);
+
+    return m_verusSolution.size() == kVerusSolutionSize;
+}
+
+
 bool xmrig::Job::setTarget(const char *target)
 {
     static auto parse = [](const char *target, size_t size, const Algorithm &algorithm) -> uint64_t {
@@ -191,6 +205,22 @@ size_t xmrig::Job::nonceOffset() const
     if (algorithm() == Algorithm::RX_VEIL) {
         // Veil: 148 byte header (version, prev hash, merkle root, witness root, accumulators, time, bits, NONCE, height)
         return 140;
+    }
+
+    if (algorithm() == Algorithm::RX_XCB) {
+        // Core Blockchain (XCB): the job's blob is just the 32 byte sealhash; the 8 byte nonce (native
+        // x86 little-endian, matching go-core's own LittleEndian seed encoding) is appended right after
+        // it by the generic nonce-splicing machinery. CpuWorker's RX_XCB case feeds blob[0..40) as-is
+        // into SHA3-512 before the RandomX call -- see xcb_randomy.h.
+        return 32;
+    }
+
+    if (algorithm() == Algorithm::VERUSHASH) {
+        // VerusCoin: 140 byte header, 32 byte nonce field at offset 108 = extranonce1 (EN1_SIZE=4 bytes,
+        // see EthStratumClient.cpp's VERUSHASH mining.notify branch) then this miner's own 4 byte search
+        // counter -- the remaining bytes of the 32 byte field stay zero (a protocol-valid choice, see
+        // EthStratumClient::submit()'s VERUSHASH branch).
+        return 112;
     }
 
     return 39;
@@ -307,6 +337,7 @@ void xmrig::Job::copy(const Job &other)
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = other.m_seed;
+    m_verusSolution = other.m_verusSolution;
     m_extraNonce = other.m_extraNonce;
     m_poolWallet = other.m_poolWallet;
 
@@ -361,6 +392,7 @@ void xmrig::Job::move(Job &&other)
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = std::move(other.m_seed);
+    m_verusSolution = std::move(other.m_verusSolution);
     m_extraNonce = std::move(other.m_extraNonce);
     m_poolWallet = std::move(other.m_poolWallet);
 

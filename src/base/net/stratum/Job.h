@@ -60,6 +60,13 @@ public:
     bool isEqualBlob(const Job &other) const;
     bool setBlob(const char *blob);
     bool setSeedHash(const char *hash);
+    // VerusHash2.2 (VERUSHASH): the node's own 1344 byte "solution" bytes, fixed per job and passed
+    // through unchanged (VerusHash is a plain single-hash PoW, not an Equihash puzzle -- there is
+    // nothing to solve). Kept OUTSIDE m_blob (which stays just the 140 byte header, well within
+    // kMaxBlobSize) rather than growing that shared, fixed-size array for every other algorithm's job
+    // too -- see vrsc-project.md's "Step 5" section. Empty/unallocated (zero cost) for every other
+    // algorithm's Job.
+    bool setVerusSolution(const char *hex);
     bool setTarget(const char *target);
     size_t nonceOffset() const;
     bool setEpicBlob(const char *prePow, uint32_t nonceHigh);
@@ -91,18 +98,24 @@ public:
     inline void setDiardi(bool diardi)                  { m_diardi = diardi; }
     // Hacash's consensus reads block_hash as a big-endian 256-bit number too (x16rs_hash's output), same
     // top-8-bytes convention as Epic/Veil -- see CpuWorker's X16RS_HAC case and blockBuilder.js's meetsTarget().
-    inline bool bigEndianValue() const                  { return m_epic || isVeil() || m_algorithm.id() == Algorithm::X16RS_HAC; }
+    // Core Blockchain (XCB): verifySeal() compares the full 32 byte RandomY hash as a big-endian big.Int
+    // against target = 2^256/difficulty (consensus.go), same top-8-bytes-big-endian convention as
+    // Epic/Veil/Hacash above -- this is only the CLIENT's own quick local filter, real validation is
+    // pool-side (full 256 bit) and node-side (submitWork), see xcb-project.md.
+    inline bool bigEndianValue() const                  { return m_epic || isVeil() || m_algorithm.id() == Algorithm::X16RS_HAC || m_algorithm.id() == Algorithm::RX_XCB; }
     inline bool isValid() const                         { return (m_size > 0 && m_diff > 0) || !m_poolWallet.isEmpty(); }
     inline bool setId(const char *id)                   { return (m_id = id); }
     inline const Algorithm &algorithm() const           { return m_algorithm; }
     inline const Buffer &seed() const                   { return m_seed; }
+    inline const Buffer &verusSolution() const          { return m_verusSolution; }
     inline const String &clientId() const               { return m_clientId; }
     inline const String &extraNonce() const             { return m_extraNonce; }
     inline const String &id() const                     { return m_id; }
     inline const String &poolWallet() const             { return m_poolWallet; }
     inline const uint32_t *nonce() const                { return reinterpret_cast<const uint32_t*>(m_blob + nonceOffset()); }
     inline const uint8_t *blob() const                  { return m_blob; }
-    inline size_t nonceSize() const                     { return (algorithm().family() == Algorithm::KAWPOW) ?  8 :  4; }
+    // Core Blockchain (XCB): go-core's types.BlockNonce is a real 8 byte (uint64) field, like KAWPOW's.
+    inline size_t nonceSize() const                     { return (algorithm().family() == Algorithm::KAWPOW || m_algorithm.id() == Algorithm::RX_XCB) ?  8 :  4; }
     inline size_t size() const                          { return m_size; }
     inline uint32_t *nonce()                            { return reinterpret_cast<uint32_t*>(m_blob + nonceOffset()); }
     inline uint32_t backend() const                     { return m_backend; }
@@ -178,6 +191,7 @@ private:
     bool m_nicehash     = false;
     bool m_epic         = false;
     Buffer m_seed;
+    Buffer m_verusSolution;
     size_t m_size       = 0;
     String m_clientId;
     String m_extraNonce;

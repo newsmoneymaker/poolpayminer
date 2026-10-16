@@ -132,6 +132,14 @@ const char* Algorithm::kX16RS           = "x16rs";
 const char* Algorithm::kX16RS_HAC       = "x16rs";
 #endif
 
+#ifdef XMRIG_ALGO_VERUSHASH
+const char* Algorithm::kVERUSHASH       = "verushash";
+#endif
+
+#ifdef XMRIG_ALGO_XCB
+const char* Algorithm::kRX_XCB          = "rx/xcb";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -220,6 +228,14 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_X16RS
     ALGO_NAME(X16RS_HAC),
+#   endif
+
+#   ifdef XMRIG_ALGO_VERUSHASH
+    ALGO_NAME(VERUSHASH),
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    ALGO_NAME(RX_XCB),
 #   endif
 };
 
@@ -383,6 +399,16 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(X16RS_HAC),      ALGO_ALIAS(X16RS_HAC, "hac"),
                                      ALGO_ALIAS(X16RS_HAC, "hacash"),
 #   endif
+
+#   ifdef XMRIG_ALGO_VERUSHASH
+    ALGO_ALIAS_AUTO(VERUSHASH),      ALGO_ALIAS(VERUSHASH, "vrsc"),
+                                     ALGO_ALIAS(VERUSHASH, "verus"),
+#   endif
+
+#   ifdef XMRIG_ALGO_XCB
+    ALGO_ALIAS_AUTO(RX_XCB),         ALGO_ALIAS(RX_XCB, "xcb"),
+                                     ALGO_ALIAS(RX_XCB, "randomy"),
+#   endif
 };
 
 
@@ -461,7 +487,9 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         YESPOWER_R16, YESPOWER_TIDE,
         YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32,
         FLEX_KCN, FLEX_LCN,
-        X16RS_HAC
+        X16RS_HAC,
+        VERUSHASH,
+        RX_XCB
     };
 
     Algorithms out;

@@ -14,6 +14,16 @@ option(WITH_YESPOWER        "Enable yespower-r16 algorithm (Yenten)" ON)
 option(WITH_YESCRYPT        "Enable yescryptr8/r16/r32 algorithms (MTBC, FNNC, LPEPE)" ON)
 option(WITH_FLEX            "Enable Flex algorithm (Kylacoin, Lyncoin)" ON)
 option(WITH_X16RS           "Enable X16RS algorithm (Hacash)" ON)
+option(WITH_VERUSHASH       "Enable VerusHash2.2 algorithm (VerusCoin) -- hash function only, mining loop not yet wired, see vrsc-project.md" OFF)
+# Default ON for a plain Linux x86_64 build (the only platform the vendored librandomy is built for --
+# src/crypto/xcb_randomy/CMakeLists.txt FATAL_ERRORs on anything else), default OFF everywhere else so a
+# Windows/other-arch build's bare `cmake ..` isn't broken by that FATAL_ERROR just because this option's
+# own default changed -- see xcb-project.md.
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux x86_64 only, see xcb-project.md" ON)
+else()
+    option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux x86_64 only, see xcb-project.md" OFF)
+endif()
 option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
 option(WITH_TLS             "Enable OpenSSL support" ON)
@@ -240,7 +250,9 @@ include(cmake/yespower.cmake)
 include(cmake/yescrypt.cmake)
 include(cmake/flex.cmake)
 include(cmake/x16rs.cmake)
+include(cmake/verus.cmake)
 include(cmake/OpenSSL.cmake)
+include(cmake/xcb.cmake)
 include(cmake/asm.cmake)
 
 if (WITH_CN_LITE)
@@ -275,7 +287,7 @@ if (WITH_DEBUG_LOG)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY})
 
 if (WIN32)
     if (NOT ARM_TARGET)
