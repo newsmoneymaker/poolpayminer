@@ -1,3 +1,33 @@
+# Enable `verushash` (VerusCoin / VRSC) by default; fix a real submit-nonce byte-order bug (1.1.29)
+
+* `-a verushash`'s wire protocol/hash-call integration was built and verified end-to-end against a fake
+  local pool in an earlier session (see vrsc-project.md), but never against the real, fully-synced VRSC
+  mainnet node until now. A real end-to-end test against the real `vrsc-nodejs-pool` turned up one real
+  bug: `EthStratumClient.cpp`'s VERUSHASH `submit()` formatted the found nonce as big-endian hex TEXT of
+  the integer (`std::hex << result.nonce`), but the header's own nonce field (written by the generic
+  `WorkerJob` nonce-splicing machinery, same as every other algorithm here) stores it as the raw NATIVE
+  (little-endian on x86) bytes of that same `uint32_t` -- e.g. value `0x12345678` sits in the header as
+  bytes `78 56 34 12`, but was being sent to the pool as the text `"12345678"`, which the pool's
+  `Buffer.from(nonceHex, 'hex')` turns into the BYTE-REVERSED value `12 34 56 78` -- a nonce the miner
+  never actually hashed with. Every single submitted share failed the pool's independent re-check
+  ("Low difficulty share"), even though this miner's own self-test and internal target comparison were
+  both already correct (the bug was purely in what got reported back, not in the hashing itself). Fixed
+  to hex-encode the raw native bytes directly (`Cvt::toHex`), the same pattern every other
+  Bitcoin-stratum-family coin here already uses for its own submitted nonce (`DaemonClient.cpp`/
+  `SelfSelectClient.cpp`). Verified: a real mining session against the real pool now gets thousands of
+  real shares ACCEPTED (zero rejections except two benign "Job not found" races at a template-refresh
+  boundary), correct vardiff retargeting observed.
+* `WITH_VERUSHASH` now defaults **ON for Linux/Windows x86_64** (previously OFF everywhere, needed an
+  explicit `-DWITH_VERUSHASH=ON`), matching `WITH_XCB`'s own platform-gated pattern -- the vendored
+  AES-NI/PCLMUL VerusHash2.2 source has no portable/ARM fallback, so the option stays OFF on any other
+  platform so a plain `cmake ..` there isn't broken by `-maes -mpclmul` failing to compile. Confirmed a
+  default (no-flags) `cmake ..` on this Linux x86_64 host now builds `verushash` support with no
+  changes needed elsewhere.
+* This was found and fixed on the MINER side, together with a matching set of real pool-side bugs (an
+  off-by-one coinbase scriptSig length, a missing `vJoinSplit` vector, and -- the real architectural
+  fix -- that this chain's own `getblocktemplate` never hands back a submission-ready block at all, see
+  `vrsc-nodejs-pool`'s own CHANGES.md and `vrsc-project.md` for the full story).
+
 # Fix `rx/xcb` (RandomY) real hashrate: cache-only mode only, now full/dataset mode (1.1.28)
 
 * Real user report: a real miner measured **11.25 H/s single-thread on an i7-7700** for `rx/xcb` --

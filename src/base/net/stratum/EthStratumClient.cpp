@@ -153,10 +153,25 @@ int64_t xmrig::EthStratumClient::submit(const JobResult& result)
         // gets hashed, not that the miner used the entire assigned search space).
         params.PushBack(Value(m_ntime.data(), allocator), allocator);
 
-        std::stringstream s;
-        s << std::hex << std::setw(8) << std::setfill('0') << result.nonce;
-        for (uint64_t i = 8; i < m_extraNonce2Size * 2; ++i) s << '0';
-        params.PushBack(Value(s.str().c_str(), allocator), allocator);
+        // REAL BUG, found via a live round-trip test against vrsc-nodejs-pool's real pool.js
+        // (2026-10-21): `result.nonce` was formatted as a big-endian hex TEXT representation of the
+        // integer (`std::hex << result.nonce`), e.g. value 0x12345678 -> "12345678". But the header's
+        // own nonce field (Job::nonceOffset(), written by the generic WorkerJob::writeUnaligned
+        // machinery, same as every other algorithm here) stores it as the raw NATIVE (little-endian on
+        // x86) bytes of that uint32 -- e.g. the same 0x12345678 sits in the header as bytes
+        // 78 56 34 12. The pool's onSubmit() does a plain `Buffer.from(nonceHex, 'hex')` on whatever
+        // hex string arrives, so the old "12345678" text reconstructed the BYTE-REVERSED value
+        // (12 34 56 78) -- a nonce the miner never actually hashed with. Every single submitted share
+        // failed the pool's independent re-check ("Low difficulty share") as a result, even though the
+        // miner's own self-test and internal target comparison were both already correct. Fixed by
+        // hex-encoding the raw native bytes directly (Cvt::toHex), the same pattern every other
+        // Bitcoin-stratum-family coin here already uses for its own nonce field (see DaemonClient.cpp/
+        // SelfSelectClient.cpp: `Cvt::toHex(..., reinterpret_cast<const uint8_t*>(&result.nonce), 4)`).
+        uint32_t nonceLE = static_cast<uint32_t>(result.nonce);
+        String nonceHex = Cvt::toHex(reinterpret_cast<const uint8_t *>(&nonceLE), sizeof(nonceLE));
+        std::string nonceStr(nonceHex.data(), nonceHex.size());
+        for (uint64_t i = 8; i < m_extraNonce2Size * 2; ++i) nonceStr += '0';
+        params.PushBack(Value(nonceStr.c_str(), allocator), allocator);
 
         // Solution is fixed per job and not threaded through JobResult (which only carries the fields it
         // needs to build the submit, not a full Job copy) -- read it from m_job directly, same as m_ntime

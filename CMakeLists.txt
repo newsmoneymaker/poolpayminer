@@ -14,7 +14,19 @@ option(WITH_YESPOWER        "Enable yespower-r16 algorithm (Yenten)" ON)
 option(WITH_YESCRYPT        "Enable yescryptr8/r16/r32 algorithms (MTBC, FNNC, LPEPE)" ON)
 option(WITH_FLEX            "Enable Flex algorithm (Kylacoin, Lyncoin)" ON)
 option(WITH_X16RS           "Enable X16RS algorithm (Hacash)" ON)
-option(WITH_VERUSHASH       "Enable VerusHash2.2 algorithm (VerusCoin) -- hash function only, mining loop not yet wired, see vrsc-project.md" OFF)
+# Default ON for Linux/Windows x86_64 builds (the only platforms the vendored AES-NI/PCLMUL VerusHash2.2
+# source is compiled for -- src/crypto/verus/CMakeLists.txt only applies those ISA flags for GNU/Clang,
+# and there is no portable/ARM fallback), default OFF everywhere else so an other-arch build's bare
+# `cmake ..` isn't broken by `-maes -mpclmul` failing to compile there -- same pattern as WITH_XCB below.
+# Flipped ON 2026-10-21 after a real end-to-end mining session against the real, fully-synced VRSC
+# mainnet node (not just the fake-pool test from the original integration session) -- see
+# vrsc-project.md: thousands of real shares accepted, a real protocol bug (the submitted nonce's byte
+# order) found and fixed along the way.
+if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Windows"))
+    option(WITH_VERUSHASH  "Enable VerusHash2.2 algorithm (VerusCoin)" ON)
+else()
+    option(WITH_VERUSHASH  "Enable VerusHash2.2 algorithm (VerusCoin)" OFF)
+endif()
 # Default ON for Linux x86_64 and Windows x86_64 builds (the two platforms the vendored librandomy is
 # built for -- src/crypto/xcb_randomy/CMakeLists.txt FATAL_ERRORs on anything else), default OFF
 # everywhere else so an other-arch build's bare `cmake ..` isn't broken by that FATAL_ERROR just because
