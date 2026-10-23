@@ -335,12 +335,18 @@ static bool flexLcnSelfTest()
 
 #ifdef XMRIG_ALGO_VERUSHASH
 // VerusCoin (VRSC): VerusHash2.2 over the 140 byte header (job.blob(), extranonce1+this miner's own 4
-// byte search counter at offset 112, see Job::nonceOffset()) concatenated with the job's own fixed 1344
-// byte solution, prefixed with its compactsize length -- the EXACT bytes the real node's
-// SerializeVerusHashV2b() hashes (see src/hash.h, confirmed from source and byte-verified against the
-// real node's own compiled output, see vrsc-project.md). The compactsize prefix for a constant 1344 byte
-// solution is always the same 3 bytes (0xfd + 1344 as a 2 byte LE integer = 0x40, 0x05) -- hardcoded
-// rather than computed generically since VerusHash2.2's solution size never varies.
+// byte search counter at offset 112, see Job::nonceOffset()) concatenated with the job's own solution,
+// prefixed with its compactsize length -- the EXACT bytes the real node's SerializeVerusHashV2b()
+// hashes (see src/hash.h, confirmed from source and byte-verified against the real node's own
+// compiled output, see vrsc-project.md).
+//
+// Real bug fixed 2026-10-23: this used to hardcode a FIXED 1344 byte solution + a fixed 3 byte
+// compactsize prefix (0xfd, 0x40, 0x05), with a comment wrongly asserting "VerusHash2.2's solution
+// size never varies" -- a real historical mainnet block was found with a 2912 byte solution (solution
+// length depends on how many PBaaS sub-headers it carries, not a fixed property of the algorithm). A
+// solution longer than 1344 bytes would have been a real stack buffer overflow here (memcpy past the
+// end of a buf[140+3+1344] array), not just a wrong hash. Now sized/prefixed generically from the
+// job's own solution length, matching blockBuilder.js's own varint() encoding on the pool side.
 static void verusHash(const uint8_t *header, const Buffer &solution, uint8_t *output)
 {
     // CVerusHashV2 (unlike every other hash function here) needs a real one-time init call --
@@ -351,14 +357,32 @@ static void verusHash(const uint8_t *header, const Buffer &solution, uint8_t *ou
     static std::once_flag initOnce;
     std::call_once(initOnce, [] { verushash2_2_init(); });
 
-    static constexpr uint8_t kSolutionLenPrefix[3] = { 0xfd, 0x40, 0x05 }; // compactsize(1344)
+    const size_t solLen = solution.size();
+    uint8_t lenPrefix[9];
+    size_t lenPrefixSize;
+    if (solLen < 0xfd) {
+        lenPrefix[0] = static_cast<uint8_t>(solLen);
+        lenPrefixSize = 1;
+    } else if (solLen <= 0xffff) {
+        lenPrefix[0] = 0xfd;
+        lenPrefix[1] = static_cast<uint8_t>(solLen & 0xff);
+        lenPrefix[2] = static_cast<uint8_t>((solLen >> 8) & 0xff);
+        lenPrefixSize = 3;
+    } else {
+        lenPrefix[0] = 0xfe;
+        lenPrefix[1] = static_cast<uint8_t>(solLen & 0xff);
+        lenPrefix[2] = static_cast<uint8_t>((solLen >> 8) & 0xff);
+        lenPrefix[3] = static_cast<uint8_t>((solLen >> 16) & 0xff);
+        lenPrefix[4] = static_cast<uint8_t>((solLen >> 24) & 0xff);
+        lenPrefixSize = 5;
+    }
 
-    uint8_t buf[140 + 3 + 1344];
-    memcpy(buf, header, 140);
-    memcpy(buf + 140, kSolutionLenPrefix, sizeof(kSolutionLenPrefix));
-    memcpy(buf + 140 + sizeof(kSolutionLenPrefix), solution.data(), solution.size());
+    std::vector<uint8_t> buf(140 + lenPrefixSize + solLen);
+    memcpy(buf.data(), header, 140);
+    memcpy(buf.data() + 140, lenPrefix, lenPrefixSize);
+    memcpy(buf.data() + 140 + lenPrefixSize, solution.data(), solLen);
 
-    verushash2_2(buf, sizeof(buf), output);
+    verushash2_2(buf.data(), buf.size(), output);
 }
 
 
