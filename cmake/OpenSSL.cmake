@@ -14,6 +14,16 @@ if (WITH_TLS)
         set(OPENSSL_USE_STATIC_LIBS TRUE)
     endif()
 
+    # Real bug fixed 2026-10-23 (poolpayminer 1.1.30): CMake's FindOpenSSL module never located the
+    # already-built MinGW OpenSSL static libs here when cross-compiling for Windows (OPENSSL_ROOT_DIR
+    # alone wasn't enough -- find_package's own probing logic doesn't reliably cross-compile-detect a
+    # prebuilt target lib without explicit path hints), so WITH_TLS silently fell back to OFF on every
+    # past Windows build. Give it the exact paths directly when they're already there.
+    if (WIN32 AND EXISTS "${XMRIG_DEPS}/lib/libcrypto.a" AND EXISTS "${XMRIG_DEPS}/lib/libssl.a")
+        set(OPENSSL_INCLUDE_DIR "${XMRIG_DEPS}/include")
+        set(OPENSSL_CRYPTO_LIBRARY "${XMRIG_DEPS}/lib/libcrypto.a")
+        set(OPENSSL_SSL_LIBRARY "${XMRIG_DEPS}/lib/libssl.a")
+    endif()
 
     find_package(OpenSSL)
 

@@ -1,3 +1,30 @@
+# Fix the Windows build's missing TLS support; fix a real stack buffer overflow in verusHash() (1.1.30)
+
+* **Windows TLS was silently OFF on every past Windows build.** `cmake/OpenSSL.cmake`'s `find_package(OpenSSL)`
+  never located the already-built MinGW OpenSSL static libs (`poolpayminer-deps/win64/lib/{libcrypto,libssl}.a`,
+  built successfully by `build-openssl-win.sh` long ago) when cross-compiling, so `WITH_TLS` fell back to `OFF`
+  -- which also meant the build fell back to the `xmrig-notls` target, which then failed to link anyway because
+  `EthStratumClient.cpp`'s SHA3-256 (`Keccak256Writer`, used by KCN/LCN's txhash rule) calls OpenSSL's `EVP_*`
+  functions unconditionally, not gated behind `WITH_TLS` at all -- so the Windows build had TWO independent
+  reasons to fail, previously misdiagnosed together as "missing MinGW OpenSSL dev headers." Fixed by passing
+  `OPENSSL_ROOT_DIR`/`OPENSSL_INCLUDE_DIR`/`OPENSSL_CRYPTO_LIBRARY`/`OPENSSL_SSL_LIBRARY` explicitly to `cmake`
+  for the Windows toolchain file (the libraries were always there, `find_package` just couldn't see them cross-
+  compiling without the hint). Verified for real: a real session, under `wine64`, against the real, live
+  `vrsc.pool-pay.com:5151` pool shows `TLSv1.3` negotiated and real shares accepted.
+* Fixed a real stack buffer overflow in `CpuWorker.cpp::verusHash()`: it hardcoded a fixed 1344-byte solution
+  buffer and a fixed 3-byte compactsize prefix, with a comment wrongly asserting "VerusHash2.2's solution size
+  never varies" -- a real historical VRSC mainnet block was found with a 2912-byte solution (solution length
+  depends on how many PBaaS sub-headers it carries, not a fixed algorithm property). Now sized/prefixed
+  generically from the job's own solution length, matching `blockBuilder.js`'s own `varint()` encoding on the
+  pool side.
+* Investigated (and ruled out) a suspected deeper VerusHash correctness bug: comparing the pool's hash
+  computation against an already-mined historical block looked like a mismatch, but turned out to be an invalid
+  comparison -- that block was found via VerusCoin's OTHER valid proof-of-work method (varying bytes inside the
+  solution's tail, not the header's nonce field), which this pool/miner never uses. Confirmed empirically
+  (built a tool that links directly against the real node's own compiled code) that for a candidate matching
+  THIS pool's actual method, the miner's hash and the real node's hash agree exactly. No change was needed to
+  the hash computation itself -- see `vrsc-project.md`/`critical-vrsc-hash-pbaas-mismatch.md` for the full story.
+
 # Enable `verushash` (VerusCoin / VRSC) by default; fix a real submit-nonce byte-order bug (1.1.29)
 
 * `-a verushash`'s wire protocol/hash-call integration was built and verified end-to-end against a fake
