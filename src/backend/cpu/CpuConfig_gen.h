@@ -206,6 +206,15 @@ size_t inline generate<Algorithm::X16RS>(Threads<CpuThreads>& threads, uint32_t 
 #endif
 
 
+#ifdef XMRIG_ALGO_VERUSHASH
+template<>
+size_t inline generate<Algorithm::VERUS>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate(Algorithm::kVERUSHASH, threads, Algorithm::VERUSHASH, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 
