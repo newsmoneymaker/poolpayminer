@@ -1,4 +1,4 @@
-poolpayminer 1.1.30 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.31 (XMRig 6.26.0 base)  (Windows x64)
 =====================================================
 
 poolpayminer is a modified version of XMRig 6.26.0 (https://github.com/xmrig/xmrig, GPLv3).
@@ -8,7 +8,7 @@ It is NOT the official XMRig.
 Windows: 64-bit, Windows 7 or newer (1.1.1 fixes the start-up error "entry point GetSystemTimePreciseAsFileTime not found in kernel32.dll" on Windows 7).
 License: GNU GPL v3 (file LICENSE). Third-party licenses (including OpenSSL): THIRD-PARTY-NOTICES.txt.
 Changes made to XMRig: CHANGES.md. The complete source code of this exact build is in
-poolpayminer-1.1.30-src.tar.gz (next to this package).
+poolpayminer-1.1.31-src.tar.gz (next to this package).
 
 
 FEE  (please read)
@@ -100,12 +100,12 @@ NOTES
 
 ===================================================== RU =====================================================
 
-poolpayminer 1.1.30 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.31 (XMRig 6.26.0 base)  (Windows x64)
 
 poolpayminer - изменённая версия XMRig 6.26.0 (GPLv3): добавлен протокол Epic Cash (RandomX), остальные
 алгоритмы XMRig сохранены. Это НЕ официальный XMRig. Лицензия: LICENSE; сторонние лицензии (включая OpenSSL):
 THIRD-PARTY-NOTICES.txt; список изменений: CHANGES.md; полный исходный код этой сборки:
-poolpayminer-1.1.30-src.tar.gz.
+poolpayminer-1.1.31-src.tar.gz.
 
 КОМИССИЯ (прочтите):
 * 1% времени (1 минута примерно из 100 минут) майнер работает на оператора poolpayminer, на какой бы пул и монету вы
@@ -306,6 +306,10 @@ a ping (Epic, Veil, pools announcing "keepalive") are pinged every 5 s so that a
   this cross-compile target, so TLS had been OFF on every Windows build since (silently falling back to a "notls" variant
   with its own separate linker errors). Fixed, and a real stack buffer overflow in verusHash() (a hardcoded 1344-byte
   solution buffer, but solution length genuinely varies -- a real historical VRSC block had a 2912-byte one) was also fixed.
+* 1.1.31: a real, serious verushash bug -- without an explicit --threads override (the default for every normal user,
+  especially --auto), the miner never built a thread profile for verushash at all and immediately decided the algorithm
+  was "disabled", closing the connection right after the first job and looping forever. Fixed; verified on both Linux and
+  Windows that verushash now mines correctly with no --threads flag needed.
 
 1.1.19
 ------

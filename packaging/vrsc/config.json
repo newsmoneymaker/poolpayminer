@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "verushash",
+            "url": "vrsc.pool-pay.com:5151",
+            "user": "YOUR_VRSC_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": true
+        }
+    ]
+}

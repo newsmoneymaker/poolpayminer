@@ -1,3 +1,22 @@
+# Fix VerusHash never getting an auto-generated CPU thread profile (1.1.31)
+
+* **`-a verushash` without an explicit `--threads` override never actually mined.** `CpuConfig::generate()`
+  builds a default CPU thread profile per algorithm family on first use, but the `VERUS` family was missing
+  from its hardcoded list (every other single-algorithm family -- GhostRider, X16RS, Yespower, ... -- was
+  there). Any run without `--threads` -- which is every normal user, and in particular every `--auto` user --
+  got an empty thread profile, so the miner itself decided verushash was disabled and closed the connection
+  right after the very first job ("incompatible/disabled algorithm \"verushash\" detected, reconnect"), looping
+  forever. Confirmed on real `--auto` traffic against the live pool: logins succeeded, then disconnected
+  immediately, every ~6 seconds. Fixed with the same one-line `generate<Algorithm::VERUS>` specialization every
+  other algorithm family already has. Verified end-to-end against the real, live pool on both Linux and Windows
+  (under Wine) with no `--threads` override: auto-generates a real `verushash` thread profile, connects, and
+  gets shares accepted immediately.
+* **Windows build, unrelated housekeeping:** fixed three source files (`Chrono.cpp`, `Taskbar.cpp`,
+  `BasicCpuInfo_arm_win.cpp`) that included Windows SDK headers using Windows' own case-insensitive spelling
+  (`Windows.h`, `Shobjidl.h`, `Objbase.h`); this only ever worked by luck on a case-sensitive Linux build host
+  (stale cached object files), and broke the moment a genuinely clean rebuild was attempted. Fixed to the real,
+  lowercase MinGW filenames.
+
 # Fix the Windows build's missing TLS support; fix a real stack buffer overflow in verusHash() (1.1.30)
 
 * **Windows TLS was silently OFF on every past Windows build.** `cmake/OpenSSL.cmake`'s `find_package(OpenSSL)`
