@@ -1,3 +1,16 @@
+# Add Kryptokrona (XKR) algorithm support (1.1.32)
+
+* **New algorithm `kryptokrona`** for Kryptokrona (XKR): the coin's own real `cn_turtle_lite_slow_hash_v2`,
+  vendored verbatim from the node's own source and wired in as a standalone algorithm (own CpuConfig_gen.h
+  auto-thread-profile specialization from day one, same class of fix as 1.1.31's VerusHash bug). This is
+  **not** the same algorithm as this project's existing `cn-pico`/`cryptonight-turtle` -- cross-checked
+  against the real node's own compiled code and confirmed they produce different hashes for the same
+  input despite matching memory/iteration parameters, so it needed a real, separate vendor port rather
+  than reusing the existing one. Plain cryptonote-nodejs-pool blob+target stratum (no new wire-protocol
+  code needed, unlike VerusHash/RandomY). Real end-to-end tested against a live, fully-synced XKR mainnet
+  node and its own real pool: real shares accepted with no `--threads` override on both Linux and Windows.
+  Open at xkrona.pool-pay.com.
+
 # Fix VerusHash never getting an auto-generated CPU thread profile (1.1.31)
 
 * **`-a verushash` without an explicit `--threads` override never actually mined.** `CpuConfig::generate()`
