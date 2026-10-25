@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "kryptokrona",
+            "url": "xkrona.pool-pay.com:5300",
+            "user": "YOUR_XKR_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ]
+}
