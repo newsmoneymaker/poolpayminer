@@ -37,6 +37,16 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE
 else()
     option(WITH_XCB         "Enable RandomY algorithm (Core Blockchain / XCB) -- Linux/Windows x86_64 only, see xcb-project.md" OFF)
 endif()
+# Kryptokrona (XKR)'s own cn_turtle_lite_slow_hash_v2 (NOT Algorithm::CN_PICO_0 -- confirmed via a real
+# cross-check against the coin's own node that they produce different hashes despite matching memory/
+# iteration parameters, see kryptokrona-project.md and critical-wrong-randomx-variant-bug), vendored
+# verbatim under src/crypto/kryptokrona/. Default ON for Linux/Windows x86_64 (the only platforms this
+# vendored AES-NI source is compiled for), same reasoning as WITH_VERUSHASH above.
+if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Windows"))
+    option(WITH_KRYPTOKRONA "Enable Kryptokrona algorithm (XKR)" ON)
+else()
+    option(WITH_KRYPTOKRONA "Enable Kryptokrona algorithm (XKR)" OFF)
+endif()
 option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
 option(WITH_TLS             "Enable OpenSSL support" ON)
@@ -264,6 +274,7 @@ include(cmake/yescrypt.cmake)
 include(cmake/flex.cmake)
 include(cmake/x16rs.cmake)
 include(cmake/verus.cmake)
+include(cmake/kryptokrona.cmake)
 include(cmake/OpenSSL.cmake)
 include(cmake/xcb.cmake)
 include(cmake/asm.cmake)
@@ -300,7 +311,7 @@ if (WITH_DEBUG_LOG)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY} ${KRYPTOKRONA_LIBRARY})
 
 if (WIN32)
     if (NOT ARM_TARGET)

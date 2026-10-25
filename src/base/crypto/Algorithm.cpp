@@ -140,6 +140,10 @@ const char* Algorithm::kVERUSHASH       = "verushash";
 const char* Algorithm::kRX_XCB          = "rx/xcb";
 #endif
 
+#ifdef XMRIG_ALGO_KRYPTOKRONA
+const char* Algorithm::kKRYPTOKRONA_V2  = "kryptokrona";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -236,6 +240,10 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_XCB
     ALGO_NAME(RX_XCB),
+#   endif
+
+#   ifdef XMRIG_ALGO_KRYPTOKRONA
+    ALGO_NAME(KRYPTOKRONA_V2),
 #   endif
 };
 
@@ -409,6 +417,11 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(RX_XCB),         ALGO_ALIAS(RX_XCB, "xcb"),
                                      ALGO_ALIAS(RX_XCB, "randomy"),
 #   endif
+
+#   ifdef XMRIG_ALGO_KRYPTOKRONA
+    ALGO_ALIAS_AUTO(KRYPTOKRONA_V2), ALGO_ALIAS(KRYPTOKRONA_V2, "xkr"),
+                                     ALGO_ALIAS(KRYPTOKRONA_V2, "cn-turtle-lite/2"),
+#   endif
 };
 
 
@@ -489,7 +502,8 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         FLEX_KCN, FLEX_LCN,
         X16RS_HAC,
         VERUSHASH,
-        RX_XCB
+        RX_XCB,
+        KRYPTOKRONA_V2
     };
 
     Algorithms out;

@@ -215,6 +215,18 @@ size_t inline generate<Algorithm::VERUS>(Threads<CpuThreads>& threads, uint32_t 
 #endif
 
 
+#ifdef XMRIG_ALGO_KRYPTOKRONA
+template<>
+size_t inline generate<Algorithm::KRYPTOKRONA>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    // See the 1.1.31 VerusHash lesson (miner-build-release.md): without this specialization, --auto /
+    // no explicit --threads leaves this algorithm with an empty thread profile and CpuBackend::isEnabled()
+    // reports it disabled, closing the connection right after the first job.
+    return generate(Algorithm::kKRYPTOKRONA_V2, threads, Algorithm::KRYPTOKRONA_V2, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 

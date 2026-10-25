@@ -142,6 +142,15 @@ public:
                                         // branch (gated on this exact id, not family) speaking THIS project's own invented eth-getWork-shaped
                                         // mining.notify/submit (5/3 fields respectively) matching xcb-nodejs-pool's pool.js -- see
                                         // EthStratumClient.cpp and Pool.cpp's createClient().
+        KRYPTOKRONA_V2  = 0x4b120000,   // "kryptokrona"      Kryptokrona (XKR): real cn_turtle_lite_slow_hash_v2 as used by the coin's own node --
+                                        // NOT this project's own Algorithm::CN_PICO_0 ("cn-pico"/"cryptonight-turtle"), despite matching memory
+                                        // (256 KB)/iteration(131072)/mask(0x1FFF0) parameters: a real cross-check against the coin's own compiled
+                                        // node code showed CN_PICO_0 produces a DIFFERENT hash for the same input -- see
+                                        // critical-wrong-randomx-variant-bug and kryptokrona-project.md. Vendored verbatim under
+                                        // src/crypto/kryptokrona/ (own xkr_ prefixed symbols, see xkr_rename.h). L3 byte 0x12 (256 KB) matches
+                                        // the algorithm's real per-thread scratchpad, unlike VERUSHASH/RX_XCB's placeholder bytes above. Plain
+                                        // cryptonote-nodejs-pool wire protocol (blob+target via the generic Client::parseJob(), default 39 byte
+                                        // nonce offset) -- no dedicated EthStratumClient/Pool.cpp branch needed, unlike VERUSHASH/RX_XCB.
     };
 
     enum Family : uint32_t {
@@ -161,7 +170,8 @@ public:
         FLEX            = 0x66000000,
         X16RS           = 0x78000000,
         VERUS           = 0x76000000,
-        RANDOMY         = 0x43000000
+        RANDOMY         = 0x43000000,
+        KRYPTOKRONA     = 0x4b000000
     };
 
     static const char *kINVALID;
@@ -266,6 +276,10 @@ public:
 
 #   ifdef XMRIG_ALGO_XCB
     static const char* kRX_XCB;
+#   endif
+
+#   ifdef XMRIG_ALGO_KRYPTOKRONA
+    static const char* kKRYPTOKRONA_V2;
 #   endif
 
     inline Algorithm() = default;

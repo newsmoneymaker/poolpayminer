@@ -1,0 +1,8 @@
+if (WITH_KRYPTOKRONA)
+    add_definitions(/DXMRIG_ALGO_KRYPTOKRONA)
+    add_subdirectory(src/crypto/kryptokrona)
+    set(KRYPTOKRONA_LIBRARY kryptokrona)
+else()
+    remove_definitions(/DXMRIG_ALGO_KRYPTOKRONA)
+    set(KRYPTOKRONA_LIBRARY "")
+endif()

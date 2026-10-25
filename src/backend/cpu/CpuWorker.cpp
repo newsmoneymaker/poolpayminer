@@ -71,6 +71,10 @@ extern "C" {
 #ifdef XMRIG_ALGO_VERUSHASH
 #   include "crypto/verus/verus.h"
 #endif
+
+#ifdef XMRIG_ALGO_KRYPTOKRONA
+#   include "crypto/kryptokrona/xkr_hash.h"
+#endif
 #include "net/JobResults.h"
 
 
@@ -409,6 +413,40 @@ static bool verusHashSelfTest()
 #endif
 
 
+#ifdef XMRIG_ALGO_KRYPTOKRONA
+static bool xkrSelfTest()
+{
+    // Real reference value, NOT a guessed vector: this exact 76-byte input (the same test_input used by
+    // every other CN-family self-test in this file, see CryptoNight_test.h) was run through the
+    // Kryptokrona (XKR) node's OWN real, active cn_slow_hash() implementation (compiled directly from
+    // its src/crypto/slow-hash.c on srv3, 213.239.211.209, confirmed via `nm -u`/preprocessor dump which
+    // of its 4 platform-gated cn_slow_hash() bodies actually compiles on x86_64 -- the hand-written
+    // AES-NI/_mm_aesenc_si128 one at line 667, not the aesb_single_round "portable" one below it) with
+    // light=1, variant=2, page_size=scratchpad=262144, iterations=131072 (cn_turtle_lite_slow_hash_v2's
+    // own fixed parameters). Deliberately does NOT reuse Algorithm::CN_PICO_0's own test_output_pico_trtl
+    // vector -- cross-checked and confirmed they differ for this exact input, see kryptokrona-project.md
+    // and critical-wrong-randomx-variant-bug.
+    static const uint8_t input[76] = {
+        0x03, 0x05, 0xA0, 0xDB, 0xD6, 0xBF, 0x05, 0xCF, 0x16, 0xE5, 0x03, 0xF3, 0xA6, 0x6F, 0x78, 0x00,
+        0x7C, 0xBF, 0x34, 0x14, 0x43, 0x32, 0xEC, 0xBF, 0xC2, 0x2E, 0xD9, 0x5C, 0x87, 0x00, 0x38, 0x3B,
+        0x30, 0x9A, 0xCE, 0x19, 0x23, 0xA0, 0x96, 0x4B, 0x00, 0x00, 0x00, 0x08, 0xBA, 0x93, 0x9A, 0x62,
+        0x72, 0x4C, 0x0D, 0x75, 0x81, 0xFC, 0xE5, 0x76, 0x1E, 0x9D, 0x8A, 0x0E, 0x6A, 0x1C, 0x3F, 0x92,
+        0x74, 0x6A, 0x96, 0xA1, 0x95, 0x6C, 0xBB, 0x46, 0x4D, 0xE0, 0xEB, 0x28
+    };
+
+    static const uint8_t expected[32] = {
+        0xC8, 0xF1, 0x1F, 0xCE, 0x77, 0x69, 0x8E, 0x50, 0x27, 0x77, 0x05, 0xDF, 0xAD, 0xF1, 0x6B, 0x84,
+        0x7F, 0x5D, 0x8B, 0x31, 0x31, 0x74, 0x1C, 0x86, 0xF7, 0x83, 0xBC, 0x78, 0x57, 0xAE, 0x10, 0x14,
+    };
+
+    uint8_t output[32];
+    xkrHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+#endif
+
+
 #ifdef XMRIG_ALGO_X16RS
 // Hacash (HAC): x16rs_hash(repeat(height), sha3_256(89-byte block_intro with nonce spliced in)) -- see
 // hac-nodejs-pool/lib/blockBuilder.js (authoritative). repeat(height) = min(floor(height/50000)+1, 16),
@@ -639,6 +677,12 @@ bool xmrig::CpuWorker<N>::selfTest()
 #   ifdef XMRIG_ALGO_VERUSHASH
     if (m_algorithm.family() == Algorithm::VERUS) {
         return (N == 1) && verusHashSelfTest();
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_KRYPTOKRONA
+    if (m_algorithm.family() == Algorithm::KRYPTOKRONA) {
+        return (N == 1) && xkrSelfTest();
     }
 #   endif
 
@@ -898,6 +942,17 @@ void xmrig::CpuWorker<N>::start()
                 case Algorithm::VERUS:
                     if (N == 1) {
                         verusHash(m_job.blob(), job.verusSolution(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_KRYPTOKRONA
+                case Algorithm::KRYPTOKRONA:
+                    if (N == 1) {
+                        xkrHash(m_job.blob(), job.size(), m_hash);
                     }
                     else {
                         valid = false;

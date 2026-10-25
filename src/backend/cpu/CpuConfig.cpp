@@ -184,6 +184,7 @@ void xmrig::CpuConfig::generate()
     count += xmrig::generate<Algorithm::FLEX>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::X16RS>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::VERUS>(m_threads, m_limit);
+    count += xmrig::generate<Algorithm::KRYPTOKRONA>(m_threads, m_limit);
 
     m_shouldSave |= count > 0;
 }
