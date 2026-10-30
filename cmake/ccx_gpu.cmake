@@ -1,0 +1,8 @@
+if (WITH_CCX_GPU)
+    add_definitions(/DXMRIG_ALGO_CCX_GPU)
+    add_subdirectory(src/crypto/ccx_gpu)
+    set(CCX_GPU_LIBRARY ccx_gpu)
+else()
+    remove_definitions(/DXMRIG_ALGO_CCX_GPU)
+    set(CCX_GPU_LIBRARY "")
+endif()

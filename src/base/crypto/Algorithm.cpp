@@ -144,6 +144,10 @@ const char* Algorithm::kRX_XCB          = "rx/xcb";
 const char* Algorithm::kKRYPTOKRONA_V2  = "kryptokrona";
 #endif
 
+#ifdef XMRIG_ALGO_CCX_GPU
+const char* Algorithm::kCN_GPU          = "cn/gpu";
+#endif
+
 
 #define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
 #define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
@@ -244,6 +248,10 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_KRYPTOKRONA
     ALGO_NAME(KRYPTOKRONA_V2),
+#   endif
+
+#   ifdef XMRIG_ALGO_CCX_GPU
+    ALGO_NAME(CN_GPU),
 #   endif
 };
 
@@ -422,6 +430,12 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
     ALGO_ALIAS_AUTO(KRYPTOKRONA_V2), ALGO_ALIAS(KRYPTOKRONA_V2, "xkr"),
                                      ALGO_ALIAS(KRYPTOKRONA_V2, "cn-turtle-lite/2"),
 #   endif
+
+#   ifdef XMRIG_ALGO_CCX_GPU
+    ALGO_ALIAS_AUTO(CN_GPU),         ALGO_ALIAS(CN_GPU, "cryptonight-gpu"),
+                                     ALGO_ALIAS(CN_GPU, "cryptonight/gpu"),
+                                     ALGO_ALIAS(CN_GPU, "cn-gpu"),
+#   endif
 };
 
 
@@ -503,7 +517,8 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         X16RS_HAC,
         VERUSHASH,
         RX_XCB,
-        KRYPTOKRONA_V2
+        KRYPTOKRONA_V2,
+        CN_GPU
     };
 
     Algorithms out;

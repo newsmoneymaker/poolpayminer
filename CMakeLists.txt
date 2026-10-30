@@ -47,6 +47,18 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE
 else()
     option(WITH_KRYPTOKRONA "Enable Kryptokrona algorithm (XKR)" OFF)
 endif()
+# Conceal (CCX)'s real PoW since the network's block_major_version 8 hard fork (LWMA1, CN-GPU, Halving):
+# CryptoNight-GPU (Ryo Currency Project's cn_pow_hash_v3), NOT Algorithm::CN_CCX/CRYPTONIGHT_CONCEAL, which
+# only matches the OLD pre-fork chain -- found 2026-10-31 after the local conceal-core source checkout
+# turned out to be 6 years stale (see ccx-project.md and critical-wrong-randomx-variant-bug). Vendored
+# verbatim under src/crypto/ccx_gpu/, cross-checked against a pristine build of the same upstream files for
+# 3 test vectors (byte-identical). AES-NI+AVX2 hardware intrinsics only (no ARM fallback vendored), same
+# x86_64 Linux/Windows-only default as WITH_VERUSHASH/WITH_XCB/WITH_KRYPTOKRONA above.
+if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Windows"))
+    option(WITH_CCX_GPU     "Enable CryptoNight-GPU algorithm (Conceal / CCX, post-V8 hard fork)" ON)
+else()
+    option(WITH_CCX_GPU     "Enable CryptoNight-GPU algorithm (Conceal / CCX, post-V8 hard fork)" OFF)
+endif()
 option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
 option(WITH_TLS             "Enable OpenSSL support" ON)
@@ -275,6 +287,7 @@ include(cmake/flex.cmake)
 include(cmake/x16rs.cmake)
 include(cmake/verus.cmake)
 include(cmake/kryptokrona.cmake)
+include(cmake/ccx_gpu.cmake)
 include(cmake/OpenSSL.cmake)
 include(cmake/xcb.cmake)
 include(cmake/asm.cmake)
@@ -311,7 +324,7 @@ if (WITH_DEBUG_LOG)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY} ${KRYPTOKRONA_LIBRARY})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY} ${KRYPTOKRONA_LIBRARY} ${CCX_GPU_LIBRARY})
 
 if (WIN32)
     if (NOT ARM_TARGET)

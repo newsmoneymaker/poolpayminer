@@ -75,6 +75,10 @@ extern "C" {
 #ifdef XMRIG_ALGO_KRYPTOKRONA
 #   include "crypto/kryptokrona/xkr_hash.h"
 #endif
+
+#ifdef XMRIG_ALGO_CCX_GPU
+#   include "crypto/ccx_gpu/ccx_gpu_hash.h"
+#endif
 #include "net/JobResults.h"
 
 
@@ -686,6 +690,12 @@ bool xmrig::CpuWorker<N>::selfTest()
     }
 #   endif
 
+#   ifdef XMRIG_ALGO_CCX_GPU
+    if (m_algorithm.family() == Algorithm::CN_GPU_FAM) {
+        return (N == 1) && ccxGpuSelfTest();
+    }
+#   endif
+
 #   ifdef XMRIG_ALGO_XCB
     if (m_algorithm.family() == Algorithm::RANDOMY) {
         return (N == 1) && xcb_randomy::selfTest();
@@ -953,6 +963,17 @@ void xmrig::CpuWorker<N>::start()
                 case Algorithm::KRYPTOKRONA:
                     if (N == 1) {
                         xkrHash(m_job.blob(), job.size(), m_hash);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_CCX_GPU
+                case Algorithm::CN_GPU_FAM:
+                    if (N == 1) {
+                        ccxGpuHash(m_job.blob(), job.size(), m_hash);
                     }
                     else {
                         valid = false;

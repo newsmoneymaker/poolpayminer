@@ -142,6 +142,17 @@ public:
                                         // branch (gated on this exact id, not family) speaking THIS project's own invented eth-getWork-shaped
                                         // mining.notify/submit (5/3 fields respectively) matching xcb-nodejs-pool's pool.js -- see
                                         // EthStratumClient.cpp and Pool.cpp's createClient().
+        CN_GPU          = 0x67150001,   // "cn/gpu"           CryptoNight-GPU (Ryo Currency Project's cn_pow_hash_v3 = cn_slow_hash<2 MB, 0xC000
+                                        // iterations, version 2>): Conceal (CCX)'s real algorithm since the network's block_major_version 8
+                                        // hard fork (LWMA1, CN-GPU, Halving) -- NOT Algorithm::CN_CCX/CRYPTONIGHT_CONCEAL below, which only
+                                        // matches the OLD, pre-fork chain (found 2026-10-31 after the local conceal-core source checkout
+                                        // turned out to be 6 years stale -- see ccx-project.md). Own dedicated family (top byte 0x67, NOT the
+                                        // CN family's 0x63) since it does not fit the templated CnAlgo/CryptoNight_x86.h engine at all: totally
+                                        // different explode/implode (keccak-expanded 512 byte blocks, not AES-based), a main loop that is
+                                        // almost entirely floating-point division/sqrt (deliberately GPU-favoring, CPU-hostile), and no final
+                                        // blake/groestl/jh/skein family-select step (just keccakf -> raw 32 bytes). Vendored verbatim under
+                                        // src/crypto/ccx_gpu/ (own namespace ccxgpu, see ccxgpu_rename.h), cross-checked byte-for-byte against
+                                        // a pristine build of the same upstream files for 3 test vectors -- see critical-wrong-randomx-variant-bug.
         KRYPTOKRONA_V2  = 0x4b120000,   // "kryptokrona"      Kryptokrona (XKR): real cn_turtle_lite_slow_hash_v2 as used by the coin's own node --
                                         // NOT this project's own Algorithm::CN_PICO_0 ("cn-pico"/"cryptonight-turtle"), despite matching memory
                                         // (256 KB)/iteration(131072)/mask(0x1FFF0) parameters: a real cross-check against the coin's own compiled
@@ -171,7 +182,8 @@ public:
         X16RS           = 0x78000000,
         VERUS           = 0x76000000,
         RANDOMY         = 0x43000000,
-        KRYPTOKRONA     = 0x4b000000
+        KRYPTOKRONA     = 0x4b000000,
+        CN_GPU_FAM      = 0x67000000
     };
 
     static const char *kINVALID;
@@ -280,6 +292,10 @@ public:
 
 #   ifdef XMRIG_ALGO_KRYPTOKRONA
     static const char* kKRYPTOKRONA_V2;
+#   endif
+
+#   ifdef XMRIG_ALGO_CCX_GPU
+    static const char* kCN_GPU;
 #   endif
 
     inline Algorithm() = default;
