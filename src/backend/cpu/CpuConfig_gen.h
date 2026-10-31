@@ -227,6 +227,18 @@ size_t inline generate<Algorithm::KRYPTOKRONA>(Threads<CpuThreads>& threads, uin
 #endif
 
 
+#ifdef XMRIG_ALGO_CCX_GPU
+template<>
+size_t inline generate<Algorithm::CN_GPU_FAM>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    // See the 1.1.31 VerusHash lesson (miner-build-release.md): without this specialization, --auto /
+    // no explicit --threads leaves this algorithm with an empty thread profile and CpuBackend::isEnabled()
+    // reports it disabled, closing the connection right after the first job.
+    return generate(Algorithm::kCN_GPU, threads, Algorithm::CN_GPU, limit);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 

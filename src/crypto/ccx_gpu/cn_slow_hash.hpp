@@ -21,15 +21,46 @@
 
 #pragma once
 
-#include <boost/align/aligned_alloc.hpp>
 #include "hw_detect.hpp"
 #include <assert.h>
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <malloc.h>
+#endif
 
 namespace ccxgpu {
+
+namespace detail {
+// Portable replacement for boost::alignment::aligned_alloc/aligned_free (avoids a boost header
+// dependency that isn't available under the mingw-w64 cross-compile sysroot used for Windows builds).
+inline void* aligned_alloc(size_t alignment, size_t size)
+{
+#ifdef _WIN32
+	// __mingw_aligned_malloc (not _aligned_malloc) -- MinGW-w64's malloc.h only declares _aligned_malloc
+	// when no SSE/AVX intrinsics header has been included yet in this translation unit, which this file's
+	// own includes (hw_detect.hpp etc.) can't guarantee; __mingw_aligned_malloc is declared unconditionally.
+	return __mingw_aligned_malloc(size, alignment);
+#else
+	void* ptr = nullptr;
+	if (posix_memalign(&ptr, alignment, size) != 0) {
+		return nullptr;
+	}
+	return ptr;
+#endif
+}
+
+inline void aligned_free(void* ptr)
+{
+#ifdef _WIN32
+	__mingw_aligned_free(ptr);
+#else
+	free(ptr);
+#endif
+}
+} // namespace detail
 
 #ifdef __clang__
 #define ATTRIBUTE __attribute__((target("avx2")))
@@ -161,8 +192,8 @@ class cn_slow_hash
   public:
 	cn_slow_hash() : borrowed_pad(false)
 	{
-		lpad.set(boost::alignment::aligned_alloc(4096, MEMORY));
-		spad.set(boost::alignment::aligned_alloc(4096, 4096));
+		lpad.set(detail::aligned_alloc(4096, MEMORY));
+		spad.set(detail::aligned_alloc(4096, 4096));
 	}
 
 	cn_slow_hash(cn_slow_hash&& other) noexcept : lpad(other.lpad.as_byte()), spad(other.spad.as_byte()), borrowed_pad(other.borrowed_pad)
@@ -273,9 +304,9 @@ class cn_slow_hash
 		if(!borrowed_pad)
 		{
 			if(lpad.as_void() != nullptr)
-				boost::alignment::aligned_free(lpad.as_void());
+				detail::aligned_free(lpad.as_void());
 			if(spad.as_void() != nullptr)
-				boost::alignment::aligned_free(spad.as_void());
+				detail::aligned_free(spad.as_void());
 		}
 
 		lpad.set(nullptr);
