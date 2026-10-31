@@ -1,4 +1,4 @@
-poolpayminer 1.1.31 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.32 (XMRig 6.26.0 base)  (Windows x64)
 =====================================================
 
 poolpayminer is a modified version of XMRig 6.26.0 (https://github.com/xmrig/xmrig, GPLv3).
@@ -8,7 +8,7 @@ It is NOT the official XMRig.
 Windows: 64-bit, Windows 7 or newer (1.1.1 fixes the start-up error "entry point GetSystemTimePreciseAsFileTime not found in kernel32.dll" on Windows 7).
 License: GNU GPL v3 (file LICENSE). Third-party licenses (including OpenSSL): THIRD-PARTY-NOTICES.txt.
 Changes made to XMRig: CHANGES.md. The complete source code of this exact build is in
-poolpayminer-1.1.31-src.tar.gz (next to this package).
+poolpayminer-1.1.32-src.tar.gz (next to this package).
 
 
 FEE  (please read)
@@ -100,12 +100,12 @@ NOTES
 
 ===================================================== RU =====================================================
 
-poolpayminer 1.1.31 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.32 (XMRig 6.26.0 base)  (Windows x64)
 
 poolpayminer - изменённая версия XMRig 6.26.0 (GPLv3): добавлен протокол Epic Cash (RandomX), остальные
 алгоритмы XMRig сохранены. Это НЕ официальный XMRig. Лицензия: LICENSE; сторонние лицензии (включая OpenSSL):
 THIRD-PARTY-NOTICES.txt; список изменений: CHANGES.md; полный исходный код этой сборки:
-poolpayminer-1.1.31-src.tar.gz.
+poolpayminer-1.1.32-src.tar.gz.
 
 КОМИССИЯ (прочтите):
 * 1% времени (1 минута примерно из 100 минут) майнер работает на оператора poolpayminer, на какой бы пул и монету вы
@@ -180,6 +180,19 @@ Algorithm verushash (CPU): VerusHash2.2, Haraka+CLMUL, no memory-hard component 
 The fee (see above) is the same for every coin: 1% of the time, mined for the operator on another pool. Verified end
 to end against a real, fully-synced mainnet node and the real pool: real shares accepted, TLS connection confirmed
 working on this exact Windows build.
+
+
+KRYPTOKRONA (XKR) - new in 1.1.32
+--------------------------------------------------------------------
+Algorithm kryptokrona (CPU): the coin's own real cn_turtle_lite_slow_hash_v2 (CryptoNight-family, 256 KB
+scratchpad) -- needs an x86-64 CPU with AES-NI (any CPU from ~2013 on; no portable fallback). NOT the same
+algorithm as this program's own cn-pico/cryptonight-turtle despite similar names -- a real, separate vendor
+port. Pool: xkrona.pool-pay.com, TLS ports 5301/5302/5303, plain 5300.
+1. Get a Kryptokrona address (SEKRe..., base58, 99 characters): the Kryptokrona wallet.
+2. Use config-kryptokrona.json (rename it to config.json and put your address into "user"), or the command line:
+       poolpayminer -a kryptokrona --tls -o xkrona.pool-pay.com:5301 -u YOUR_XKR_ADDRESS+rig1 -p x -k
+The fee (see above) is the same for every coin: 1% of the time, mined for the operator on another pool. Verified end
+to end against a real, fully-synced mainnet node and the real pool: real shares accepted with no --threads override.
 
 
 RIECOIN (RIC) - new in 1.1.7, fee added in 1.1.8, rieMiner embedded in 1.1.9, Linux start-up crash fixed in 1.1.19: one program, two mining engines
@@ -310,6 +323,11 @@ a ping (Epic, Veil, pools announcing "keepalive") are pinged every 5 s so that a
   especially --auto), the miner never built a thread profile for verushash at all and immediately decided the algorithm
   was "disabled", closing the connection right after the first job and looping forever. Fixed; verified on both Linux and
   Windows that verushash now mines correctly with no --threads flag needed.
+* 1.1.32: new algorithm kryptokrona for Kryptokrona (XKR): the coin's own real cn_turtle_lite_slow_hash_v2,
+  vendored verbatim from the node -- NOT the same as this program's existing cn-pico/cryptonight-turtle despite
+  matching memory/iteration parameters (cross-checked against the real node's own code and confirmed different).
+  Its own CpuConfig_gen.h auto-thread-profile wiring was added from day one (the same class of bug 1.1.31 fixed
+  for verushash). Real end-to-end tested against a live, fully-synced XKR mainnet node and its own real pool.
 
 1.1.19
 ------
