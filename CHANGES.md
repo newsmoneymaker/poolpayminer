@@ -1,3 +1,28 @@
+# Add CryptoNight-GPU algorithm support (Conceal / CCX) (1.1.33)
+
+* **New algorithm `cn/gpu`** for Conceal (CCX): the coin's real proof-of-work since its block_major_version 8
+  hard fork (LWMA1, CN-GPU, Halving) is CryptoNight-GPU, not the old `CRYPTONIGHT_CONCEAL`/`cn/ccx` variant --
+  the local reference source used to validate that old variant turned out to be 6 years stale. Vendored the
+  real algorithm (Ryo Currency Project's `cn_pow_hash_v3`) verbatim from current upstream, wrapped in its own
+  namespace with renamed C symbols to avoid colliding with other vendored crypto in this codebase. Verified
+  byte-identical against a pristine build of the same upstream files for 3 test vectors (now the self-test).
+* **Fixed the same missing-thread-profile bug class as 1.1.31 (VerusHash)/1.1.32 (Kryptokrona) for `cn/gpu`
+  before it ever shipped**: `CpuConfig::generate()` had no `CN_GPU_FAM` specialization, so any run without an
+  explicit `--threads` override (i.e. every normal/`--auto` user) would have gotten an empty thread profile
+  and the client would have decided the algorithm was "disabled", closing the connection right after the
+  first job. Fixed with the same `generate<Algorithm::CN_GPU_FAM>` specialization every other single-algorithm
+  family already has.
+* **Fixed a real Windows cross-compile blocker**: the vendored `cn_slow_hash.hpp` depended on
+  `boost/align/aligned_alloc.hpp`, which isn't reachable under the mingw-w64 cross-compile sysroot used for
+  Windows builds. Replaced with a small portable wrapper (`posix_memalign` on Linux, `__mingw_aligned_malloc`
+  on Windows -- not `_aligned_malloc`, which MinGW's own `malloc.h` only declares when no SSE/AVX intrinsics
+  header has been included first in the same translation unit, a condition this file's own includes can't
+  guarantee).
+* Real end-to-end tested against a live, fully-synced Conceal mainnet node and its own real pool on both
+  Linux and Windows (the latter under `wine64`, cross-compiled): real shares accepted with no `--threads`
+  override. Open at conceal.pool-pay.com (stratum currently restricted to the pool operator while the rest
+  of the launch checklist is completed).
+
 # Add Kryptokrona (XKR) algorithm support (1.1.32)
 
 * **New algorithm `kryptokrona`** for Kryptokrona (XKR): the coin's own real `cn_turtle_lite_slow_hash_v2`,

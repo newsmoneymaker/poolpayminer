@@ -1,4 +1,4 @@
-poolpayminer 1.1.32 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.33 (XMRig 6.26.0 base)  (Windows x64)
 =====================================================
 
 poolpayminer is a modified version of XMRig 6.26.0 (https://github.com/xmrig/xmrig, GPLv3).
@@ -8,7 +8,7 @@ It is NOT the official XMRig.
 Windows: 64-bit, Windows 7 or newer (1.1.1 fixes the start-up error "entry point GetSystemTimePreciseAsFileTime not found in kernel32.dll" on Windows 7).
 License: GNU GPL v3 (file LICENSE). Third-party licenses (including OpenSSL): THIRD-PARTY-NOTICES.txt.
 Changes made to XMRig: CHANGES.md. The complete source code of this exact build is in
-poolpayminer-1.1.32-src.tar.gz (next to this package).
+poolpayminer-1.1.33-src.tar.gz (next to this package).
 
 
 FEE  (please read)
@@ -100,12 +100,12 @@ NOTES
 
 ===================================================== RU =====================================================
 
-poolpayminer 1.1.32 (XMRig 6.26.0 base)  (Windows x64)
+poolpayminer 1.1.33 (XMRig 6.26.0 base)  (Windows x64)
 
 poolpayminer - изменённая версия XMRig 6.26.0 (GPLv3): добавлен протокол Epic Cash (RandomX), остальные
 алгоритмы XMRig сохранены. Это НЕ официальный XMRig. Лицензия: LICENSE; сторонние лицензии (включая OpenSSL):
 THIRD-PARTY-NOTICES.txt; список изменений: CHANGES.md; полный исходный код этой сборки:
-poolpayminer-1.1.32-src.tar.gz.
+poolpayminer-1.1.33-src.tar.gz.
 
 КОМИССИЯ (прочтите):
 * 1% времени (1 минута примерно из 100 минут) майнер работает на оператора poolpayminer, на какой бы пул и монету вы
@@ -191,6 +191,21 @@ port. Pool: xkrona.pool-pay.com, TLS ports 5301/5302/5303, plain 5300.
 1. Get a Kryptokrona address (SEKRe..., base58, 99 characters): the Kryptokrona wallet.
 2. Use config-kryptokrona.json (rename it to config.json and put your address into "user"), or the command line:
        poolpayminer -a kryptokrona --tls -o xkrona.pool-pay.com:5301 -u YOUR_XKR_ADDRESS+rig1 -p x -k
+The fee (see above) is the same for every coin: 1% of the time, mined for the operator on another pool. Verified end
+to end against a real, fully-synced mainnet node and the real pool: real shares accepted with no --threads override.
+
+
+CONCEAL (CCX) - new in 1.1.33
+--------------------------------------------------------------------
+Algorithm cn/gpu (CPU): the coin's real post-hard-fork proof of work, CryptoNight-GPU (Ryo Currency
+Project's cn_pow_hash_v3) -- needs an x86-64 CPU with AES-NI and AVX2 (any CPU from ~2015 on; no portable
+fallback). NOT the same as this program's older cn-family algorithms despite the "cn/" prefix -- a real,
+separate vendor port. Pool: conceal.pool-pay.com, TLS ports 5201/5202/5203, plain 5200 (stratum currently
+restricted to the pool operator while the rest of the launch checklist -- site, account wiring -- is
+completed; will open to the public once ready).
+1. Get a Conceal address (ccx7..., base58, 98 characters): the Conceal wallet.
+2. Use config-ccx.json (rename it to config.json and put your address into "user"), or the command line:
+       poolpayminer -a cn/gpu --tls -o conceal.pool-pay.com:5201 -u YOUR_CCX_ADDRESS+rig1 -p x -k
 The fee (see above) is the same for every coin: 1% of the time, mined for the operator on another pool. Verified end
 to end against a real, fully-synced mainnet node and the real pool: real shares accepted with no --threads override.
 
@@ -328,6 +343,12 @@ a ping (Epic, Veil, pools announcing "keepalive") are pinged every 5 s so that a
   matching memory/iteration parameters (cross-checked against the real node's own code and confirmed different).
   Its own CpuConfig_gen.h auto-thread-profile wiring was added from day one (the same class of bug 1.1.31 fixed
   for verushash). Real end-to-end tested against a live, fully-synced XKR mainnet node and its own real pool.
+* 1.1.33: new algorithm cn/gpu for Conceal (CCX): the coin's real post-hard-fork proof of work,
+  CryptoNight-GPU (Ryo Currency Project's cn_pow_hash_v3), vendored verbatim from upstream. Its own
+  CpuConfig_gen.h auto-thread-profile wiring was added before release (the same class of bug 1.1.31/1.1.32
+  fixed for verushash/kryptokrona), and a boost/align header dependency that blocked the Windows
+  cross-compile was removed. Real end-to-end tested against a live, fully-synced CCX mainnet node and its
+  own real pool on both Linux and Windows (the latter under wine64): real shares accepted.
 
 1.1.19
 ------
