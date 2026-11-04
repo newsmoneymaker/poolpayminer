@@ -1,3 +1,12 @@
+# The algorithm rx/pp for PoolPayCoin (1.1.34)
+
+* **New algorithm `rx/pp`** (`Algorithm::RX_PP`, alias `randomx/pp`, `randompp`): PoolPayCoin (PPC) proof of work, RandomX 1.2.1 with the Argon2 salt
+  `RandomX-PoolPay\x01` and the commitment: the value compared with the target is `randomx_calculate_commitment(header, hash)`, the hash itself goes into the block header.
+  Same construction as `rx/scash` (own salt only, everything else -- the 112 byte header, nonce at offset 76, `Tweak_V2_COMMITMENT` -- identical). Configuration:
+  `RandomX_ConfigurationPP`. PoolPayCoin is a brand-new chain (own genesis block, not a fork of an existing live network); verified against the real `poolpaycoind`
+  and `ppc-nodejs-pool`: real shares accepted end to end (vardiff retargeted 5000 -> 10000 after real accepted shares arrived faster than the target rate).
+* `packaging/ppc/config.json`: ready config for ppc.pool-pay.com.
+
 # Add CryptoNight-GPU algorithm support (Conceal / CCX) (1.1.33)
 
 * **New algorithm `cn/gpu`** for Conceal (CCX): the coin's real proof-of-work since its block_major_version 8

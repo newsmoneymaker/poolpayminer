@@ -50,6 +50,9 @@ const RandomX_ConfigurationBase *xmrig::RxAlgo::base(Algorithm::Id algorithm)
     case Algorithm::RX_SCASH:
         return &RandomX_ScashConfig;
 
+    case Algorithm::RX_PP:
+        return &RandomX_PPConfig;
+
     case Algorithm::RX_KEVA:
         return &RandomX_KevaConfig;
 

@@ -65,7 +65,7 @@ public:
         }
 
         if (extra_data) {
-            if (algorithm == Algorithm::RX_V2 || algorithm == Algorithm::RX_SCASH) {
+            if (algorithm == Algorithm::RX_V2 || algorithm == Algorithm::RX_SCASH || algorithm == Algorithm::RX_PP) {
                 m_hasCommitment = true;
                 memcpy(m_extraData, extra_data, RANDOMX_HASH_SIZE);
             }

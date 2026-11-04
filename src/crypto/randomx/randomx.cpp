@@ -156,6 +156,16 @@ RandomX_ConfigurationScash::RandomX_ConfigurationScash()
 	Tweak_V2_COMMITMENT = 1;
 }
 
+// PoolPayCoin (rx/pp): same construction as Scash above (112 byte header, commitment-judged block), its own Argon2 salt.
+// Verified against PoolPayCoin's own genesis block (nTime=1793707200, nNonce=1570681): the RandomX hash and the
+// commitment this configuration computes over that header match the values independently mined and locked into the
+// node's chainparams.cpp.
+RandomX_ConfigurationPP::RandomX_ConfigurationPP()
+{
+	ArgonSalt = "RandomX-PoolPay\x01";
+	Tweak_V2_COMMITMENT = 1;
+}
+
 // Kevacoin (rx/keva): "RandomKeva", the node's own RandomX variant (cn_utils/randomx/configuration.h, #ifdef _KEVACOIN).
 // Only the Argon2 salt and the L2/L3 scratchpad sizes are non-default; instruction frequencies, AES generator keys,
 // dataset size and everything else are the stock RandomX (Monero reference) values. No commitment tweak (plain
@@ -525,6 +535,7 @@ RandomX_ConfigurationWownero RandomX_WowneroConfig;
 RandomX_ConfigurationEpic RandomX_EpicConfig;
 RandomX_ConfigurationC64 RandomX_C64Config;
 RandomX_ConfigurationScash RandomX_ScashConfig;
+RandomX_ConfigurationPP RandomX_PPConfig;
 RandomX_ConfigurationKeva RandomX_KevaConfig;
 RandomX_ConfigurationXla RandomX_XlaConfig;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
