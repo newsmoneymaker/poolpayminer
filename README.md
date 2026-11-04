@@ -411,11 +411,11 @@ expected value, we keep 5%) or directly in each coin to your own address. Then s
 
 ## Supported algorithms
 
-poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/xla`, `rx/arq`, `rx/keva`, `ghostrider`,
+poolpayminer mines what XMRig 6.26.0 mines (taken from its source, `src/base/crypto/Algorithm.h`), plus `rx/epic`, `rx/veil`, `rx/c64`, `rx/scash`, `rx/pp`, `rx/xla`, `rx/arq`, `rx/keva`, `ghostrider`,
 `yespower-r16`, `yespowertide`, `flex`, `x16rs` and the `yescryptr8`/`yescryptr16`/`yescryptr32` family, and dispatches `ric` to the
 bundled rieMiner (see above; it is not one of XMRig's own algorithms, so it is not in the table below). Only
 **Epic Cash (`rx/epic`)**, **Veil (`rx/veil`)**, **ArQmA (`rx/arq`)**, **Salvium (`rx/0`)**, **Raptoreum (`ghostrider`)**, **Yenten (`yespower-r16`)**, **Tidecoin (`yespowertide`)**,
-**Kylacoin (`flex`)**, **Lyncoin (`flex-lcn`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)**, **LuckyPepe (`yescryptr32`)**, **Core Blockchain (`rx/xcb`)**, **VerusCoin (`verushash`)** and **Kryptokrona (`kryptokrona`)** have been tested
+**Kylacoin (`flex`)**, **Lyncoin (`flex-lcn`)**, **Hacash (`x16rs`)**, **MateableCoin (`yescryptr8`)**, **Fennec (`yescryptr16`)**, **LuckyPepe (`yescryptr32`)**, **Core Blockchain (`rx/xcb`)**, **VerusCoin (`verushash`)**, **Kryptokrona (`kryptokrona`)** and **PoolPayCoin (`rx/pp`)** have been tested
 end to end by the project (against each coin's own real node and pool, shares accepted over the real stratum; for Epic/Veil also against the fee route, Nanopool); the others are as
 documented above or are XMRig's own code, unchanged. Hacash has no Stratum of its own at all -- `x16rs` runs over a custom TCP JSON-RPC protocol this fork built from scratch for it (see CHANGES.md 1.1.23), not standard Bitcoin/Monero stratum like every other algorithm here. Core Blockchain's node builds the whole block itself (no coinbase/merkle tree at all) and only hands out a 32-byte sealhash via a classic geth/ethash-family `cryptore_getWork`/`submitWork` RPC -- `rx/xcb` uses its own invented 5-field `mining.notify`/3-field `mining.submit` wire shape (no `mixHash`, RandomY has no DAG-mixing concept) and is built on Linux x86_64 and Windows x64 (`WITH_XCB`, default ON on both platforms, see CHANGES.md). VerusCoin's own wire protocol is the "Equihash-compatible" shape real Zcash-family pools use (9-field `mining.notify`, raw-target `mining.set_target`, no coinb1/coinb2 -- the pool computes the whole merkle root server-side from the node's own fixed coinbase), not standard Bitcoin stratum; `verushash` needs AES-NI+PCLMUL (`WITH_VERUSHASH`, default ON on Linux/Windows x86_64, see CHANGES.md 1.1.29).
 
@@ -425,6 +425,7 @@ documented above or are XMRig's own code, unchanged. Hacash has no Stratum of it
 | **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
 | **`rx/scash`** | **Satoshi Cash (SCASH)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target | RandomX | CPU |
+| **`rx/pp`** | **PoolPayCoin (PPC)**: RandomX 1.2.1 with its own salt and the commitment as the value compared with the target -- same construction as `rx/scash`, own salt. A brand-new chain (own genesis block) | RandomX | CPU |
 | **`rx/xla`** | **Scala (XLA)**: Panthera, RandomX variant with its own parameters and blake2b + yespower + KangarooTwelve as the input hash | RandomX | CPU |
 | **`rx/keva`** | **Kevacoin (KVA)**: RandomKeva, the RandomX variant of the Kevacoin node | RandomX | CPU |
 | **`rx/xcb`** (`xcb`, `randomy`, `--coin=xcb`) | **Core Blockchain (XCB)**: RandomY, a tuned RandomX fork (different Argon2 iterations/salt, program size, scratchpad sizing) with a fixed, never-rotated dataset key and a SHA3-512(sealhash\|\|nonce) seed step before the RandomX hash itself. Linux x86_64 and Windows x64 | RandomX-family | CPU |
