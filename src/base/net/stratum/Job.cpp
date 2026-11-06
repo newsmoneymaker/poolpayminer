@@ -220,6 +220,17 @@ size_t xmrig::Job::nonceOffset() const
         return 32;
     }
 
+    if (algorithm() == Algorithm::CN_UPX2) {
+        // WrkzCoin (WRKZ): its daemon's raw blocktemplate_blob is NOT the simple "header+nonce" shape
+        // most CryptoNote forks use -- the real PoW nonce lives inside a nested "parent block" merge-
+        // mining-placeholder sub-header, confirmed empirically at byte offset 73 (see wrkz-nodejs-pool's
+        // own blobtool.js header comment for exactly how and its one honestly-stated limitation). If a
+        // DIFFERENT coin is ever wired up on this same cn/upx2 algorithm (e.g. uPlexa itself) with the
+        // standard 39-byte layout instead, this blanket per-algorithm branch would need to become a
+        // per-pool flag instead -- check before reusing.
+        return 73;
+    }
+
     if (algorithm() == Algorithm::VERUSHASH) {
         // VerusCoin: 140 byte header, 32 byte nonce field at offset 108 = extranonce1 (EN1_SIZE=4 bytes,
         // see EthStratumClient.cpp's VERUSHASH mining.notify branch) then this miner's own 4 byte search
