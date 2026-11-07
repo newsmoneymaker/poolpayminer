@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true },
+    "pools": [
+        {
+            "algo": "cn/upx2",
+            "url": "wrkz.pool-pay.com:4764",
+            "user": "YOUR_WRKZ_ADDRESS+rig1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ]
+}
