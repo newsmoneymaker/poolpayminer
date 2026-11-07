@@ -450,7 +450,7 @@ documented above or are XMRig's own code, unchanged. Hacash has no Stratum of it
 | `argon2/chukwa`, `argon2/chukwav2` | Chukwa (Turtlecoin-family Argon2id coins) | Argon2 | CPU |
 | `argon2/wrkz` | WRKZ (Wrkzcoin) | Argon2 | CPU |
 | `cn/ccx` | Conceal (CCX) | CryptoNight | CPU |
-| `cn/upx2` | Uplexa (UPX2) | CryptoNight | CPU |
+| `cn/upx2` | Uplexa (UPX2), WrkzCoin (WRKZ) | CryptoNight | CPU |
 | `cn-heavy/xhv` | Haven Protocol (XHV) | CryptoNight-Heavy | CPU |
 | `cn-heavy/tube` | Bittube (TUBE) | CryptoNight-Heavy | CPU |
 | `cn/half` | Masari, Torque | CryptoNight | CPU |

@@ -1,3 +1,21 @@
+# WrkzCoin (WRKZ) nonce offset fix for cn/upx2 (1.1.35)
+
+* **Fixed `cn/upx2` mining against WrkzCoin (WRKZ)**: `Job::nonceOffset()` only had the generic
+  CryptoNight-family default (byte 39), which is wrong for this specific coin -- WrkzCoin's real
+  block-template blob is not the simple "header+nonce" shape most CryptoNote forks use; the real PoW
+  nonce lives at byte offset 73, inside a nested "parent block" merge-mining-placeholder sub-header
+  (confirmed empirically against the real live daemon, see the `wrkz-nodejs-pool` repo's own
+  `blobtool.js`). Added a `cn/upx2`-specific case, same pattern as the existing RX_SCASH/RX_PP/
+  VERUSHASH/X16RS special cases right next to it. Without this every real WRKZ share was rejected as
+  "Bad hash" (the miner and the pool were correctly hashing different bytes, for different nonce
+  positions). No new algorithm was needed -- `cn/upx2` already existed in this project (shared with
+  Uplexa); this was purely a per-coin nonce-position fix.
+* Verified against the real, live `wrkz.pool-pay.com` pool: real shares genuinely accepted end to end
+  (16/0, then again 14/0 after a later config change, zero rejected either time).
+* **Caveat for later, if a different coin is ever wired up on this same `cn/upx2` algorithm with the
+  STANDARD 39-byte layout** (e.g. Uplexa itself): this blanket per-algorithm branch would need to become
+  a per-pool flag instead -- noted in the code comment.
+
 # The algorithm rx/pp for PoolPayCoin (1.1.34)
 
 * **New algorithm `rx/pp`** (`Algorithm::RX_PP`, alias `randomx/pp`, `randompp`): PoolPayCoin (PPC) proof of work, RandomX 1.2.1 with the Argon2 salt
