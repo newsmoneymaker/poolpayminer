@@ -161,6 +161,7 @@ size_t inline generate<Algorithm::YESPOWER>(Threads<CpuThreads>& threads, uint32
     size_t count = 0;
     count += generate(Algorithm::kYESPOWER_R16, threads, Algorithm::YESPOWER_R16, limit);
     count += generate(Algorithm::kYESPOWER_TIDE, threads, Algorithm::YESPOWER_TIDE, limit);
+    count += generate(Algorithm::kYESPOWER_ADVC, threads, Algorithm::YESPOWER_ADVC, limit);
     return count;
 }
 #endif

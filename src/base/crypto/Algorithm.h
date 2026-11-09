@@ -74,6 +74,12 @@ public:
         GHOSTRIDER_RTM  = 0x6c150000,   // "ghostrider"       GhostRider
         YESPOWER_R16    = 0x79170000,   // "yespower-r16"     yespower 1.0, N=4096, r=16, 8 MB (Yenten).
         YESPOWER_TIDE   = 0x79150000,   // "yespowertide"     yespower 1.0, N=2048, r=8, no personalization, 2 MB (Tidecoin).
+        YESPOWER_ADVC   = 0x79171041,   // "yespower-advc"    yespower 1.0, N=2048, r=32, pers "Let the quest begin" (19 bytes), 8 MB (AdventureCoin / ADVC,
+                                        // the coin's own real name for this is "yespowerADVC" -- see CBlockHeader::GetPoWHash() in the node's own
+                                        // src/primitives/block.cpp). NOT the same (N,r) as YESPOWER_R16 despite the identical 8 MB memory-size byte --
+                                        // third/fourth bytes here disambiguate it; do not alias this to YESPOWER_R16, an earlier research pass on this
+                                        // coin wrongly assumed the dead/unused yespower.c v2 branch (N=4096,r=16) was the real consensus PoW when the
+                                        // REAL one (this entry) is GetPoWHash's own inline yespower_1_0_v2 params struct, genuinely different.
         // The second byte here (as with every other id above) is log2(memory bytes) for l3()/auto thread-count sizing, NOT the
         // algorithm's "r" parameter -- 128*r*N bytes of smix scratch space: r8 N=2048 -> 2 MB (2^21), r16 N=4096 -> 8 MB (2^23),
         // r32 N=4096 -> 16 MB (2^24). An earlier version of this file used 0x08/0x16/0x32 (the literal r digits, read as hex),
@@ -264,6 +270,7 @@ public:
     static const char* kYESPOWER;
     static const char* kYESPOWER_R16;
     static const char* kYESPOWER_TIDE;
+    static const char* kYESPOWER_ADVC;
 #   endif
 
 #   ifdef XMRIG_ALGO_YESCRYPT
@@ -320,7 +327,7 @@ public:
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
     // the algorithms that speak Bitcoin's Stratum (mining.subscribe/notify with coinb1/coinb2, see EthStratumClient) and are mined over an 80 byte header
-    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN || id == VERUSHASH; }
+    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESPOWER_ADVC || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN || id == VERUSHASH; }
     inline bool isBitcoinStratum() const                    { return isBitcoinStratum(m_id); }
     inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
     inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };

@@ -120,6 +120,25 @@ static void yespowerTideHash(const uint8_t *input, size_t size, uint8_t *output)
 }
 
 
+// AdventureCoin (ADVC): the coin's own real consensus PoW is "yespowerADVC" -- yespower 1.0, N=2048, r=32,
+// personalization "Let the quest begin" (19 bytes, literal ASCII), over the 80-byte block header. Confirmed
+// from the node's OWN src/primitives/block.cpp, CBlockHeader::GetPoWHash()'s inline yespower_1_0_v2 params
+// struct (used for every real block, since the time-based branch there only ever picks the OLDER v1 params
+// for a timestamp before 2019-03-29, long before ADVC's own 2025-04-21 genesis). An earlier research pass
+// on this coin wrongly assumed src/crypto/yespower/yespower.c's own yespower_hash() (dead code, never called
+// by consensus) was the real PoW and that it matched YESPOWER_R16 -- it does not; this is a genuinely
+// different (N, r, pers) combination, caught and corrected before this was ever shipped.
+static void yespowerAdvcHash(const uint8_t *input, size_t size, uint8_t *output)
+{
+    static const uint8_t pers[] = "Let the quest begin";
+    static const yespower_params_t params = { YESPOWER_1_0, 2048, 32, pers, 19 };
+
+    if (yespower_tls(input, size, &params, reinterpret_cast<yespower_binary_t *>(output)) != 0) {
+        memset(output, 0xFF, 32);
+    }
+}
+
+
 static bool yespowerR16SelfTest()
 {
     // header of a real Yenten block (height 2287592) and its yespower 1.0 hash (equal to the pool's helper and to the node)
@@ -161,6 +180,34 @@ static bool yespowerTideSelfTest()
 
     uint8_t output[32];
     yespowerTideHash(input, sizeof(input), output);
+
+    return memcmp(output, expected, sizeof(output)) == 0;
+}
+
+
+// AdventureCoin (ADVC) self-test: the REAL mainnet genesis block (height 0), pulled from the pool's own
+// ADVC node on srv5 (getblockheader on the real genesis hash, confirmed via a real synced-to-genesis node,
+// 2026-11-10) -- not a fabricated vector. Independently verified to beat the genesis block's own recorded
+// difficulty target (nBits 0x1e3fffff) before being trusted here (see advc-project.md): interpreting the
+// 32 byte digest as a little-endian 256 bit integer gives 359514160880090188086164652570451294194636774715
+// 818351363975697045309067, the target decodes to 441711660882304413838637677267701945286438655323809338
+// 981290296012177408, and the former is indeed smaller -- a genuine solved PoW, not just a params match.
+static bool yespowerAdvcSelfTest()
+{
+    static const uint8_t input[80] = {
+        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xe4, 0x3c, 0x2f, 0xd9, 0x17, 0x67, 0xa1, 0xef, 0xc4, 0x19, 0xc5, 0x66,
+        0x34, 0xe4, 0x22, 0x28, 0x73, 0x7b, 0x90, 0xa8, 0x34, 0xd6, 0x44, 0xfb, 0x51, 0x19, 0x11, 0xe5,
+        0xc5, 0x0f, 0xc5, 0xe3, 0x64, 0x54, 0x06, 0x68, 0xff, 0xff, 0x3f, 0x1e, 0x60, 0x70, 0x02, 0x00
+    };
+    static const uint8_t expected[32] = {
+        0x8b, 0xc6, 0x9e, 0xc9, 0xcc, 0x37, 0xde, 0x46, 0x14, 0x13, 0xbd, 0xee, 0x3a, 0x4f, 0x46, 0x8a,
+        0xfb, 0x6c, 0x31, 0xdc, 0xf9, 0xd4, 0x64, 0x47, 0x6c, 0xf8, 0x11, 0x1f, 0x17, 0x34, 0x00, 0x00
+    };
+
+    uint8_t output[32];
+    yespowerAdvcHash(input, sizeof(input), output);
 
     return memcmp(output, expected, sizeof(output)) == 0;
 }
@@ -630,6 +677,8 @@ bool xmrig::CpuWorker<N>::selfTest()
             return yespowerR16SelfTest();
         case Algorithm::YESPOWER_TIDE:
             return yespowerTideSelfTest();
+        case Algorithm::YESPOWER_ADVC:
+            return yespowerAdvcSelfTest();
         default:
             return false;
         }
@@ -892,6 +941,9 @@ void xmrig::CpuWorker<N>::start()
                             break;
                         case Algorithm::YESPOWER_TIDE:
                             yespowerTideHash(m_job.blob(), job.size(), m_hash);
+                            break;
+                        case Algorithm::YESPOWER_ADVC:
+                            yespowerAdvcHash(m_job.blob(), job.size(), m_hash);
                             break;
                         default:
                             valid = false;
