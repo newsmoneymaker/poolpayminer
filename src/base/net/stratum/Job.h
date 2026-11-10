@@ -96,6 +96,17 @@ public:
     inline bool isVeil() const                          { return m_algorithm.id() == Algorithm::RX_VEIL; }
     inline bool isDiardi() const                        { return m_diardi; }               // Scala: nobody but the allow-listed miners can find this block
     inline void setDiardi(bool diardi)                  { m_diardi = diardi; }
+    // Generic, pool-driven nonce-position override: some CryptoNote forks' real blocktemplate_blob puts the
+    // PoW nonce somewhere other than this algorithm family's usual default (see nonceOffset()'s fallback chain) --
+    // e.g. WrkzCoin's own nested "parent block" merge-mining-placeholder header pushes it to byte 73 instead of
+    // the standard 39, even though it shares Algorithm::CN_UPX2 with uPlexa, which uses the plain standard layout.
+    // Rather than hang a second blanket per-algorithm special case here (which can't tell WRKZ and UPX apart),
+    // the POOL itself says where its own nonce lives, per job, via an optional "nonce_offset" stratum field
+    // (see Client::parseJob) -- set once here, BEFORE Job::setBlob() is called (setBlob() itself calls
+    // nonceOffset() to size- and nicehash-check the blob, so the override must already be in place by then).
+    // Unset (-1) for every pool that never sends this field, which falls through to the normal per-algorithm
+    // default below -- zero behavior change for any coin that doesn't need it.
+    inline void setNonceOffsetOverride(int offset)      { m_nonceOffsetOverride = offset; }
     // Hacash's consensus reads block_hash as a big-endian 256-bit number too (x16rs_hash's output), same
     // top-8-bytes convention as Epic/Veil -- see CpuWorker's X16RS_HAC case and blockBuilder.js's meetsTarget().
     // Core Blockchain (XCB): verifySeal() compares the full 32 byte RandomY hash as a big-endian big.Int
@@ -190,6 +201,7 @@ private:
     Algorithm m_algorithm;
     bool m_nicehash     = false;
     bool m_epic         = false;
+    int m_nonceOffsetOverride = -1;
     Buffer m_seed;
     Buffer m_verusSolution;
     size_t m_size       = 0;

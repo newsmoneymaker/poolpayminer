@@ -168,6 +168,10 @@ bool xmrig::Job::setTarget(const char *target)
 
 size_t xmrig::Job::nonceOffset() const
 {
+    if (m_nonceOffsetOverride >= 0) {
+        return static_cast<size_t>(m_nonceOffsetOverride);
+    }
+
     if (m_epic) {
         // Epic: the 8-byte big-endian nonce is the last field of the header; workers iterate its low 32 bits
         return m_size >= 4 ? m_size - 4 : 0;
@@ -220,16 +224,14 @@ size_t xmrig::Job::nonceOffset() const
         return 32;
     }
 
-    if (algorithm() == Algorithm::CN_UPX2) {
-        // WrkzCoin (WRKZ): its daemon's raw blocktemplate_blob is NOT the simple "header+nonce" shape
-        // most CryptoNote forks use -- the real PoW nonce lives inside a nested "parent block" merge-
-        // mining-placeholder sub-header, confirmed empirically at byte offset 73 (see wrkz-nodejs-pool's
-        // own blobtool.js header comment for exactly how and its one honestly-stated limitation). If a
-        // DIFFERENT coin is ever wired up on this same cn/upx2 algorithm (e.g. uPlexa itself) with the
-        // standard 39-byte layout instead, this blanket per-algorithm branch would need to become a
-        // per-pool flag instead -- check before reusing.
-        return 73;
-    }
+    // NOTE: Algorithm::CN_UPX2 (cn/upx2) deliberately has NO blanket branch here anymore. WrkzCoin (WRKZ)
+    // and uPlexa (UPX) both use this same algorithm enum value but need DIFFERENT nonce byte offsets at
+    // the same time (WRKZ: byte 73, inside a nested "parent block" merge-mining-placeholder sub-header --
+    // see wrkz-nodejs-pool's own blobtool.js; UPX: the plain standard byte 39, confirmed empirically
+    // against uPlexa's real getblocktemplate, 2026-11-10). A per-algorithm branch can't tell them apart,
+    // so WRKZ's pool sends "nonce_offset": 73 in every job (see Client::parseJob /
+    // setNonceOffsetOverride() above) and UPX's pool sends nothing, correctly falling through to the
+    // ordinary `return 39` default at the end of this function.
 
     if (algorithm() == Algorithm::VERUSHASH) {
         // VerusCoin: 140 byte header, 32 byte nonce field at offset 108 = extranonce1 (EN1_SIZE=4 bytes,
@@ -350,6 +352,7 @@ void xmrig::Job::copy(const Job &other)
     m_diff       = other.m_diff;
     m_height     = other.m_height;
     m_diardi     = other.m_diardi;
+    m_nonceOffsetOverride = other.m_nonceOffsetOverride;
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = other.m_seed;
@@ -405,6 +408,7 @@ void xmrig::Job::move(Job &&other)
     m_diff       = other.m_diff;
     m_height     = other.m_height;
     m_diardi     = other.m_diardi;
+    m_nonceOffsetOverride = other.m_nonceOffsetOverride;
     m_target     = other.m_target;
     m_index      = other.m_index;
     m_seed       = std::move(other.m_seed);

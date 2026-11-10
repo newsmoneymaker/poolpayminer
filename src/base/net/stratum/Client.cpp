@@ -412,6 +412,13 @@ bool xmrig::Client::parseJob(const rapidjson::Value &params, int *code)
         job.setAlgorithm(m_pool.coin().algorithm(blobVersion));
     }
 
+    // Pool-driven nonce-position override (see Job::setNonceOffsetOverride's own comment) -- must be set
+    // BEFORE job.setBlob() below, since setBlob() itself calls nonceOffset() to size/nicehash-check the blob.
+    const int nonceOffset = Json::getInt(params, "nonce_offset", -1);
+    if (nonceOffset >= 0) {
+        job.setNonceOffsetOverride(nonceOffset);
+    }
+
 #   ifdef XMRIG_FEATURE_HTTP
     if (m_pool.mode() == Pool::MODE_SELF_SELECT) {
         job.setExtraNonce(Json::getString(params, "extra_nonce"));
