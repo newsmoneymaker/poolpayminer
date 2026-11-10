@@ -1,3 +1,28 @@
+# Per-pool nonce offset for cn/upx2 (uPlexa) + AdventureCoin (ADVC, yespower-advc) (1.1.36)
+
+* **Fixed `cn/upx2` mining against uPlexa (UPX)**: 1.1.35's WrkzCoin fix hardcoded a blanket byte-73
+  nonce offset for the whole `cn/upx2` algorithm family, which is correct ONLY for WrkzCoin's own
+  non-standard, nested "parent block" merge-mining-placeholder block layout -- uPlexa shares the same
+  `Algorithm::CN_UPX2` enum value but uses the plain standard byte-39 offset every other CryptoNote fork
+  uses. Replaced the blanket per-algorithm branch with a genuine per-pool flag: `Job::setNonceOffsetOverride()`
+  lets a pool say where its own nonce lives via an optional `"nonce_offset"` stratum field
+  (`Client::parseJob`), applied before `Job::setBlob()` runs. WrkzCoin's own pool (`wrkz-nodejs-pool`)
+  now sends `nonce_offset: 73` in every job; uPlexa's pool sends nothing and correctly falls through to
+  the ordinary byte-39 default -- zero behavior change for WRKZ or for every other coin/algorithm.
+  **uPlexa's own public pool (`upx.pool-pay.com`) just went live with an open stratum -- this release
+  fixes a real, live bug: anyone pointing the previous v1.1.35 binary at it would have had every single
+  share rejected.**
+* Verified end to end against both real pools: uPlexa shares genuinely accepted (16/0) against the real
+  uplexa pool; WrkzCoin shares still genuinely accepted (37/0) against the real, restarted wrkz-pool
+  after this refactor.
+* **New algorithm `yespower-advc`** (aliases `advc`, `adventurecoin`): AdventureCoin (ADVC) proof of work,
+  yespower 1.0, N=2048, r=32, personalization `Let the quest begin` (19 bytes), 8 MB per thread --
+  confirmed from the node's own `CBlockHeader::GetPoWHash()` (`src/primitives/block.cpp`), NOT the
+  coin's own dead `yespower.c` wrapper (never called by consensus) that an earlier research pass wrongly
+  matched to `yespower-r16`. Self-test vector is the real mainnet genesis block header, independently
+  verified to beat its own recorded difficulty target. ADVC's own pool is not public yet (still syncing
+  its node), so this is self-test-verified only, not yet tested against a real live pool.
+
 # WrkzCoin (WRKZ) nonce offset fix for cn/upx2 (1.1.35)
 
 * **Fixed `cn/upx2` mining against WrkzCoin (WRKZ)**: `Job::nonceOffset()` only had the generic
