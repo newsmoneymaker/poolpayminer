@@ -16,7 +16,7 @@
 #include <cstring>
 #include <string>
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #else
@@ -150,7 +150,8 @@ inline bool resolveHost(const char* host, std::string& dottedIp)
     }
 
     char buffer[INET_ADDRSTRLEN] = {0};
-    const sockaddr_in* addr = (const sockaddr_in*)result->ai_addr;
+    sockaddr_in* addr = (sockaddr_in*)result->ai_addr;
+    // mingw-w64's inet_ntop (unlike POSIX's) takes a non-const PVOID -- it still only reads it.
     const bool ok = inet_ntop(AF_INET, &addr->sin_addr, buffer, sizeof(buffer)) != nullptr;
     freeaddrinfo(result);
     if (!ok) return false;
@@ -229,7 +230,7 @@ struct Client
                 // EINTR (a signal landed mid-syscall) is benign and common when the caller polls in a
                 // tight loop alongside other threads -- treat it as "nothing ready yet", not a dead
                 // connection. Only a real error (anything else) means the socket is actually broken.
-#ifndef _MSC_VER
+#ifndef _WIN32
                 if (errno == EINTR)
                 {
                     return true;

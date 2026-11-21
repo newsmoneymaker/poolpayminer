@@ -5,10 +5,12 @@
 #include <cstdio>
 #include <cstring>
 
+#ifdef _WIN32
+#include <winsock2.h>
 #ifdef _MSC_VER
 #include <intrin.h>
-#include <winsock2.h>
 #pragma comment (lib, "ws2_32.lib")
+#endif
 #else
 #include <errno.h>
 #include <immintrin.h>
@@ -88,7 +90,7 @@ typedef struct
 
 struct ServerSocket
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
     ServerSocket()
     {
         WSADATA wsaData;
@@ -120,7 +122,9 @@ struct ServerSocket
         ZeroMemory(&addr, sizeof(addr));
         addr.sin_family = AF_INET;
         addr.sin_port = htons(port);
-        sscanf_s(address, "%hhu.%hhu.%hhu.%hhu", &addr.sin_addr.S_un.S_un_b.s_b1, &addr.sin_addr.S_un.S_un_b.s_b2, &addr.sin_addr.S_un.S_un_b.s_b3, &addr.sin_addr.S_un.S_un_b.s_b4);
+        // sscanf_s is an MSVC-only "secure CRT" function, not available under mingw (the actual
+        // toolchain this project cross-compiles Windows builds with) -- plain sscanf works on both.
+        sscanf(address, "%hhu.%hhu.%hhu.%hhu", &addr.sin_addr.S_un.S_un_b.s_b1, &addr.sin_addr.S_un.S_un_b.s_b2, &addr.sin_addr.S_un.S_un_b.s_b3, &addr.sin_addr.S_un.S_un_b.s_b4);
         if (connect(serverSocket, (const sockaddr*)&addr, sizeof(addr)))
         {
             printf("Fail to connect to %s (%d)!\n", address, WSAGetLastError());
