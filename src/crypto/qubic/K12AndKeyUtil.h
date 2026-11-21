@@ -1026,7 +1026,15 @@ static void fpneg1271(felm_t a)
     a[1] = 0x7FFFFFFFFFFFFFFF - a[1];
 }
 #ifndef _MSC_VER
-static uint64_t _umul128(uint64_t a, uint64_t b, long long unsigned int *hi)
+// Renamed from the plain MSVC intrinsic names (_umul128/__shiftleft128/__shiftright128): under
+// mingw (the actual toolchain this project cross-compiles Windows builds with -- _MSC_VER is never
+// defined there even though the target IS Windows), <winnt.h> itself declares functions with these
+// exact names (extern "C", no body -- vestigial MSVC-intrinsic-parity declarations), which collides
+// with these real, needed software fallbacks the moment anything here also includes windows.h/
+// winsock2.h. #define-ing the original names back right after keeps every call site below unchanged
+// and leaves real MSVC builds (where this whole block is skipped, and the names resolve to the true
+// compiler intrinsics) untouched.
+static uint64_t qubic_umul128(uint64_t a, uint64_t b, long long unsigned int *hi)
 {
     union { unsigned __int128 v; uint64_t sv[2]; } var;
     var.v = a;
@@ -1036,7 +1044,7 @@ static uint64_t _umul128(uint64_t a, uint64_t b, long long unsigned int *hi)
 }
 
 
-static uint64_t __shiftleft128 (uint64_t  LowPart, uint64_t HighPart, unsigned char Shift)
+static uint64_t qubic_shiftleft128 (uint64_t  LowPart, uint64_t HighPart, unsigned char Shift)
 {
     uint64_t ret;
 
@@ -1048,7 +1056,7 @@ static uint64_t __shiftleft128 (uint64_t  LowPart, uint64_t HighPart, unsigned c
     return ret;
 }
 
-static uint64_t __shiftright128 (uint64_t  LowPart, uint64_t HighPart, unsigned char Shift)
+static uint64_t qubic_shiftright128 (uint64_t  LowPart, uint64_t HighPart, unsigned char Shift)
 {
     uint64_t ret;
 
@@ -1059,6 +1067,9 @@ static uint64_t __shiftright128 (uint64_t  LowPart, uint64_t HighPart, unsigned 
 
     return ret;
 }
+#define _umul128 qubic_umul128
+#define __shiftleft128 qubic_shiftleft128
+#define __shiftright128 qubic_shiftright128
 #endif
 
 static void fpmul1271(felm_t a, felm_t b, felm_t c)
@@ -2345,3 +2356,15 @@ BOOL_FUNC_DECL getSharedKey(const unsigned char* privateKey, const unsigned char
 
     return true;
 }
+
+#ifndef _MSC_VER
+// Undo the _umul128/__shiftleft128/__shiftright128 -> qubic_* remapping now that every call site in
+// THIS file has used it: leaving the macros defined past this point would also rewrite <winnt.h>'s
+// OWN (unrelated) declarations of these exact names the moment something later in the same
+// translation unit includes windows.h/winsock2.h (qatum.h does, right after this header) -- which
+// just relocates the original name collision onto the new name instead of resolving it. Confirmed
+// by hitting exactly that error with the macros left active.
+#undef _umul128
+#undef __shiftleft128
+#undef __shiftright128
+#endif

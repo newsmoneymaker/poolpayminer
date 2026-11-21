@@ -165,6 +165,16 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
         src/crypto/qubic/keyUtils.cpp
         PROPERTIES COMPILE_FLAGS "-madx -mbmi2 -mrdrnd"
     )
+    # inet_ntop/inet_pton are gated behind the target Windows version mingw-w64's own headers
+    # assume -- without raising it, <ws2tcpip.h> simply doesn't declare them (confirmed by a direct
+    # build failure: "inet_ntop was not declared in this scope" cross-compiling Dispatch.cpp). 0x0600
+    # = Vista, which is already far below anything a real miner runs on.
+    if (WIN32)
+        set_source_files_properties(
+            src/qubic/Dispatch.cpp
+            PROPERTIES COMPILE_FLAGS "-madx -mbmi2 -mrdrnd -D_WIN32_WINNT=0x0600"
+        )
+    endif()
 endif()
 
 set(SOURCES_CRYPTO
