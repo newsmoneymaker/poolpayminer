@@ -21,6 +21,7 @@
 #include "base/kernel/Process.h"
 #include "autoswitch/AutoSwitch.h"
 #include "riecoin/Dispatch.h"
+#include "qubic/Dispatch.h"
 
 
 int main(int argc, char **argv)
@@ -35,6 +36,11 @@ int main(int argc, char **argv)
     int riecoinExitCode = 0;
     if (riecoin::maybeDispatch(argc, argv, riecoinExitCode)) {
         return riecoinExitCode;
+    }
+
+    int qubicExitCode = 0;
+    if (qubic::maybeDispatch(argc, argv, qubicExitCode)) {
+        return qubicExitCode;
     }
 
     Process process(argc, argv);
