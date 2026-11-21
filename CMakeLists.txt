@@ -193,9 +193,24 @@ set(SOURCES
     src/autoswitch/AutoSwitch.cpp
     src/riecoin/Dispatch.cpp
     "${RIEMINER_BLOB_CPP}"
+    src/qubic/Dispatch.cpp
+    src/crypto/qubic/keyUtils.cpp
     src/Summary.cpp
     src/xmrig.cpp
    )
+
+# Qubic's vendored FourQ/K12 crypto (src/crypto/qubic/K12AndKeyUtil.h) uses the ADX/BMI2 intrinsics
+# (_addcarry_u64 etc.) throughout its field arithmetic with no portable fallback path, confirmed by a
+# direct build failure without these flags on this host's gcc 8.3.0. Scoped to just these two files
+# instead of the whole target, so mining every OTHER algorithm still works on CPUs older than Haswell/
+# Excavator (~2013+) -- only customers mining Qubic specifically need that newer a CPU.
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set_source_files_properties(
+        src/qubic/Dispatch.cpp
+        src/crypto/qubic/keyUtils.cpp
+        PROPERTIES COMPILE_FLAGS "-madx -mbmi2 -mrdrnd"
+    )
+endif()
 
 set(SOURCES_CRYPTO
     src/crypto/cn/c_blake256.c
