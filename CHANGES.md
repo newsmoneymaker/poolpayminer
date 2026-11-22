@@ -1,3 +1,386 @@
+# Qubic (QUBIC, bpp9000 useful proof of work) support (1.1.37)
+
+* **New algorithm `qubic`** (`-a qubic`): Qubic's "useful proof of work" (bpp9000 ant-colony), a
+  fundamentally different model from every other algorithm here -- instead of hashing, the miner
+  searches for solutions that improve a real neural network, verified against a vendored copy of the
+  official Qiner reference miner's own scorer. Speaks the real, currently-accepted Qatum protocol
+  (plain TCP, newline-delimited JSON) directly against pool-pay.com's own Qubic pool. Self-contained
+  side path (`src/qubic/Dispatch.{h,cpp}`, same pattern as Riecoin's own dispatcher) -- one attempt
+  costs real CPU seconds-to-minutes, not hashes/second, so it can't fit the normal Algorithm/Job/Pool
+  abstraction. Needs a reasonably modern CPU (ADX/BMI2/RDRAND, Haswell/Excavator-era or newer, 2013+)
+  for the vendored FourQ/K12 crypto this algorithm's identity/signing math needs -- scoped to just
+  this algorithm's own files so every other algorithm keeps working on older CPUs.
+* Fixed a real bug found via a live end-to-end test against pool-pay.com's own Qubic pool: the client
+  never read the `threshold` field the pool's own job packet carries, so the submit check
+  (`score <= threshold`) was silently comparing against 0 (an unreachable "perfect" score) on every
+  job after the first -- meaning no real miner could ever have submitted an accepted solution, even
+  though everything else (connecting, scoring, job handling) worked correctly.
+* Windows cross-compile support for `qubic`: the vendored crypto/network headers assumed Windows meant
+  real MSVC (`_MSC_VER`), which mingw (the actual toolchain this project's Windows builds use) never
+  defines even though it does target Windows -- fixed the platform checks, a resulting symbol
+  collision between this algorithm's own software fallbacks and mingw's own `<winnt.h>` declarations
+  of the same names, and a couple of smaller mingw-vs-MSVC API differences (`inet_ntop`'s constness,
+  `_WIN32_WINNT` gating, `sscanf_s` not existing under mingw).
+* Verified end to end on both platforms against the real, live pool: subscribes, receives a real job
+  with the correct threshold, after the fixes above (confirmed via a real Linux test and, separately,
+  the real Windows binary run under `wine64`).
+
+# Per-pool nonce offset for cn/upx2 (uPlexa) + AdventureCoin (ADVC, yespower-advc) (1.1.36)
+
+* **Fixed `cn/upx2` mining against uPlexa (UPX)**: 1.1.35's WrkzCoin fix hardcoded a blanket byte-73
+  nonce offset for the whole `cn/upx2` algorithm family, which is correct ONLY for WrkzCoin's own
+  non-standard, nested "parent block" merge-mining-placeholder block layout -- uPlexa shares the same
+  `Algorithm::CN_UPX2` enum value but uses the plain standard byte-39 offset every other CryptoNote fork
+  uses. Replaced the blanket per-algorithm branch with a genuine per-pool flag: `Job::setNonceOffsetOverride()`
+  lets a pool say where its own nonce lives via an optional `"nonce_offset"` stratum field
+  (`Client::parseJob`), applied before `Job::setBlob()` runs. WrkzCoin's own pool (`wrkz-nodejs-pool`)
+  now sends `nonce_offset: 73` in every job; uPlexa's pool sends nothing and correctly falls through to
+  the ordinary byte-39 default -- zero behavior change for WRKZ or for every other coin/algorithm.
+  **uPlexa's own public pool (`upx.pool-pay.com`) just went live with an open stratum -- this release
+  fixes a real, live bug: anyone pointing the previous v1.1.35 binary at it would have had every single
+  share rejected.**
+* Verified end to end against both real pools: uPlexa shares genuinely accepted (16/0) against the real
+  uplexa pool; WrkzCoin shares still genuinely accepted (37/0) against the real, restarted wrkz-pool
+  after this refactor.
+* **New algorithm `yespower-advc`** (aliases `advc`, `adventurecoin`): AdventureCoin (ADVC) proof of work,
+  yespower 1.0, N=2048, r=32, personalization `Let the quest begin` (19 bytes), 8 MB per thread --
+  confirmed from the node's own `CBlockHeader::GetPoWHash()` (`src/primitives/block.cpp`), NOT the
+  coin's own dead `yespower.c` wrapper (never called by consensus) that an earlier research pass wrongly
+  matched to `yespower-r16`. Self-test vector is the real mainnet genesis block header, independently
+  verified to beat its own recorded difficulty target. ADVC's own pool is not public yet (still syncing
+  its node), so this is self-test-verified only, not yet tested against a real live pool.
+
+# WrkzCoin (WRKZ) nonce offset fix for cn/upx2 (1.1.35)
+
+* **Fixed `cn/upx2` mining against WrkzCoin (WRKZ)**: `Job::nonceOffset()` only had the generic
+  CryptoNight-family default (byte 39), which is wrong for this specific coin -- WrkzCoin's real
+  block-template blob is not the simple "header+nonce" shape most CryptoNote forks use; the real PoW
+  nonce lives at byte offset 73, inside a nested "parent block" merge-mining-placeholder sub-header
+  (confirmed empirically against the real live daemon, see the `wrkz-nodejs-pool` repo's own
+  `blobtool.js`). Added a `cn/upx2`-specific case, same pattern as the existing RX_SCASH/RX_PP/
+  VERUSHASH/X16RS special cases right next to it. Without this every real WRKZ share was rejected as
+  "Bad hash" (the miner and the pool were correctly hashing different bytes, for different nonce
+  positions). No new algorithm was needed -- `cn/upx2` already existed in this project (shared with
+  Uplexa); this was purely a per-coin nonce-position fix.
+* Verified against the real, live `wrkz.pool-pay.com` pool: real shares genuinely accepted end to end
+  (16/0, then again 14/0 after a later config change, zero rejected either time).
+* **Caveat for later, if a different coin is ever wired up on this same `cn/upx2` algorithm with the
+  STANDARD 39-byte layout** (e.g. Uplexa itself): this blanket per-algorithm branch would need to become
+  a per-pool flag instead -- noted in the code comment.
+
+# The algorithm rx/pp for PoolPayCoin (1.1.34)
+
+* **New algorithm `rx/pp`** (`Algorithm::RX_PP`, alias `randomx/pp`, `randompp`): PoolPayCoin (PPC) proof of work, RandomX 1.2.1 with the Argon2 salt
+  `RandomX-PoolPay\x01` and the commitment: the value compared with the target is `randomx_calculate_commitment(header, hash)`, the hash itself goes into the block header.
+  Same construction as `rx/scash` (own salt only, everything else -- the 112 byte header, nonce at offset 76, `Tweak_V2_COMMITMENT` -- identical). Configuration:
+  `RandomX_ConfigurationPP`. PoolPayCoin is a brand-new chain (own genesis block, not a fork of an existing live network); verified against the real `poolpaycoind`
+  and `ppc-nodejs-pool`: real shares accepted end to end (vardiff retargeted 5000 -> 10000 after real accepted shares arrived faster than the target rate).
+* `packaging/ppc/config.json`: ready config for ppc.pool-pay.com.
+
+# Add CryptoNight-GPU algorithm support (Conceal / CCX) (1.1.33)
+
+* **New algorithm `cn/gpu`** for Conceal (CCX): the coin's real proof-of-work since its block_major_version 8
+  hard fork (LWMA1, CN-GPU, Halving) is CryptoNight-GPU, not the old `CRYPTONIGHT_CONCEAL`/`cn/ccx` variant --
+  the local reference source used to validate that old variant turned out to be 6 years stale. Vendored the
+  real algorithm (Ryo Currency Project's `cn_pow_hash_v3`) verbatim from current upstream, wrapped in its own
+  namespace with renamed C symbols to avoid colliding with other vendored crypto in this codebase. Verified
+  byte-identical against a pristine build of the same upstream files for 3 test vectors (now the self-test).
+* **Fixed the same missing-thread-profile bug class as 1.1.31 (VerusHash)/1.1.32 (Kryptokrona) for `cn/gpu`
+  before it ever shipped**: `CpuConfig::generate()` had no `CN_GPU_FAM` specialization, so any run without an
+  explicit `--threads` override (i.e. every normal/`--auto` user) would have gotten an empty thread profile
+  and the client would have decided the algorithm was "disabled", closing the connection right after the
+  first job. Fixed with the same `generate<Algorithm::CN_GPU_FAM>` specialization every other single-algorithm
+  family already has.
+* **Fixed a real Windows cross-compile blocker**: the vendored `cn_slow_hash.hpp` depended on
+  `boost/align/aligned_alloc.hpp`, which isn't reachable under the mingw-w64 cross-compile sysroot used for
+  Windows builds. Replaced with a small portable wrapper (`posix_memalign` on Linux, `__mingw_aligned_malloc`
+  on Windows -- not `_aligned_malloc`, which MinGW's own `malloc.h` only declares when no SSE/AVX intrinsics
+  header has been included first in the same translation unit, a condition this file's own includes can't
+  guarantee).
+* Real end-to-end tested against a live, fully-synced Conceal mainnet node and its own real pool on both
+  Linux and Windows (the latter under `wine64`, cross-compiled): real shares accepted with no `--threads`
+  override. Open at conceal.pool-pay.com (stratum currently restricted to the pool operator while the rest
+  of the launch checklist is completed).
+
+# Add Kryptokrona (XKR) algorithm support (1.1.32)
+
+* **New algorithm `kryptokrona`** for Kryptokrona (XKR): the coin's own real `cn_turtle_lite_slow_hash_v2`,
+  vendored verbatim from the node's own source and wired in as a standalone algorithm (own CpuConfig_gen.h
+  auto-thread-profile specialization from day one, same class of fix as 1.1.31's VerusHash bug). This is
+  **not** the same algorithm as this project's existing `cn-pico`/`cryptonight-turtle` -- cross-checked
+  against the real node's own compiled code and confirmed they produce different hashes for the same
+  input despite matching memory/iteration parameters, so it needed a real, separate vendor port rather
+  than reusing the existing one. Plain cryptonote-nodejs-pool blob+target stratum (no new wire-protocol
+  code needed, unlike VerusHash/RandomY). Real end-to-end tested against a live, fully-synced XKR mainnet
+  node and its own real pool: real shares accepted with no `--threads` override on both Linux and Windows.
+  Open at xkrona.pool-pay.com.
+
+# Fix VerusHash never getting an auto-generated CPU thread profile (1.1.31)
+
+* **`-a verushash` without an explicit `--threads` override never actually mined.** `CpuConfig::generate()`
+  builds a default CPU thread profile per algorithm family on first use, but the `VERUS` family was missing
+  from its hardcoded list (every other single-algorithm family -- GhostRider, X16RS, Yespower, ... -- was
+  there). Any run without `--threads` -- which is every normal user, and in particular every `--auto` user --
+  got an empty thread profile, so the miner itself decided verushash was disabled and closed the connection
+  right after the very first job ("incompatible/disabled algorithm \"verushash\" detected, reconnect"), looping
+  forever. Confirmed on real `--auto` traffic against the live pool: logins succeeded, then disconnected
+  immediately, every ~6 seconds. Fixed with the same one-line `generate<Algorithm::VERUS>` specialization every
+  other algorithm family already has. Verified end-to-end against the real, live pool on both Linux and Windows
+  (under Wine) with no `--threads` override: auto-generates a real `verushash` thread profile, connects, and
+  gets shares accepted immediately.
+* **Windows build, unrelated housekeeping:** fixed three source files (`Chrono.cpp`, `Taskbar.cpp`,
+  `BasicCpuInfo_arm_win.cpp`) that included Windows SDK headers using Windows' own case-insensitive spelling
+  (`Windows.h`, `Shobjidl.h`, `Objbase.h`); this only ever worked by luck on a case-sensitive Linux build host
+  (stale cached object files), and broke the moment a genuinely clean rebuild was attempted. Fixed to the real,
+  lowercase MinGW filenames.
+
+# Fix the Windows build's missing TLS support; fix a real stack buffer overflow in verusHash() (1.1.30)
+
+* **Windows TLS was silently OFF on every past Windows build.** `cmake/OpenSSL.cmake`'s `find_package(OpenSSL)`
+  never located the already-built MinGW OpenSSL static libs (`poolpayminer-deps/win64/lib/{libcrypto,libssl}.a`,
+  built successfully by `build-openssl-win.sh` long ago) when cross-compiling, so `WITH_TLS` fell back to `OFF`
+  -- which also meant the build fell back to the `xmrig-notls` target, which then failed to link anyway because
+  `EthStratumClient.cpp`'s SHA3-256 (`Keccak256Writer`, used by KCN/LCN's txhash rule) calls OpenSSL's `EVP_*`
+  functions unconditionally, not gated behind `WITH_TLS` at all -- so the Windows build had TWO independent
+  reasons to fail, previously misdiagnosed together as "missing MinGW OpenSSL dev headers." Fixed by passing
+  `OPENSSL_ROOT_DIR`/`OPENSSL_INCLUDE_DIR`/`OPENSSL_CRYPTO_LIBRARY`/`OPENSSL_SSL_LIBRARY` explicitly to `cmake`
+  for the Windows toolchain file (the libraries were always there, `find_package` just couldn't see them cross-
+  compiling without the hint). Verified for real: a real session, under `wine64`, against the real, live
+  `vrsc.pool-pay.com:5151` pool shows `TLSv1.3` negotiated and real shares accepted.
+* Fixed a real stack buffer overflow in `CpuWorker.cpp::verusHash()`: it hardcoded a fixed 1344-byte solution
+  buffer and a fixed 3-byte compactsize prefix, with a comment wrongly asserting "VerusHash2.2's solution size
+  never varies" -- a real historical VRSC mainnet block was found with a 2912-byte solution (solution length
+  depends on how many PBaaS sub-headers it carries, not a fixed algorithm property). Now sized/prefixed
+  generically from the job's own solution length, matching `blockBuilder.js`'s own `varint()` encoding on the
+  pool side.
+* Investigated (and ruled out) a suspected deeper VerusHash correctness bug: comparing the pool's hash
+  computation against an already-mined historical block looked like a mismatch, but turned out to be an invalid
+  comparison -- that block was found via VerusCoin's OTHER valid proof-of-work method (varying bytes inside the
+  solution's tail, not the header's nonce field), which this pool/miner never uses. Confirmed empirically
+  (built a tool that links directly against the real node's own compiled code) that for a candidate matching
+  THIS pool's actual method, the miner's hash and the real node's hash agree exactly. No change was needed to
+  the hash computation itself -- see `vrsc-project.md`/`critical-vrsc-hash-pbaas-mismatch.md` for the full story.
+
+# Enable `verushash` (VerusCoin / VRSC) by default; fix a real submit-nonce byte-order bug (1.1.29)
+
+* `-a verushash`'s wire protocol/hash-call integration was built and verified end-to-end against a fake
+  local pool in an earlier session (see vrsc-project.md), but never against the real, fully-synced VRSC
+  mainnet node until now. A real end-to-end test against the real `vrsc-nodejs-pool` turned up one real
+  bug: `EthStratumClient.cpp`'s VERUSHASH `submit()` formatted the found nonce as big-endian hex TEXT of
+  the integer (`std::hex << result.nonce`), but the header's own nonce field (written by the generic
+  `WorkerJob` nonce-splicing machinery, same as every other algorithm here) stores it as the raw NATIVE
+  (little-endian on x86) bytes of that same `uint32_t` -- e.g. value `0x12345678` sits in the header as
+  bytes `78 56 34 12`, but was being sent to the pool as the text `"12345678"`, which the pool's
+  `Buffer.from(nonceHex, 'hex')` turns into the BYTE-REVERSED value `12 34 56 78` -- a nonce the miner
+  never actually hashed with. Every single submitted share failed the pool's independent re-check
+  ("Low difficulty share"), even though this miner's own self-test and internal target comparison were
+  both already correct (the bug was purely in what got reported back, not in the hashing itself). Fixed
+  to hex-encode the raw native bytes directly (`Cvt::toHex`), the same pattern every other
+  Bitcoin-stratum-family coin here already uses for its own submitted nonce (`DaemonClient.cpp`/
+  `SelfSelectClient.cpp`). Verified: a real mining session against the real pool now gets thousands of
+  real shares ACCEPTED (zero rejections except two benign "Job not found" races at a template-refresh
+  boundary), correct vardiff retargeting observed.
+* `WITH_VERUSHASH` now defaults **ON for Linux/Windows x86_64** (previously OFF everywhere, needed an
+  explicit `-DWITH_VERUSHASH=ON`), matching `WITH_XCB`'s own platform-gated pattern -- the vendored
+  AES-NI/PCLMUL VerusHash2.2 source has no portable/ARM fallback, so the option stays OFF on any other
+  platform so a plain `cmake ..` there isn't broken by `-maes -mpclmul` failing to compile. Confirmed a
+  default (no-flags) `cmake ..` on this Linux x86_64 host now builds `verushash` support with no
+  changes needed elsewhere.
+* This was found and fixed on the MINER side, together with a matching set of real pool-side bugs (an
+  off-by-one coinbase scriptSig length, a missing `vJoinSplit` vector, and -- the real architectural
+  fix -- that this chain's own `getblocktemplate` never hands back a submission-ready block at all, see
+  `vrsc-nodejs-pool`'s own CHANGES.md and `vrsc-project.md` for the full story).
+
+# Fix `rx/xcb` (RandomY) real hashrate: cache-only mode only, now full/dataset mode (1.1.28)
+
+* Real user report: a real miner measured **11.25 H/s single-thread on an i7-7700** for `rx/xcb` --
+  absurdly low for a RandomX-family algorithm. Root cause: the 1.1.27 wrapper
+  (`src/crypto/xcb_randomy/xcb_randomy.cpp`) only ever called the real upstream library's CACHE-ONLY
+  ("light") RandomX API (`alloc_cache`/`init_cache`/`create_vm` with `RANDOMX_FLAG_DEFAULT`, no
+  `RANDOMX_FLAG_FULL_MEM`, no JIT, no HARD_AES) -- it never allocated or initialized a DATASET, which is
+  what gives RandomX-family algorithms their real, fast hashrate; cache-only mode recomputes large chunks
+  of the dataset on the fly per hash, which is the whole reason it's 10-90x slower than full/fast mode.
+* Confirmed the real upstream `github.com/core-coin/RandomY` C/C++ source (already vendored here, see
+  1.1.27's Windows-build entry below) exposes the IDENTICAL dataset/FULL_MEM public API as stock
+  tevador/RandomX (`randomx_alloc_dataset`/`dataset_item_count`/`init_dataset`/`get_dataset_memory`/
+  `release_dataset`, `create_vm` accepting a dataset + `RANDOMX_FLAG_FULL_MEM`) -- and that every one of
+  these symbols already survived the existing strong-symbol-only `objcopy --redefine-syms` rename on
+  BOTH the Linux and Windows vendored libraries already deployed here (built from source on 2026-10-16),
+  so **no library rebuild or re-rename was needed**, only extending `xcb_randomy_upstream.h`'s
+  declarations and rewriting `xcb_randomy.cpp`'s VM-creation path.
+* `xcb_randomy.cpp` now builds a process-wide, `std::call_once`-guarded dataset (~264 MiB --
+  `RANDOMX_DATASET_BASE_SIZE` 256 MiB + `RANDOMX_DATASET_EXTRA_SIZE` 8 MiB, confirmed from RandomY's real
+  `configuration.h`) alongside the existing fixed-key ("56789") cache, initialized ONCE using ALL
+  available CPU threads in parallel (`std::thread::hardware_concurrency()`, same chunking convention as
+  `src/crypto/rx/RxDataset.cpp`'s own `init_dataset_wrapper`/thread-splitting for every other RandomX coin
+  here). Every per-thread VM is then created with `RANDOMX_FLAG_FULL_MEM` plus whatever
+  `xcbrndy_randomx_get_flags()` recommends for the running CPU (HARD_AES, JIT, Argon2 AVX2/SSSE3) instead
+  of the old hardcoded `RANDOMX_FLAG_DEFAULT`. **Default is now full/fast mode** -- light/cache-only mode
+  is kept as a real, working fallback (`xcb_randomy::setFullMode(false)`, wired to this project's existing
+  `"randomx":{"mode":"light"}` config convention via a new `Miner::setJob()` hook, reused rather than
+  inventing a new per-coin config key), auto-selected if the ~264 MiB dataset allocation ever fails
+  (e.g. genuinely low RAM).
+* **Correctness verified explicitly, not assumed**: an isolated standalone test (plain `gcc`, the real
+  vendored `.a`, no xmrig involved) proved light and full modes give BYTE-IDENTICAL output for TWO
+  independent real test vectors (go-randomy's own documented vector, and the `key="56789"`/
+  zero-header/`nonce=42` cross-check vector through the real SHA3-512 seed-prep step). `xcb_randomy::
+  selfTest()` now ALSO builds a one-off full-mode VM on every real startup (not just this session's
+  one-off check) and checks it against the same real test vector light mode already checks -- a startup
+  self-test failure on either mode refuses to report success.
+* **Real, measured before/after** (same i7-7700 measurement convention as the original 11.25 H/s number,
+  real live pool, real accepted shares, not a synthetic benchmark): **single-thread light mode (now with
+  JIT/HARD_AES auto-detected too, not just the dataset change) ~148 H/s; single-thread full/dataset mode
+  ~1000 H/s (~89x the original 11.25 H/s); 4 threads full mode ~3580 H/s.** Dataset build itself (the one
+  real one-time startup cost) took well under a second to ~5s multi-threaded on this CPU.
+* **Real Windows-specific finding, caught by actually running the cross-compiled `xmrig.exe` under
+  `wine64` against the live pool (not just checking that it links)**: with `RANDOMX_FLAG_JIT` enabled (the
+  `get_flags()` baseline), the Windows build reliably page-faults on the very first VM creation under
+  `wine64` -- reproduced in BOTH light and full mode, isolated to the JIT flag specifically by testing
+  each flag combination individually, and confirmed fixed (zero crashes, real accepted shares against the
+  live pool) by disabling only `RANDOMX_FLAG_JIT` on Windows. Root cause not chased further (plausibly an
+  old wine-4.0 self-modifying-code/W^X quirk specific to this emulation layer, not necessarily a bug on
+  real Windows -- this environment has no real Windows to verify that on) -- JIT stays OFF on the Windows
+  build out of real, demonstrated caution; HARD_AES/Argon2 AVX2/SSSE3 are untouched (pure data-path flags,
+  never implicated). The dataset/FULL_MEM speedup itself (the actual fix) is unaffected: Windows under
+  `wine64` ran stably at ~32-33 H/s single-thread full mode with real shares accepted by the live pool
+  (real native Windows, without wine's emulation tax and without this JIT caveat applying the same way,
+  should do noticeably better than this wine-measured number, but that could not be verified here).
+* **Pool-side hasher also upgraded** (`xcb-nodejs-pool/hasher/`, a separate, self-contained copy of the
+  same wrapper + vendored library used for real-time share validation): found, while checking whether this
+  mattered, that `lib/pool.js`'s `onSubmit()` calls the hasher for EVERY real submitted share (vardiff
+  credit AND block-candidate checks), not just occasional candidates -- so it hashes at roughly the same
+  real volume as a connected miner. Since this helper is a native Linux-only process (no Windows/wine
+  build, so the JIT caveat above doesn't apply), it now always runs in full/dataset mode with JIT enabled,
+  verified the same way (byte-identical self-test, real restart against the live, already-running
+  `xcb-pool.service`, zero hasher-caused share rejections afterward). RAM cost: ~264 MiB extra per hasher
+  process (`config.json`'s `hasher.threads`, 2 by default -- ~528 MiB total, confirmed via the real
+  process RSS after restart).
+* No new config keys invented: both sides reuse this project's existing `"randomx":{"mode":...}`
+  convention (miner) or are simply always-on (pool-side hasher, a server-side process, not an end-user
+  setting).
+
+# Add Windows x64 build for `rx/xcb` (RandomY) (1.1.27, same version, Windows asset added)
+
+* The 1.1.27 release above shipped Linux x86_64 only. This adds a real Windows x64 build of the same
+  `rx/xcb` algorithm, without ever downloading a prebuilt Windows binary from go-randomy's own releases
+  (an earlier attempt at that was correctly blocked by this environment's own safety classifier and was
+  not re-attempted).
+* Instead, both `librandomy_xcb.a` libraries (Linux and Windows) are now compiled by this project itself
+  from the real, unmodified upstream RandomY C/C++ source tree (`github.com/core-coin/RandomY` -- the
+  actual source go-randomy's own CI compiles into its prebuilt releases), using the system GCC for Linux
+  and this project's existing mingw-w64 cross-compiler (`toolchain-mingw64.cmake`, the same toolchain
+  every other coin's Windows build already uses here) for Windows. Building the real upstream source
+  tree unmodified, rather than reconstructing RandomY's config inside this project's own differently-laid
+  -out RandomX engine, turned out to reproduce the correct test vector on the first try on Linux -- the
+  earlier mismatch documented above was specific to this project's own reimplementation, not to any
+  missing/wrong documented config constant.
+* Symbol rename (`objcopy --redefine-syms`, `randomx_*` -> `xcbrndy_*`) now excludes PE/COFF
+  COMDAT-folded sections (`.text$<mangled-name>` etc. with the `LINK_ONCE_DISCARD` flag, found via
+  `objdump -h`) on Windows, mirroring the existing ELF weak-symbol exclusion used on Linux -- both are
+  the C++ ABI's vague-linkage mechanism (template instantiations, inline member functions,
+  typeinfo/vtables) and must stay mergeable with this project's own identically-named RandomX engine
+  symbols, or the result is an ODR violation.
+* Verified on both platforms: the renamed library still reproduces the real go-randomy test vector
+  (`key="test key 000"`, `input="This is a test"` -> `0e9ab13e...`). The Windows PE library was confirmed
+  by actually executing it under `wine64` (installed for this verification), not just checking that it
+  links; the full cross-compiled `xmrig.exe` (`-DWITH_XCB=ON`) passed its own internal self-test
+  (`cpu READY`, not a self-test-failed error) and exchanged real `rx/xcb` stratum traffic with the live
+  `xcb-nodejs-pool`, at 1 and 4 threads, under `wine64`.
+* `WITH_XCB` now defaults ON on Windows x86_64 too (previously Linux x86_64 only).
+* Windows asset (`poolpayminer-1.1.27-win64.zip`) added to the existing `v1.1.27` GitHub release (no new
+  tag/release created); `SHA256SUMS-1.1.27.txt` updated to include it. All coin sites' `/downloads/` pages
+  (the 21 sites whose win64 row was still on stale 1.1.26, plus a brand-new win64 row added to
+  xcb.pool-pay.com, which never had one) updated to the new 1.1.27 Windows build.
+
+# Add Core Blockchain (XCB): new `rx/xcb` algorithm, RandomY (1.1.27)
+
+* New `Algorithm::RANDOMY` family and `rx/xcb` algorithm id (aliases `xcb`, `randomy`, `--coin=xcb`) for
+  **Core Blockchain (XCB)**, an account-based, EVM-like chain (geth v2 fork) -- structurally different
+  from every other coin here: the node builds the whole block itself (no coinbase/merkle tree at all)
+  and hands out mining work over a classic geth/ethash-family `cryptore_getWork`/`submitWork` RPC, not a
+  Bitcoin-style block template.
+* RandomY is a tuned fork of Monero's RandomX (different Argon2 iteration count/salt, program size,
+  scratchpad sizing vs. the reference/Monero configuration), with two coin-specific wrinkles: a fixed,
+  never-rotated dataset key (`"56789"`, no per-epoch DAG logic needed) and a `SHA3-512(sealHash ||
+  nonce)` seed-prep step fed into the hash in place of the raw header RandomX normally hashes. Vendors
+  the real, prebuilt `librandomy` the upstream `go-core` node itself links (binary-renamed via `objcopy
+  --redefine-syms` to avoid colliding with this project's own, differently-configured RandomX engine),
+  not a reimplementation -- reconstructing RandomY's config inside this project's own RandomX engine was
+  tried first and produced a wrong hash against the real library's own documented test vector, so that
+  approach was abandoned in favor of vendoring the real library directly.
+* `Pool.cpp`: added the `RANDOMY` family to the `EthStratumClient` selection whitelist. A dedicated
+  `RX_XCB`-only branch (not the shared default ethash-style path) handles this coin's own invented wire
+  shape: 5-field `mining.notify` (`job_id, sealHashHex, targetHex, heightHex, clean_jobs`), 3-field
+  `mining.submit` (`worker, job_id, nonceHex`) -- no `mixHash` param at all, since RandomY has no
+  DAG-mixing concept the way real ethash/KawPow do.
+* `CMakeLists.txt`: new `WITH_XCB` option, **default ON on Linux x86_64** (the only platform the
+  vendored static library is built for -- `src/crypto/xcb_randomy/CMakeLists.txt` fails loudly with a
+  `FATAL_ERROR` on anything else rather than silently skipping), default OFF everywhere else so this
+  change doesn't break a plain `cmake ..` on Windows/other targets. **Windows build not done this pass**
+  -- the Windows build of the vendored static library itself is a known, explicitly deferred gap; `xcb`
+  mining is Linux x86_64 only for now. (Addressed in the follow-up entry above this one, same version:
+  Windows x64 now also supported.)
+* Real end-to-end test against the live, fully-synced Core Blockchain mainnet node (via `xcb-nodejs-pool`,
+  itself polling the real node over an SSH tunnel): real jobs at advancing block heights, real shares
+  accepted at 1 and 2 threads, both over localhost and the public `xcb.pool-pay.com:6200` hostname.
+
+# Fix Kylacoin (KCN) coinbase/merkle-root hashing: sha3d, matching the pool (1.1.26)
+
+* Kylacoin's own `CTransaction::ComputeHash()` uses double SHA3-256 (`Hash3Writer`), unconditionally for every
+  transaction, not Bitcoin's standard double-SHA256 -- confirmed directly in the node's own source. The miner's
+  own independent coinbase/merkle-root reconstruction (used to check its own submitted shares) now does the
+  same for `flex`'s `FLEX_KCN` id, reusing the same helper added for Lyncoin below (now generalized as
+  `sha3d_flex_coinbase()`).
+* This is the matching client-side half of a pool-side fix that was briefly applied and reverted on 2026-10-13
+  (pool-only sha3d broke live share acceptance, since the client still rebuilt its own merkle root with plain
+  sha256d) -- re-applying both sides together this time. Every block Kylacoin's pool actually finds was being
+  submitted and rejected by the node (`"bad-txnmrklroot"`) until this; verified live after this fix that shares
+  are accepted normally (pool's vardiff retargeted upward from the share rate, not downward from rejections).
+* **Anyone mining Kylacoin (`flex`/`kcn`/`kylacoin`) must update to this version or newer** -- older miner builds
+  will have their shares rejected as "Low difficulty share" against a pool running the matching pool-side fix.
+
+# Add Lyncoin (LCN): its own Flex variant, `flex-lcn` (1.1.25)
+
+* New algorithm `flex-lcn` (aliases `lcn`, `lyncoin`) for Lyncoin: the same 18-chained SPH/CryptoNight-family
+  round shape as Kylacoin's `flex`, but a genuinely different vendored hasher -- Lyncoin's own `cnfn.c`/`aesb.c`/
+  `flex.cpp`, confirmed byte-for-byte against the live node's own source, never interchangeable with `flex`
+  despite the shared shape (see `critical-wrong-randomx-variant-bug`).
+* Found and fixed a new symbol-collision shape while vendoring it: `cnfn.h`'s thin wrapper functions
+  (`cnfn_dark_hash`, `cnfn_cnfast_hash`, etc.) are declared `inline` + `extern "C"`, which strips C++ namespacing
+  and let them collide as plain global symbols with Kylacoin's identically-named-but-different wrappers despite
+  both nominally living inside a `crypto::` namespace -- renamed to an `lcnflex_` prefix, confirmed zero overlap
+  afterward via `nm -g --defined-only` across every vendored crypto lib.
+* Lyncoin's coinbase transactions are mandatorily version 8 and hash their own txid with double SHA3-256 (not
+  SHA256d) under this coin's consensus rule (confirmed directly in the node's own `validation.cpp`, rule name
+  `flex-algo-wrong-cb-version`) -- the miner's own independent coinbase/merkle-root reconstruction (used to check
+  its own submitted shares) now does the same, gated strictly on `flex-lcn`'s own algorithm id so it never
+  affects Kylacoin's `flex` handling.
+* Real end-to-end mining verified against the live Lyncoin pool: shares accepted, vardiff climbing normally.
+  Self-test is a cross-check against the pool's own independently-built reference hasher for the same input,
+  not a real mined block -- Lyncoin's Flex variant runs at only ~30 H/s per thread on this reference CPU (no
+  AES-NI path in the real node's own source either), so a genuine block-level grind was judged impractical for
+  a self-test vector.
+
+# Fix two Stratum client bugs: keepalive re-ping storm and false "write error" disconnects (1.1.24)
+
+* `Client::ping()` never rescheduled its own keepalive timer: once `tick()`'s `now > m_keepAlive` check first
+  went true, it stayed true forever, so every later tick fired another ping instead of one per interval. Silent
+  on pools that just answer "keepalive"/"keepalived" (Epic, Veil); would be loudly visible as a repeating
+  "unknown method" error on any pool that doesn't. Fix: `ping()` now calls `startTimeout()` again after sending,
+  which recomputes the correct next interval.
+* `Client::write()` used `uv_try_write()` (non-blocking) and treated ANY short result -- including a plain
+  `UV_EAGAIN`, which just means the OS socket send buffer is momentarily full, normal under a burst of shares
+  from a many-thread miner -- as a fatal error and closed the connection. Confirmed live on a 16-thread Kylacoin
+  session: a "write error" and full reconnect roughly every 15-20s, which in turn kept resetting the pool's own
+  vardiff retarget timer on every reconnect -- looked exactly like "difficulty never adjusts" from the outside,
+  when the real cause was this reconnect loop. Fix: queue the unsent remainder via a real `uv_write()` (which
+  waits/retries internally) instead of giving up; only a genuine non-`EAGAIN` negative status still closes the
+  connection. Verified: 140 accepted / 0 rejected shares, 0 write errors, 1 connection (no reconnects) over a
+  60-second, 8-thread run against the live KCN pool, versus a reconnect roughly every 15-35s before the fix.
+* `Client::write()` is shared by both the plain-TCP path and the TLS path (`Tls.cpp`'s `send()` ->
+  `Client::send(BIO*)` -> `write()`), so this affected every coin's pool with many-threaded miners under either
+  plain or TLS Stratum, not just Kylacoin's.
+
 # Add X16RS algorithm (Hacash): a wholly new mining protocol, not just a new hash (1.1.23)
 
 * New algorithm `x16rs` (aliases `hac`, `hacash`) for Hacash (HAC): 16 chained classic hash rounds selected by a
