@@ -1,3 +1,30 @@
+# Qubic (QUBIC, bpp9000 useful proof of work) support (1.1.37)
+
+* **New algorithm `qubic`** (`-a qubic`): Qubic's "useful proof of work" (bpp9000 ant-colony), a
+  fundamentally different model from every other algorithm here -- instead of hashing, the miner
+  searches for solutions that improve a real neural network, verified against a vendored copy of the
+  official Qiner reference miner's own scorer. Speaks the real, currently-accepted Qatum protocol
+  (plain TCP, newline-delimited JSON) directly against pool-pay.com's own Qubic pool. Self-contained
+  side path (`src/qubic/Dispatch.{h,cpp}`, same pattern as Riecoin's own dispatcher) -- one attempt
+  costs real CPU seconds-to-minutes, not hashes/second, so it can't fit the normal Algorithm/Job/Pool
+  abstraction. Needs a reasonably modern CPU (ADX/BMI2/RDRAND, Haswell/Excavator-era or newer, 2013+)
+  for the vendored FourQ/K12 crypto this algorithm's identity/signing math needs -- scoped to just
+  this algorithm's own files so every other algorithm keeps working on older CPUs.
+* Fixed a real bug found via a live end-to-end test against pool-pay.com's own Qubic pool: the client
+  never read the `threshold` field the pool's own job packet carries, so the submit check
+  (`score <= threshold`) was silently comparing against 0 (an unreachable "perfect" score) on every
+  job after the first -- meaning no real miner could ever have submitted an accepted solution, even
+  though everything else (connecting, scoring, job handling) worked correctly.
+* Windows cross-compile support for `qubic`: the vendored crypto/network headers assumed Windows meant
+  real MSVC (`_MSC_VER`), which mingw (the actual toolchain this project's Windows builds use) never
+  defines even though it does target Windows -- fixed the platform checks, a resulting symbol
+  collision between this algorithm's own software fallbacks and mingw's own `<winnt.h>` declarations
+  of the same names, and a couple of smaller mingw-vs-MSVC API differences (`inet_ntop`'s constness,
+  `_WIN32_WINNT` gating, `sscanf_s` not existing under mingw).
+* Verified end to end on both platforms against the real, live pool: subscribes, receives a real job
+  with the correct threshold, after the fixes above (confirmed via a real Linux test and, separately,
+  the real Windows binary run under `wine64`).
+
 # Per-pool nonce offset for cn/upx2 (uPlexa) + AdventureCoin (ADVC, yespower-advc) (1.1.36)
 
 * **Fixed `cn/upx2` mining against uPlexa (UPX)**: 1.1.35's WrkzCoin fix hardcoded a blanket byte-73

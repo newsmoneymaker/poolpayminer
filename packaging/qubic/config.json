@@ -1,0 +1,14 @@
+{
+    "autosave": false,
+    "cpu": { "enabled": true, "huge-pages": true, "max-threads-hint": 50 },
+    "pools": [
+        {
+            "algo": "qubic",
+            "url": "qubic.pool-pay.com:3001",
+            "user": "YOUR_QUBIC_IDENTITY.worker1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ]
+}
