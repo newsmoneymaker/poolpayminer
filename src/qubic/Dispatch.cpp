@@ -578,13 +578,17 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
 {
     std::string algo, url, user, pass, configPath;
     bool haveAlgo = false;
+    bool useTls = false;
     unsigned int threads = 0;
 
     for (int i = 1; i < argc; ++i) {
         const char *arg = argv[i];
         const char *inlineValue = nullptr;
 
-        if (matchOpt(arg, "-a", "--algo", inlineValue)) {
+        if (strcmp(arg, "--tls") == 0) {
+            useTls = true;
+        }
+        else if (matchOpt(arg, "-a", "--algo", inlineValue)) {
             haveAlgo = true;
             algo = inlineValue ? inlineValue : ((i + 1 < argc) ? argv[++i] : "");
         }
@@ -623,6 +627,9 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
                 }
                 if (pass.empty()) {
                     if (const char *p = Json::getString(pool, "pass")) pass = p;
+                }
+                if (!useTls) {
+                    useTls = Json::getBool(pool, "tls", false);
                 }
             }
         }
@@ -692,7 +699,7 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
     }
     std::thread liveFetchThread(liveFetchThreadProc);
 
-    printf("poolpayminer: qubic: %u mining thread(s), connecting to %s:%s as wallet \"%s\"\n", threads, host.c_str(), port.c_str(), user.c_str());
+    printf("poolpayminer: qubic: %u mining thread(s), connecting to %s:%s%s as wallet \"%s\"\n", threads, host.c_str(), port.c_str(), useTls ? " (TLS)" : "", user.c_str());
 
     auto mainStart = std::chrono::steady_clock::now();
     uint64_t jobVersionCounter = 0;
@@ -719,7 +726,7 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
         }
 
         qatum::Client client;
-        if (!client.connect(host.c_str(), std::atoi(port.c_str()))) {
+        if (!client.connect(host.c_str(), std::atoi(port.c_str()), useTls)) {
             fprintf(stderr, "poolpayminer: qubic: could not connect to %s:%s, retrying in 5s\n", host.c_str(), port.c_str());
             std::this_thread::sleep_for(std::chrono::seconds(5));
             continue;
