@@ -421,6 +421,7 @@ documented above or are XMRig's own code, unchanged. Hacash has no Stratum of it
 
 | Algorithm (`--algo`) | Coin | Family | Runs on |
 |---|---|---|---|
+| **`qubic`** (`bpp9000`, `qubic/bpp9000`) | **Qubic (QUBIC)**: the network's "useful proof of work" (bpp9000 ant-colony scoring, not hashing), via the real Qatum pool protocol. Fetches fresh task data directly from a live Qubic node every 45 minutes (the data rotates hourly), so it never scores against a stale snapshot. Needs ADX/BMI2/RDRAND (Haswell/Excavator-era CPU, 2013+) | bpp9000 | CPU |
 | **`rx/epic`** (with `--epic`) | **Epic Cash (EPIC)**: RandomX with Wownero's instruction frequencies and AES keys, as in the Epic node | RandomX | CPU |
 | **`rx/veil`** | **Veil (VEIL)**: reference RandomX over the double SHA-256 of the 148 byte header | RandomX | CPU |
 | **`rx/c64`** | **C64 Chain (C64)**: the RandomX variant of the C64 node | RandomX | CPU |
