@@ -1,3 +1,16 @@
+# Qubic (QUBIC): real TLS support, `--tls` (1.1.38)
+
+* **Adds real TLS to the Qubic/Qatum connection** (`--tls`, or `"tls": true` in a pool config entry)
+  -- until now this was the one algorithm with no TLS option at all, a plain, unencrypted TCP socket
+  only. Some networks' DPI kills a long-lived connection that doesn't look like TLS traffic (confirmed
+  on a real user's own home network, mining Qubic specifically) -- `-a qubic -o
+  qubic.pool-pay.com:3011 -u <identity> -p x --tls` connects over a real TLS 1.3 session instead,
+  verified end to end on both Linux and Windows against the pool's own new TLS listener (real
+  handshake, subscribe, job, correct threshold, live task-data fetch all confirmed working).
+* The pool side (`qubic.pool-pay.com:3011`) now runs the exact same Qatum handler over `tls.createServer`
+  alongside the existing plain port 3001 -- nothing changes for anyone already connecting without
+  `--tls`, port 3001 keeps working exactly as before.
+
 # Qubic (QUBIC, bpp9000 useful proof of work) support (1.1.37)
 
 * **New algorithm `qubic`** (`-a qubic`): Qubic's "useful proof of work" (bpp9000 ant-colony), a

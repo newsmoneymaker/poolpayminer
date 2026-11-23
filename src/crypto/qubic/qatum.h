@@ -16,6 +16,9 @@
 #include <cstring>
 #include <string>
 
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -168,7 +171,14 @@ struct Client
     std::string buffer;
     bool connected = false;
 
-    bool connect(const char* host, int port)
+    // Some networks' DPI kills a long-lived plain TCP connection that doesn't look like TLS
+    // (confirmed on a real user's home network -- see user-home-network-dpi-issue memory). The
+    // Qatum pool now also offers a TLS listener; this is the client side of that.
+    bool useTls = false;
+    SSL_CTX* sslCtx = nullptr;
+    SSL* ssl = nullptr;
+
+    bool connect(const char* host, int port, bool tls = false)
     {
         std::string ip;
         if (!resolveHost(host, ip))
@@ -180,6 +190,28 @@ struct Client
         {
             return false;
         }
+        useTls = tls;
+        if (useTls)
+        {
+            sslCtx = SSL_CTX_new(TLS_client_method());
+            if (!sslCtx)
+            {
+                printf("qatum: SSL_CTX_new failed\n");
+                sock.closeConnection();
+                return false;
+            }
+            ssl = SSL_new(sslCtx);
+            SSL_set_fd(ssl, (int)sock.serverSocket);
+            SSL_set_tlsext_host_name(ssl, host); // SNI -- our cert is a *.pool-pay.com wildcard
+            if (SSL_connect(ssl) != 1)
+            {
+                printf("qatum: TLS handshake with %s:%d failed\n", host, port);
+                SSL_free(ssl); ssl = nullptr;
+                SSL_CTX_free(sslCtx); sslCtx = nullptr;
+                sock.closeConnection();
+                return false;
+            }
+        }
         buffer.clear();
         connected = true;
         return true;
@@ -188,6 +220,12 @@ struct Client
     void close()
     {
         if (!connected) return;
+        if (useTls && ssl)
+        {
+            SSL_shutdown(ssl);
+            SSL_free(ssl); ssl = nullptr;
+            SSL_CTX_free(sslCtx); sslCtx = nullptr;
+        }
         sock.closeConnection();
         connected = false;
         buffer.clear();
@@ -198,6 +236,18 @@ struct Client
         if (!connected) return false;
         std::string line = packet;
         line.push_back('\n');
+        if (useTls)
+        {
+            int total = 0;
+            const int need = (int)line.size();
+            while (total < need)
+            {
+                const int n = SSL_write(ssl, line.data() + total, need - total);
+                if (n <= 0) { connected = false; return false; }
+                total += n;
+            }
+            return true;
+        }
         if (!sock.sendData(&line[0], (unsigned int)line.size()))
         {
             connected = false;
@@ -214,38 +264,60 @@ struct Client
         size_t newline = buffer.find('\n');
         if (newline == std::string::npos)
         {
-            // select() with a zero timeout rather than a non-blocking recv: the socket carries the
-            // 5s SO_RCVTIMEO ServerSocket sets for request/response use, and a blocking read here
-            // would stall the coordinator for that long between draining worker hits.
-            fd_set readable;
-            FD_ZERO(&readable);
-            FD_SET(sock.serverSocket, &readable);
-            timeval immediately;
-            immediately.tv_sec = 0;
-            immediately.tv_usec = 0;
-
-            const int ready = select((int)sock.serverSocket + 1, &readable, nullptr, nullptr, &immediately);
-            if (ready < 0)
+            // SSL_pending(): TLS framing means a previous SSL_read can leave already-decrypted bytes
+            // sitting in OpenSSL's own buffer with nothing left to see on the raw fd -- select() below
+            // would then wait a full cycle for no reason. Skip straight to SSL_read when that's non-zero.
+            if (!(useTls && ssl && SSL_pending(ssl) > 0))
             {
-                // EINTR (a signal landed mid-syscall) is benign and common when the caller polls in a
-                // tight loop alongside other threads -- treat it as "nothing ready yet", not a dead
-                // connection. Only a real error (anything else) means the socket is actually broken.
+                // select() with a zero timeout rather than a non-blocking recv: the socket carries the
+                // 5s SO_RCVTIMEO ServerSocket sets for request/response use, and a blocking read here
+                // would stall the coordinator for that long between draining worker hits.
+                fd_set readable;
+                FD_ZERO(&readable);
+                FD_SET(sock.serverSocket, &readable);
+                timeval immediately;
+                immediately.tv_sec = 0;
+                immediately.tv_usec = 0;
+
+                const int ready = select((int)sock.serverSocket + 1, &readable, nullptr, nullptr, &immediately);
+                if (ready < 0)
+                {
+                    // EINTR (a signal landed mid-syscall) is benign and common when the caller polls in a
+                    // tight loop alongside other threads -- treat it as "nothing ready yet", not a dead
+                    // connection. Only a real error (anything else) means the socket is actually broken.
 #ifndef _WIN32
-                if (errno == EINTR)
+                    if (errno == EINTR)
+                    {
+                        return true;
+                    }
+#endif
+                    connected = false;
+                    return false;
+                }
+                if (ready == 0)
                 {
                     return true;
                 }
-#endif
-                connected = false;
-                return false;
-            }
-            if (ready == 0)
-            {
-                return true;
             }
 
             char chunk[4096];
-            const int received = (int)recv(sock.serverSocket, chunk, sizeof(chunk), 0);
+            int received;
+            if (useTls)
+            {
+                received = SSL_read(ssl, chunk, sizeof(chunk));
+                if (received <= 0)
+                {
+                    const int err = SSL_get_error(ssl, received);
+                    if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+                    {
+                        return true; // nothing fully decoded yet, not a dead connection
+                    }
+                }
+            }
+            else
+            {
+                received = (int)recv(sock.serverSocket, chunk, sizeof(chunk), 0);
+            }
             if (received <= 0)
             {
                 connected = false;
