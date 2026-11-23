@@ -34,6 +34,7 @@
 #include "crypto/qubic/score_bpp9000.h"
 #include "crypto/qubic/keyUtils.h"
 #include "crypto/qubic/qatum.h"
+#include "crypto/qubic/bpp9000_fetch.h"
 #include "3rdparty/rapidjson/document.h"
 
 #include <array>
@@ -200,8 +201,104 @@ std::string exeDir(const std::string &exePath)
 }
 
 
-// Set once in maybeDispatch() before any worker thread starts; read-only after that.
+// Set once in maybeDispatch() before any worker thread starts; read-only after that. This is the
+// BUNDLED snapshot's path -- the fallback/initial topology source. What worker threads actually load
+// is g_liveTask.activePath below, which the live-fetch thread can swap at runtime.
 std::string g_taskFilePath;
+
+// Real Qubic nodes to fetch fresh bpp9000 task data from directly (the binary peer protocol, port
+// 21841 -- NOT the Qatum pool connection). Same bootstrap list the pool's own node-manager uses, see
+// qatum-protocol-src/.env's NODE_IPS -- reusing an already-trusted source rather than inventing a new
+// one.
+const std::vector<std::string> kBootstrapNodeIps = {"82.197.173.130", "195.154.148.68", "90.11.201.149"};
+
+// Stay well under the hourly dataHash rotation found in this project's own research
+// (critical-qubic-task-data-staleness memory) so the loaded task is never far behind.
+constexpr int kLiveFetchIntervalSeconds = 45 * 60;
+
+// Shared between the live-fetch thread (the only writer) and worker threads (readers, via
+// currentActivePath()/taskVersion()). version bumps whenever activePath actually changes to a
+// genuinely different task (compared by the protocol-level first-frame hash, not just "a fetch
+// happened") -- worker threads reload the scorer only when this, or the job's own seedVersion,
+// changes.
+struct LiveTaskState
+{
+    std::mutex mutex;
+    std::string activePath;
+    std::atomic<uint64_t> version{0};
+    unsigned char lastFirstFrameHash[32] = {};
+    bool haveFirstFrameHash = false;
+
+    std::string currentActivePath()
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        return activePath;
+    }
+};
+LiveTaskState g_liveTask;
+
+// Updated whenever the Qatum pool's own SubscribePacket reports a dataHash (its protocol-level hash
+// of the live first-frame targets, same quantity fetchAndWriteLiveTaskFile() computes into
+// outDataHashFirstFrame -- see critical-bpp9000-datahash-formula memory). Used only as an
+// informational cross-check logged by the live-fetch thread, never to gate mining: the node fetch
+// itself is the authoritative source once it succeeds.
+std::mutex g_poolHashMutex;
+bool g_havePoolDataHash = false;
+unsigned char g_poolDataHash[32] = {};
+
+
+void liveFetchThreadProc()
+{
+    const std::string livePath = g_taskFilePath + ".live";
+
+    while (!shuttingDown()) {
+        bool fetchedThisRound = false;
+
+        for (const std::string &ip : kBootstrapNodeIps) {
+            if (shuttingDown()) break;
+
+            const std::string topoSrc = g_liveTask.currentActivePath();
+            unsigned char firstFrameHash[32];
+
+            if (qubic_live_fetch::fetchAndWriteLiveTaskFile(ip.c_str(), topoSrc.c_str(), livePath.c_str(), firstFrameHash)) {
+                bool changed = false;
+                {
+                    std::lock_guard<std::mutex> lock(g_liveTask.mutex);
+                    changed = !g_liveTask.haveFirstFrameHash || memcmp(g_liveTask.lastFirstFrameHash, firstFrameHash, 32) != 0;
+                    if (changed) {
+                        memcpy(g_liveTask.lastFirstFrameHash, firstFrameHash, 32);
+                        g_liveTask.haveFirstFrameHash = true;
+                        g_liveTask.activePath = livePath;
+                        g_liveTask.version.fetch_add(1);
+                    }
+                }
+
+                if (changed) {
+                    printf("poolpayminer: qubic: live task data refreshed from node %s (first-frame hash %s)\n",
+                        ip.c_str(), qatum::toHex(firstFrameHash, 32).c_str());
+
+                    std::lock_guard<std::mutex> poolLock(g_poolHashMutex);
+                    if (g_havePoolDataHash) {
+                        const bool matchesPool = memcmp(g_poolDataHash, firstFrameHash, 32) == 0;
+                        printf("poolpayminer: qubic: live task data %s the pool's last-reported dataHash\n",
+                            matchesPool ? "MATCHES" : "does NOT match");
+                    }
+                }
+                fetchedThisRound = true;
+                break;
+            }
+        }
+
+        if (!fetchedThisRound && !shuttingDown()) {
+            fprintf(stderr, "poolpayminer: qubic: could not fetch live task data from any known node this round; "
+                "mining continues against the last loaded task file (may be stale)\n");
+        }
+
+        for (int i = 0; i < kLiveFetchIntervalSeconds && !shuttingDown(); ++i) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
+}
 
 
 void splitHostPort(std::string url, std::string &host, std::string &port)
@@ -419,6 +516,7 @@ void workerThreadProc(SharedState &state)
     std::mt19937_64 rng(std::random_device{}());
     std::unique_ptr<QubicScorer> scorer;
     uint64_t loadedSeedVersion = 0;
+    uint64_t loadedTaskVersion = 0;
 
     while (!shuttingDown()) {
         const JobState job = state.currentJob();
@@ -427,17 +525,20 @@ void workerThreadProc(SharedState &state)
             continue;
         }
 
-        if (!scorer || job.seedVersion != loadedSeedVersion) {
+        const uint64_t taskVersion = g_liveTask.version.load();
+        if (!scorer || job.seedVersion != loadedSeedVersion || taskVersion != loadedTaskVersion) {
+            const std::string taskFilePath = g_liveTask.currentActivePath();
             scorer.reset(new QubicScorer());
             unsigned char seedCopy[32];
             memcpy(seedCopy, job.seed, 32);
-            if (!scorer->initialize(seedCopy, g_taskFilePath.c_str())) {
-                fprintf(stderr, "poolpayminer: qubic: failed to load task file %s, retrying\n", g_taskFilePath.c_str());
+            if (!scorer->initialize(seedCopy, taskFilePath.c_str())) {
+                fprintf(stderr, "poolpayminer: qubic: failed to load task file %s, retrying\n", taskFilePath.c_str());
                 scorer.reset();
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 continue;
             }
             loadedSeedVersion = job.seedVersion;
+            loadedTaskVersion = taskVersion;
         }
 
         QubicScorer::ANN rootAnn;
@@ -564,6 +665,7 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
             return true;
         }
     }
+    g_liveTask.activePath = g_taskFilePath; // bundled snapshot, until the live-fetch thread swaps in something fresher
 
     FeeRoute route;
     const bool haveFee = !self.empty() && FeeTable::mainRoute(route) && route.target == FeeTarget::CPU;
@@ -588,6 +690,7 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
     for (unsigned int i = 0; i < threads; ++i) {
         workers.emplace_back(workerThreadProc, std::ref(state));
     }
+    std::thread liveFetchThread(liveFetchThreadProc);
 
     printf("poolpayminer: qubic: %u mining thread(s), connecting to %s:%s as wallet \"%s\"\n", threads, host.c_str(), port.c_str(), user.c_str());
 
@@ -662,6 +765,20 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
                     }
                     subscribed = true;
                     printf("poolpayminer: qubic: subscribed\n");
+
+                    // The pool reports its OWN protocol-level dataHash here (K12 of its current
+                    // first-frame targets, same quantity the live-fetch thread computes) -- purely
+                    // informational: logged by the live-fetch thread as a cross-check, never used to
+                    // gate mining. See critical-bpp9000-datahash-formula memory.
+                    std::string poolDataHashHex;
+                    if (qatum::getString(line, "dataHash", poolDataHashHex)) {
+                        unsigned char poolHash[32];
+                        if (qatum::parseHex(poolDataHashHex, poolHash, 32)) {
+                            std::lock_guard<std::mutex> lock(g_poolHashMutex);
+                            memcpy(g_poolDataHash, poolHash, 32);
+                            g_havePoolDataHash = true;
+                        }
+                    }
                 }
                 else if (id == qatum::EVENT_NEW_DIFFICULTY) {
                     unsigned int diff = 0;
@@ -764,6 +881,7 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
     for (auto &t : workers) {
         t.join();
     }
+    liveFetchThread.join();
 
     exitCode = 0;
     return true;

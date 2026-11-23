@@ -24,6 +24,19 @@
 * Verified end to end on both platforms against the real, live pool: subscribes, receives a real job
   with the correct threshold, after the fixes above (confirmed via a real Linux test and, separately,
   the real Windows binary run under `wine64`).
+* **Fixed a real correctness gap found while re-auditing this same release before its first public
+  announcement: the bundled `bpp9000-mainnet.task` snapshot goes stale within about an hour (its
+  `dataHash` rotates hourly with the network's own BTC price feed), and the real Qatum pool protocol
+  has no way to hand a client fresh task bytes at all -- it only ever sends `topologyHash`/`dataHash`,
+  never the data itself. A client with no live-fetch path would silently score against a dead task
+  forever, with zero error message telling the user why nothing is ever accepted.** Fixed with a real
+  live-fetch: `qubic` now talks directly to a real Qubic node every 45 minutes (the same binary peer
+  protocol, `REQUEST_BPP9000_TASK_DATA`, that `qatum-protocol-src`'s own offline tooling already used)
+  and swaps in the fresh task data automatically -- worker threads reload transparently, no restart
+  needed. Verified against two independent real nodes agreeing on the identical freshly-fetched hash,
+  and a full round trip through the real production scorer loading the freshly written file back.
+  This is why this release was held back after its first build -- the earlier binary had the bug
+  above and was pulled before anyone downloaded it.
 
 # Per-pool nonce offset for cn/upx2 (uPlexa) + AdventureCoin (ADVC, yespower-advc) (1.1.36)
 
