@@ -1,3 +1,19 @@
+# Qubic (QUBIC): fixes a silent crash on CPUs older than ~2013 (1.1.41)
+
+* **Fixes a real bug: `-a qubic` crashed instantly with no error message at all on CPUs from before
+  roughly 2013** (confirmed on an Intel Xeon E5-2650, Sandy Bridge, 2012). Qubic's vendored FourQ curve
+  code genuinely needs the ADX/BMI2/RDRAND instruction sets, but the build was applying those compiler
+  flags to the WHOLE of `Dispatch.cpp`/`keyUtils.cpp` -- including the mining/networking code that
+  doesn't use them at all -- letting the compiler opportunistically use those instructions anywhere in
+  those files. Direct-address Qubic mining (the only mode this miner supports) never actually needs the
+  FourQ code (`getPublicKeyFromIdentity` is a plain decode, not curve math), so this was pure
+  collateral damage from over-broad compile flags, not anything inherent to mining itself.
+* Split the FourQ curve arithmetic into its own file/translation unit (`keyUtilsEcc.cpp`), so only it
+  gets the special compiler flags; everything else, including the whole mining hot path, now builds
+  and runs on any 64-bit CPU again, same as before Qubic was added.
+* Also replaced a hardware-RDRAND call in the Qatum network code (a plain session-correlation id, not
+  a secret) with a portable PRNG, for the same reason.
+
 # Qubic (QUBIC): real scoring algorithm upgrade, fixes every solution verifying false (1.1.40)
 
 * **Fixes a real bug: every submitted solution that got through the (now-fixed) 1.1.39 format check
