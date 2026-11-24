@@ -1,3 +1,19 @@
+# Qubic (QUBIC): fixed EVERY submission being rejected (1.1.39)
+
+* **Fixes a real, 100%-reproducible bug: every single solution submission was rejected by the pool
+  with "invalid submit packet (canonical ant nonce required)".** The real network's canonical ant
+  nonce encoding grew a "mode" field (bits 4-5 of `nonce[1]`, must be `WIRING`) since this vendored
+  scorer was first pulled in -- the pool's own native addon was updated for this once already (see
+  the earlier `critical-qatum-addon-old-algorithm-version` fix), but poolpayminer's own copy of
+  `score_bpp9000.h` and its nonce generator were never carried over to the new encoding, so every
+  nonce this miner ever produced was built in the OLD format and rejected outright. Found live from a
+  real user's miner: it mined correctly, found real candidate solutions, and every one bounced.
+* Fixed `lutEntriesPerStep()`/`isCanonicalAntNonce()` in `score_bpp9000.h` and the nonce generator in
+  `Dispatch.cpp` to match the real network's current encoding exactly -- cross-checked directly
+  against the pool's own real validator function (`qatum-protocol-src/src/utils/bpp9000.ts`): the new
+  encoding passes, the old one now correctly fails the same check. The actual score math is
+  unaffected (L/K are the same values either way, only how they're packed into the nonce byte changed).
+
 # Qubic (QUBIC): real TLS support, `--tls` (1.1.38)
 
 * **Adds real TLS to the Qubic/Qatum connection** (`--tls`, or `"tls": true` in a pool config entry)

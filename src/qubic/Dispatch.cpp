@@ -506,7 +506,14 @@ void randomNonce(std::mt19937_64 &rng, unsigned char nonce[32])
         memcpy(nonce + i * 8, &r, 8);
     }
     nonce[0] = 1;
-    nonce[1] = static_cast<unsigned char>(1 + (rng() % 10));   // L in [1,10]
+    // nonce[1] packs L into the low 4 bits AND the mode (WIRING=2, the only mode this scorer/the real
+    // node currently implements) into bits 4-5, top two bits clear -- matching
+    // score_bpp9000::Miner::isCanonicalAntNonce()/the pool's own isCanonicalAntNonce() exactly. A plain
+    // L byte here (the OLD encoding) passes the OLD check but the real node/pool reject every single
+    // submission as non-canonical -- found 2026-11-24 from a real miner's 100%-reproducible rejections.
+    const unsigned char L = static_cast<unsigned char>(1 + (rng() % 10));   // L in [1,10]
+    constexpr unsigned char kModeWiring = 2;
+    nonce[1] = static_cast<unsigned char>((kModeWiring << 4) | L);
     nonce[2] = static_cast<unsigned char>(rng() % 101);        // K in [0,100]
 }
 

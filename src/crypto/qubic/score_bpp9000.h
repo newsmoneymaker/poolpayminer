@@ -468,9 +468,16 @@ struct Miner
     // is what makes ant-colony solutions acceptable. Shares pRandom2Pool, score(), mutate() and the
     // trit arithmetic with the solo path above.
 
+    // L lives in the LOW 4 bits of nonce[1] now, not the whole byte -- the real network's canonical
+    // nonce encoding grew a "mode" field in bits 4-5 (WIRING=2 is the only mode this scorer, or the
+    // real node, currently implements; see isCanonicalAntNonce()) after this vendored copy was first
+    // pulled in. Found 2026-11-24 from a real, 100%-reproducible "invalid submit packet (canonical ant
+    // nonce required)" rejection on every single real submission -- the exact same stale-encoding
+    // class of bug already fixed once on the pool's own native addon, see
+    // critical-qatum-addon-old-algorithm-version memory, just never carried over to this file.
     static unsigned int lutEntriesPerStep(const unsigned char* nonce)
     {
-        unsigned int L = nonce[1];
+        unsigned int L = nonce[1] & 0x0F;
         if (L < 1)
         {
             L = 1;
@@ -530,11 +537,21 @@ struct Miner
         return best;
     }
 
+    // Matches the pool's own isCanonicalAntNonce (qatum-protocol-src/src/utils/bpp9000.ts) exactly:
+    // algo = 01, L = nonce[1] & 0x0F in [1, MAX_LUT_ENTRIES_PER_STEP], mode = (nonce[1] >> 4) & 0x03
+    // must be WIRING (2), and the top two bits of nonce[1] must be clear.
+    static constexpr unsigned char BPP9000_MODE_WIRING = 2;
+
     static bool isCanonicalAntNonce(const unsigned char* nonce)
     {
+        const unsigned char b1 = nonce[1];
+        const unsigned int L = b1 & 0x0F;
+        const unsigned int mode = (b1 >> 4) & 0x03;
         return (nonce[0] == 1)                             // AlgoType::Bpp9000
-            && (nonce[1] >= 1)
-            && (nonce[1] <= MAX_LUT_ENTRIES_PER_STEP)
+            && (L >= 1)
+            && (L <= MAX_LUT_ENTRIES_PER_STEP)
+            && (mode == BPP9000_MODE_WIRING)
+            && ((b1 & 0xC0) == 0)
             && (nonce[2] <= numberOfMutations);
     }
 
