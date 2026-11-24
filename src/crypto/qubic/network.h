@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <random>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -13,7 +14,6 @@
 #endif
 #else
 #include <errno.h>
-#include <immintrin.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -63,7 +63,11 @@ public:
 
     inline void randomizeDejavu()
     {
-        _rdrand32_step(&_dejavu);
+        // dejavu is a plain correlation id, not a secret -- a portable PRNG is fine and, unlike
+        // _rdrand32_step, doesn't require a CPU newer than Haswell/Excavator (~2013+) just to start
+        // the program at all (real crash seen on an Intel Xeon E5-2650, Sandy Bridge, 2012).
+        static std::mt19937 rng(std::random_device{}());
+        _dejavu = rng();
         if (!_dejavu)
         {
             _dejavu = 1;

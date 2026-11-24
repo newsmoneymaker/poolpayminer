@@ -195,19 +195,28 @@ set(SOURCES
     "${RIEMINER_BLOB_CPP}"
     src/qubic/Dispatch.cpp
     src/crypto/qubic/keyUtils.cpp
+    src/crypto/qubic/keyUtilsEcc.cpp
     src/Summary.cpp
     src/xmrig.cpp
    )
 
-# Qubic's vendored FourQ/K12 crypto (src/crypto/qubic/K12AndKeyUtil.h) uses the ADX/BMI2 intrinsics
-# (_addcarry_u64 etc.) throughout its field arithmetic with no portable fallback path, confirmed by a
-# direct build failure without these flags on this host's gcc 8.3.0. Scoped to just these two files
-# instead of the whole target, so mining every OTHER algorithm still works on CPUs older than Haswell/
-# Excavator (~2013+) -- only customers mining Qubic specifically need that newer a CPU.
+# Qubic's vendored FourQ curve arithmetic (src/crypto/qubic/FourQCurve.h, included only by
+# keyUtilsEcc.cpp) uses the ADX/BMI2/RDRAND intrinsics (_addcarry_u64 etc.) throughout its field
+# arithmetic with no portable fallback path, confirmed by a direct build failure without these flags
+# on this host's gcc 8.3.0. Scoped to just this one file -- previously it was scoped to Dispatch.cpp
+# and keyUtils.cpp as a whole (a real bug, fixed 2026-11-24): compiling those two LARGE translation
+# units under a blanket -madx -mbmi2 -mrdrnd let gcc opportunistically target those instructions
+# ANYWHERE in them, including the bpp9000 mining hot loop (included into Dispatch.cpp via
+# score_bpp9000.h) which has nothing to do with FourQ at all. Confirmed by a real crash with zero
+# console output on an Intel Xeon E5-2650 (Sandy Bridge, 2012 -- no ADX/BMI2/RDRAND) running plain
+# direct-address Qubic mining, which never reaches FourQ in the first place (getPublicKeyFromIdentity
+# is a pure base-26 decode + K12 checksum; only getPublicKeyFromPrivateKey, built here, needs the
+# curve math, and poolpayminer's Qubic mode never calls it -- direct-address only, no custodial seed
+# path). Every OTHER algorithm, and now Qubic's own mining/networking code too, works on CPUs older
+# than Haswell/Excavator (~2013+); only a caller of getPublicKeyFromPrivateKey would need that CPU.
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set_source_files_properties(
-        src/qubic/Dispatch.cpp
-        src/crypto/qubic/keyUtils.cpp
+        src/crypto/qubic/keyUtilsEcc.cpp
         PROPERTIES COMPILE_FLAGS "-madx -mbmi2 -mrdrnd"
     )
     # inet_ntop/inet_pton are gated behind the target Windows version mingw-w64's own headers
@@ -217,7 +226,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
     if (WIN32)
         set_source_files_properties(
             src/qubic/Dispatch.cpp
-            PROPERTIES COMPILE_FLAGS "-madx -mbmi2 -mrdrnd -D_WIN32_WINNT=0x0600"
+            PROPERTIES COMPILE_FLAGS "-D_WIN32_WINNT=0x0600"
         )
     endif()
 endif()
