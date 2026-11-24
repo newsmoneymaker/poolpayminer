@@ -554,7 +554,7 @@ void workerThreadProc(SharedState &state)
         unsigned char nonce[32];
         randomNonce(rng, nonce);
 
-        const unsigned int score = scorer->computeScoreFromParent(rootAnn.lut, job.computorPubkey, nonce, job.anchorDigest);
+        const unsigned int score = scorer->computeScoreFromParent(rootAnn, job.computorPubkey, nonce, job.anchorDigest);
         state.attempts.fetch_add(1);
 
         // The job may have rotated while this attempt ran (each attempt costs real seconds): a stale

@@ -1,3 +1,20 @@
+# Qubic (QUBIC): real scoring algorithm upgrade, fixes every solution verifying false (1.1.40)
+
+* **Fixes a real bug: every submitted solution that got through the (now-fixed) 1.1.39 format check
+  still verified false against the live network.** `score_bpp9000.h`'s whole scoring engine was still
+  the pre-EP240 algorithm (population=64, windowWidth=672, no shift mechanic) -- the pool's own native
+  addon was upgraded to the current post-EP240 algorithm (population=1024, windowWidth=8760,
+  sequenceLength=8928, a rolling-shift-window + advanceThreshold mechanic) once already, this miner's
+  own copy never was. Wiring/initial-neuron-values are now root-material-derived (matching the real
+  network), not read from the task file's topology block.
+* Rewrote the scorer as a direct port of qubic/core's current production reference, cross-checked
+  bit-exact against the pool's own real native addon on two independent real inputs (identical scores
+  both times: 5833/5833 and 5965/5965) -- not a self-consistency check, a real side-by-side comparison
+  against the network's own authoritative implementation.
+* `Dispatch.cpp`'s call to `computeScoreFromParent` now passes the full parent ANN (initial values +
+  wiring + LUT), not just the LUT -- the old call only ever inherited the LUT, silently dropping the
+  other two fields a real child must inherit from its parent.
+
 # Qubic (QUBIC): fixed EVERY submission being rejected (1.1.39)
 
 * **Fixes a real, 100%-reproducible bug: every single solution submission was rejected by the pool
