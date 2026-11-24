@@ -1,3 +1,9 @@
+# Qubic (QUBIC): shows the real best score reached each round (1.1.43)
+
+* The console now also prints the real best (lowest) score seen across all threads every ~60s,
+  right next to the job's own threshold -- so it's visible how close real attempts are actually
+  getting, instead of only knowing a solution hasn't been found yet with no further detail.
+
 # Qubic (QUBIC): reports a real attempts/hour rate (1.1.42)
 
 * Qubic mining now prints its own real attempts/hour rate to the console every ~60s, and reports it to
