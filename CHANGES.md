@@ -1,3 +1,10 @@
+# Qubic (QUBIC): reports a real attempts/hour rate (1.1.42)
+
+* Qubic mining now prints its own real attempts/hour rate to the console every ~60s, and reports it to
+  the pool (`EVENT_REPORT_HASHRATE`, already in the protocol client but never actually called until
+  now) -- the pool's `/workers` API always showed `hashrate: 0` before this, not because mining was
+  idle, just because nothing ever sent a real number.
+
 # Qubic (QUBIC): fixes a silent crash on CPUs older than ~2013 (1.1.41)
 
 * **Fixes a real bug: `-a qubic` crashed instantly with no error message at all on CPUs from before
