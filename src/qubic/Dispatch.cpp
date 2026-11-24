@@ -469,6 +469,16 @@ struct SharedState
 
     std::atomic<uint64_t> attempts{0};
     std::atomic<uint64_t> solutionsFound{0};
+    // Lower is better (it's an error/mismatch count, not a "difficulty"): tracks the best (lowest)
+    // real score seen across all threads since the last periodic report was printed, so a real,
+    // observed number can be shown next to the two thresholds it's actually compared against.
+    std::atomic<unsigned int> bestScoreSinceReport{UINT32_MAX};
+
+    void noteScore(unsigned int score)
+    {
+        unsigned int cur = bestScoreSinceReport.load();
+        while (score < cur && !bestScoreSinceReport.compare_exchange_weak(cur, score)) {}
+    }
 
     void setJob(const JobState &j)
     {
@@ -556,6 +566,9 @@ void workerThreadProc(SharedState &state)
 
         const unsigned int score = scorer->computeScoreFromParent(rootAnn, job.computorPubkey, nonce, job.anchorDigest);
         state.attempts.fetch_add(1);
+        if (score != QubicScorer::INVALID_SCORE_VALUE) {
+            state.noteScore(score);
+        }
 
         // The job may have rotated while this attempt ran (each attempt costs real seconds): a stale
         // solution for an old anchor/seed would just be rejected by the pool, so drop it here instead
@@ -890,8 +903,19 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
                     const uint64_t curAttempts = state.attempts.load();
                     const uint64_t delta = curAttempts - lastRateReportAttempts;
                     const double attemptsPerHour = delta * 3600000.0 / elapsedMs;
-                    printf("poolpayminer: qubic: %.1f attempts/hour (%llu total this connection)\n",
-                        attemptsPerHour, (unsigned long long)curAttempts);
+                    const unsigned int bestScore = state.bestScoreSinceReport.exchange(UINT32_MAX);
+                    // Lower is better: the real number mining needs to beat is the job's own
+                    // threshold (job.threshold, printed on every "new job" line), not 3504 -- that's
+                    // just the algorithm's own internal gate for extending the scoring window further.
+                    if (bestScore == UINT32_MAX) {
+                        printf("poolpayminer: qubic: %.1f attempts/hour (%llu total this connection), "
+                            "no attempt scored yet this round\n",
+                            attemptsPerHour, (unsigned long long)curAttempts);
+                    } else {
+                        printf("poolpayminer: qubic: %.1f attempts/hour (%llu total this connection), "
+                            "best score this round: %u (need <= %u to submit)\n",
+                            attemptsPerHour, (unsigned long long)curAttempts, bestScore, job.threshold);
+                    }
                     // Reported as attempts/hour, not /sec: a single thread's real rate is well under
                     // 1/sec (full attempts cost whole seconds, see this file's header comment), which
                     // would truncate to 0 as the integer this wire field expects.
