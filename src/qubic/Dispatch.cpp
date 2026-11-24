@@ -752,6 +752,8 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
 
         JobState job;
         bool subscribed = false;
+        auto lastRateReport = std::chrono::steady_clock::now();
+        uint64_t lastRateReportAttempts = state.attempts.load();
 
         while (!shuttingDown() && client.connected) {
             if (haveFee) {
@@ -873,6 +875,31 @@ bool maybeDispatch(int argc, char **argv, int &exitCode)
                     const PendingSubmit s = state.submits.front();
                     state.submits.pop();
                     client.submit(s.jobId, s.computorIdStr, qatum::toHex(s.seed, 32), s.nonce, s.claimedScore);
+                }
+            }
+
+            // Real attempts/sec, not a guess: state.attempts is incremented once per completed
+            // computeScoreFromParent call (score_bpp9000.h), the actual unit of work here (there is
+            // no "hash" to count, see this file's header comment). Reported both locally and to the
+            // pool (EVENT_REPORT_HASHRATE, already implemented in qatum.h but never called until
+            // now) every ~60s, so /workers shows real numbers instead of the 0 it always had before.
+            {
+                const auto now = std::chrono::steady_clock::now();
+                const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastRateReport).count();
+                if (elapsedMs >= 60000) {
+                    const uint64_t curAttempts = state.attempts.load();
+                    const uint64_t delta = curAttempts - lastRateReportAttempts;
+                    const double attemptsPerHour = delta * 3600000.0 / elapsedMs;
+                    printf("poolpayminer: qubic: %.1f attempts/hour (%llu total this connection)\n",
+                        attemptsPerHour, (unsigned long long)curAttempts);
+                    // Reported as attempts/hour, not /sec: a single thread's real rate is well under
+                    // 1/sec (full attempts cost whole seconds, see this file's header comment), which
+                    // would truncate to 0 as the integer this wire field expects.
+                    if (subscribed && !job.computorIdStr.empty()) {
+                        client.reportHashrate(job.computorIdStr, (unsigned long long)attemptsPerHour);
+                    }
+                    lastRateReport = now;
+                    lastRateReportAttempts = curAttempts;
                 }
             }
 
