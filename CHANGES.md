@@ -1,3 +1,20 @@
+# Add FortuneBlock (FTB) mining support: new `fortunehash` algorithm (1.1.44)
+
+* FortuneBlock's own PoW hash is a GhostRider-shaped algorithm but genuinely different, not an
+  alias: 11 core SPH hash functions in 5/5/1 segments over 14 rounds (GhostRider uses 15 functions
+  in uniform 5/5/5 segments over 18 rounds), confirmed by diffing FortuneBlock's own `hash.h`/
+  `hash_selection.h` against Raptoreum's real upstream source. The same 6 CryptoNight sub-hash
+  variants as GhostRider are reused as-is (confirmed byte-identical), as are the already-vendored
+  sphlib core-hash primitives from `src/crypto/ghostrider` -- `fortunehash` links against that
+  existing static library for those symbols instead of re-vendoring them, so there is no
+  duplicate-symbol risk between the two algorithm libraries.
+* Self-test is a real historical FortuneBlock mainnet block (height 100000), not a synthetic
+  vector: its expected hash was computed independently by linking a standalone test program
+  directly against FortuneBlock's own compiled consensus objects (not this ported code), and
+  confirmed to beat that block's own recorded difficulty target.
+* `-a fortunehash` or `--coin=ftb`; login is your FortuneBlock address (`F...`), optionally with a
+  worker name. The package has it as `config-ftb.json`.
+
 # Qubic (QUBIC): shows the real best score reached each round (1.1.43)
 
 * The console now also prints the real best (lowest) score seen across all threads every ~60s,
