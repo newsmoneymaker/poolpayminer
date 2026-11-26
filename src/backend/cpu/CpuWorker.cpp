@@ -39,6 +39,7 @@
 #include "crypto/rx/RxDataset.h"
 #include "crypto/rx/RxVm.h"
 #include "crypto/ghostrider/ghostrider.h"
+#include "crypto/fortunehash/fortunehash.h"
 
 #ifdef XMRIG_ALGO_XCB
 #include "crypto/xcb_randomy/xcb_randomy.h"
@@ -755,6 +756,10 @@ bool xmrig::CpuWorker<N>::selfTest()
     if (m_algorithm.family() == Algorithm::GHOSTRIDER) {
         return (N == 8) && verify(Algorithm::GHOSTRIDER_RTM, test_output_gr);
     }
+
+    if (m_algorithm.family() == Algorithm::FORTUNEHASH) {
+        return (N == 8) && verify(Algorithm::FORTUNEHASH_FTB, nullptr);
+    }
 #   endif
 
     if (m_algorithm.family() == Algorithm::CN) {
@@ -1074,6 +1079,15 @@ void xmrig::CpuWorker<N>::start()
                         valid = false;
                     }
                     break;
+
+                case Algorithm::FORTUNEHASH:
+                    if (N == 8) {
+                        fortunehash::hash_octa(m_job.blob(), job.size(), m_hash, m_ctx);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
 #               endif
 
                 default:
@@ -1174,6 +1188,49 @@ bool xmrig::CpuWorker<N>::verify(const Algorithm &algorithm, const uint8_t *refe
 
         for (size_t i = 0; i < N * 32; ++i) {
             if ((hash1[i] ^ hash2[i]) != referenceValue[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_GHOSTRIDER
+    if (algorithm == Algorithm::FORTUNEHASH_FTB) {
+        // Real historical FortuneBlock mainnet block (height 100000, hash 1cfe25b7...), not a synthetic/all-
+        // zero vector: its raw 80 byte header was fetched live from a fully synced fortuneblockd via
+        // getblockheader(hash, false) on 2026-11-26. The expected hash below was computed independently by
+        // linking a standalone test program against FortuneBlock's OWN compiled consensus objects
+        // (libfortuneblock_consensus.a + crypto/libfortuneblock_crypto.a from /root/claude/fortuneblock-src,
+        // calling HashFortune() directly) -- NOT derived from this ported fortunehash:: code, so a bug shared
+        // between the two could not make this pass by coincidence. Independently confirmed to beat the real
+        // block's own recorded target (bits 1e02f41d): hash starts 00 00 02 d1... vs target 00 00 02 f4 1d
+        // 00..., d1 < f4 at the first differing byte, so hash < target, exactly as a real accepted block must
+        // satisfy. All N lanes get the identical real header (hash_octa's selection seed is bytes [4,36) of
+        // the header, which is fixed here), so every lane's output must match it identically.
+        static const uint8_t header[80] = {
+            0x00, 0x00, 0x00, 0x20, 0xdd, 0x28, 0x57, 0x53, 0x8b, 0xa3, 0xa7, 0x17, 0xaf, 0x7a, 0x51, 0xa1,
+            0x3a, 0x5f, 0x88, 0xe7, 0x2a, 0x74, 0x1f, 0x72, 0x9d, 0xd1, 0xc4, 0xaf, 0xce, 0xe8, 0x25, 0x8a,
+            0x0c, 0xfb, 0xa0, 0xb4, 0x5b, 0xf8, 0x84, 0xbd, 0xb6, 0xdf, 0xf4, 0x56, 0xa0, 0x39, 0x4c, 0xa2,
+            0xa9, 0x95, 0x11, 0x6a, 0xf0, 0x20, 0x4b, 0x1e, 0x89, 0xc9, 0x01, 0xfc, 0x74, 0x8a, 0xb1, 0x42,
+            0xab, 0xd9, 0x71, 0xa6, 0x9a, 0x3d, 0x37, 0x68, 0x1d, 0xf4, 0x02, 0x1e, 0x00, 0x00, 0x17, 0xe5
+        };
+        static const uint8_t expectedHash[32] = {
+            0x64, 0x1c, 0x00, 0xda, 0x61, 0x64, 0xfb, 0xe5, 0xc6, 0xb0, 0xed, 0x2a, 0xea, 0x23, 0xf8, 0x1c,
+            0x56, 0x10, 0x66, 0xe0, 0xe0, 0x96, 0xd7, 0xb6, 0x40, 0x7b, 0xdc, 0x64, 0xd1, 0x02, 0x00, 0x00
+        };
+
+        uint8_t blob[N * 80];
+        for (size_t i = 0; i < N; ++i) {
+            memcpy(blob + i * 80, header, 80);
+        }
+
+        uint8_t hash[N * 32] = {};
+        fortunehash::hash_octa(blob, 80, hash, m_ctx, false);
+
+        for (size_t i = 0; i < N; ++i) {
+            if (memcmp(hash + i * 32, expectedHash, 32) != 0) {
                 return false;
             }
         }

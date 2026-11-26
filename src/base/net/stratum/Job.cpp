@@ -182,6 +182,7 @@ size_t xmrig::Job::nonceOffset() const
         return 32;
 
     case Algorithm::GHOSTRIDER:
+    case Algorithm::FORTUNEHASH:
     case Algorithm::YESPOWER:
     case Algorithm::YESCRYPT:
     case Algorithm::FLEX:

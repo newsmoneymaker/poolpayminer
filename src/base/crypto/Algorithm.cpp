@@ -107,6 +107,8 @@ const char *Algorithm::kKAWPOW_RVN      = "kawpow";
 #ifdef XMRIG_ALGO_GHOSTRIDER
 const char* Algorithm::kGHOSTRIDER      = "ghostrider";
 const char* Algorithm::kGHOSTRIDER_RTM  = "ghostrider";
+const char* Algorithm::kFORTUNEHASH     = "fortunehash";
+const char* Algorithm::kFORTUNEHASH_FTB = "fortunehash";
 #endif
 
 #ifdef XMRIG_ALGO_YESPOWER
@@ -219,6 +221,7 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     ALGO_NAME(GHOSTRIDER_RTM),
+    ALGO_NAME(FORTUNEHASH_FTB),
 #   endif
 
 #   ifdef XMRIG_ALGO_YESPOWER
@@ -386,6 +389,8 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     ALGO_ALIAS_AUTO(GHOSTRIDER_RTM), ALGO_ALIAS(GHOSTRIDER_RTM, "ghostrider/rtm"),
                                      ALGO_ALIAS(GHOSTRIDER_RTM, "gr"),
+    ALGO_ALIAS_AUTO(FORTUNEHASH_FTB), ALGO_ALIAS(FORTUNEHASH_FTB, "fortunehash/ftb"),
+                                      ALGO_ALIAS(FORTUNEHASH_FTB, "ftb"),
 #   endif
 
 #   ifdef XMRIG_ALGO_YESPOWER
@@ -520,6 +525,7 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         AR2_CHUKWA, AR2_CHUKWA_V2, AR2_WRKZ,
         KAWPOW_RVN,
         GHOSTRIDER_RTM,
+        FORTUNEHASH_FTB,
         YESPOWER_R16, YESPOWER_TIDE, YESPOWER_ADVC,
         YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32,
         FLEX_KCN, FLEX_LCN,

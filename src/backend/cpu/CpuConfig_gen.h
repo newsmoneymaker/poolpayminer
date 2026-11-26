@@ -148,6 +148,15 @@ size_t inline generate<Algorithm::GHOSTRIDER>(Threads<CpuThreads>& threads, uint
 {
     return generate(Algorithm::kGHOSTRIDER, threads, Algorithm::GHOSTRIDER_RTM, limit);
 }
+
+// FortuneBlock's own HashFortune algorithm -- distinct from GhostRider (different core-hash count/round
+// structure, see Algorithm::FORTUNEHASH_FTB), but gated on the same XMRIG_ALGO_GHOSTRIDER build flag for
+// now rather than adding a brand-new CMake option, since it shares this module's build dependencies.
+template<>
+size_t inline generate<Algorithm::FORTUNEHASH>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate(Algorithm::kFORTUNEHASH, threads, Algorithm::FORTUNEHASH_FTB, limit);
+}
 #endif
 
 

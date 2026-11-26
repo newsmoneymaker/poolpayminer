@@ -179,6 +179,7 @@ void xmrig::CpuConfig::generate()
     count += xmrig::generate<Algorithm::RANDOM_X>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::ARGON2>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::GHOSTRIDER>(m_threads, m_limit);
+    count += xmrig::generate<Algorithm::FORTUNEHASH>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::YESPOWER>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::YESCRYPT>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::FLEX>(m_threads, m_limit);
