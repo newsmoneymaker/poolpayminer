@@ -1,3 +1,22 @@
+# Add Cascoin (CAS) mining support: new `minotaurx` algorithm (1.1.45)
+
+* Cascoin's CPU-only PoW ("MinotaurX" -- the coin also has a separate SHA256 ASIC side this miner
+  deliberately does not support): SHA512 seed over the 80-byte header, a fixed 22-node binary
+  hash-selection tree ("Torture Garden", hand-wired, not derived from any runtime data), 16
+  candidate SPH primitives chosen once from the seed's own bytes, traversal branches left/right by
+  the last byte of each node's output, 7 nodes per path. The final gate node is always forced to a
+  yespower pass (N=2048, r=8, its own salt) rather than modulo-selected -- the "X" hardening,
+  confirmed to be the only variant Cascoin's own consensus code ever uses for real blocks.
+* 15 of 16 primitives are linked from the existing `ghostrider` library (no re-vendoring); SHA-512
+  (which `ghostrider`'s own `sph_sha2.c` doesn't implement, only 224/256) comes from OpenSSL
+  directly, already linked for TLS. yespower core reused from the existing `yespower` library.
+* Self-test is a real mainnet Cascoin block (height 362001), independently confirmed via a separate
+  implementation (the pool's own test suite) to be a real MinotaurX block whose hash beats its own
+  recorded difficulty target. Real end-to-end test passed against the real cas-nodejs-pool:
+  connected, received real jobs, submitted shares, all accepted.
+* `-a minotaurx` or `--coin=cas`; login is your Cascoin address, optionally with a worker name. The
+  package has it as `config-cas.json`.
+
 # Add FortuneBlock (FTB) mining support: new `fortunehash` algorithm (1.1.44)
 
 * FortuneBlock's own PoW hash is a GhostRider-shaped algorithm but genuinely different, not an
