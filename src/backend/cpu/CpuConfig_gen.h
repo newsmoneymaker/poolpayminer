@@ -159,6 +159,17 @@ size_t inline generate<Algorithm::FORTUNEHASH>(Threads<CpuThreads>& threads, uin
 }
 #endif
 
+#ifdef XMRIG_ALGO_MINOTAURX
+// Cascoin's own MinotaurX algorithm -- single-lane (no CryptoNight component), but its own distinct
+// family/build flag since it needs both the ghostrider module's sph_* primitives AND the yespower
+// module's core together (see src/crypto/minotaurx/minotaurx.h).
+template<>
+size_t inline generate<Algorithm::MINOTAURX>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate(Algorithm::kMINOTAURX, threads, Algorithm::MINOTAURX_CAS, limit);
+}
+#endif
+
 
 #ifdef XMRIG_ALGO_YESPOWER
 template<>

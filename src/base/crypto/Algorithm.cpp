@@ -111,6 +111,11 @@ const char* Algorithm::kFORTUNEHASH     = "fortunehash";
 const char* Algorithm::kFORTUNEHASH_FTB = "fortunehash";
 #endif
 
+#ifdef XMRIG_ALGO_MINOTAURX
+const char* Algorithm::kMINOTAURX       = "minotaurx";
+const char* Algorithm::kMINOTAURX_CAS   = "minotaurx";
+#endif
+
 #ifdef XMRIG_ALGO_YESPOWER
 const char* Algorithm::kYESPOWER        = "yespower-r16";
 const char* Algorithm::kYESPOWER_R16    = "yespower-r16";
@@ -222,6 +227,10 @@ static const std::map<uint32_t, const char *> kAlgorithmNames = {
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     ALGO_NAME(GHOSTRIDER_RTM),
     ALGO_NAME(FORTUNEHASH_FTB),
+#   endif
+
+#   ifdef XMRIG_ALGO_MINOTAURX
+    ALGO_NAME(MINOTAURX_CAS),
 #   endif
 
 #   ifdef XMRIG_ALGO_YESPOWER
@@ -393,6 +402,11 @@ static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAlias
                                       ALGO_ALIAS(FORTUNEHASH_FTB, "ftb"),
 #   endif
 
+#   ifdef XMRIG_ALGO_MINOTAURX
+    ALGO_ALIAS_AUTO(MINOTAURX_CAS),   ALGO_ALIAS(MINOTAURX_CAS, "minotaurx/cas"),
+                                      ALGO_ALIAS(MINOTAURX_CAS, "cas"),
+#   endif
+
 #   ifdef XMRIG_ALGO_YESPOWER
     ALGO_ALIAS_AUTO(YESPOWER_R16),   ALGO_ALIAS(YESPOWER_R16, "yespowerr16"),
                                      ALGO_ALIAS(YESPOWER_R16, "ytn"),
@@ -526,6 +540,7 @@ std::vector<xmrig::Algorithm> xmrig::Algorithm::all(const std::function<bool(con
         KAWPOW_RVN,
         GHOSTRIDER_RTM,
         FORTUNEHASH_FTB,
+        MINOTAURX_CAS,
         YESPOWER_R16, YESPOWER_TIDE, YESPOWER_ADVC,
         YESCRYPT_R8, YESCRYPT_R16, YESCRYPT_R32,
         FLEX_KCN, FLEX_LCN,

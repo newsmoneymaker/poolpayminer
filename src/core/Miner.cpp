@@ -340,7 +340,7 @@ public:
         avg_hashrate_buf[0] = '\0';
 
 #       ifdef XMRIG_ALGO_GHOSTRIDER
-        if (algorithm.family() == Algorithm::GHOSTRIDER || algorithm.family() == Algorithm::FORTUNEHASH) {
+        if (algorithm.family() == Algorithm::GHOSTRIDER || algorithm.family() == Algorithm::FORTUNEHASH || algorithm.family() == Algorithm::MINOTAURX) {
             snprintf(avg_hashrate_buf, sizeof(avg_hashrate_buf), " avg " CYAN_BOLD("%s %s"), Hashrate::format({ true, avg_hashrate * scale }, num + 16 * 4, 16), h);
         }
 #       endif

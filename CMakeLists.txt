@@ -323,6 +323,9 @@ include(cmake/verus.cmake)
 include(cmake/kryptokrona.cmake)
 include(cmake/ccx_gpu.cmake)
 include(cmake/OpenSSL.cmake)
+# minotaurx.cpp uses OpenSSL's SHA512() directly (see its own comment for why) -- must come AFTER
+# cmake/OpenSSL.cmake so OPENSSL_INCLUDE_DIR is already set and in scope when its add_subdirectory() runs.
+include(cmake/minotaurx.cmake)
 include(cmake/xcb.cmake)
 include(cmake/asm.cmake)
 
@@ -358,7 +361,7 @@ if (WITH_DEBUG_LOG)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${FORTUNEHASH_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY} ${KRYPTOKRONA_LIBRARY} ${CCX_GPU_LIBRARY})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ETHASH_LIBRARY} ${FORTUNEHASH_LIBRARY} ${MINOTAURX_LIBRARY} ${GHOSTRIDER_LIBRARY} ${YESPOWER_LIBRARY} ${YESCRYPT_LIBRARY} ${FLEX_LIBRARY} ${X16RS_LIBRARY} ${VERUS_LIBRARY} ${XCB_LIBRARY} ${KRYPTOKRONA_LIBRARY} ${CCX_GPU_LIBRARY})
 
 if (WIN32)
     if (NOT ARM_TARGET)

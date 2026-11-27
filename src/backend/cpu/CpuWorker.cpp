@@ -41,6 +41,10 @@
 #include "crypto/ghostrider/ghostrider.h"
 #include "crypto/fortunehash/fortunehash.h"
 
+#ifdef XMRIG_ALGO_MINOTAURX
+#include "crypto/minotaurx/minotaurx.h"
+#endif
+
 #ifdef XMRIG_ALGO_XCB
 #include "crypto/xcb_randomy/xcb_randomy.h"
 #endif
@@ -728,6 +732,38 @@ bool xmrig::CpuWorker<N>::selfTest()
     }
 #   endif
 
+#   ifdef XMRIG_ALGO_MINOTAURX
+    if (m_algorithm.family() == Algorithm::MINOTAURX) {
+        if (N != 1) {
+            return false;
+        }
+
+        // Real mainnet Cascoin block, height 362001 -- independently confirmed this session (via
+        // cas-nodejs-pool's test/test-real-blocks.js, a SEPARATE implementation built from the same
+        // source spec, not copied from this code) to be a real MinotaurX block (version field carries
+        // the MinotaurX powtype bit) whose hash beats its own recorded difficulty target (bits
+        // 0x1d2cc932). The expected output below was computed by linking a standalone test program
+        // directly against this exact compiled minotaurx:: code (not fabricated) -- this checks the
+        // code hasn't regressed/been miscompiled, not an independent algorithm re-derivation; that
+        // independent check already happened via the beats-the-real-target comparison above.
+        static const uint8_t header[80] = {
+            0x00, 0x00, 0x01, 0x00, 0xc4, 0x36, 0x39, 0x96, 0xf6, 0x27, 0xeb, 0x48, 0x21, 0x35, 0x2f, 0x52,
+            0xf7, 0x01, 0x8f, 0x40, 0x43, 0x5f, 0xf6, 0xd4, 0x92, 0x40, 0xab, 0x5d, 0xbe, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x6c, 0x5b, 0x1a, 0xc9, 0xc5, 0xad, 0xe2, 0xec, 0x48, 0xd7, 0x4f, 0x02,
+            0xb7, 0x8d, 0x6b, 0x8a, 0xdc, 0xa3, 0x37, 0x68, 0x9b, 0xf3, 0x52, 0xb1, 0x19, 0xd3, 0x65, 0x44,
+            0x64, 0x0a, 0x79, 0x7b, 0xff, 0x7c, 0xe0, 0x69, 0x32, 0xc9, 0x2c, 0x1d, 0xf7, 0x99, 0xb7, 0x2d
+        };
+        static const uint8_t expectedHash[32] = {
+            0x52, 0x18, 0x38, 0x43, 0x86, 0x25, 0x64, 0xf4, 0x61, 0x16, 0x20, 0x35, 0xde, 0x28, 0x40, 0x3f,
+            0x00, 0x0f, 0xcd, 0xa2, 0xb8, 0x48, 0xba, 0x0a, 0x55, 0xd9, 0x41, 0xe7, 0x19, 0x00, 0x00, 0x00
+        };
+
+        uint8_t out[32];
+        minotaurx::hash(header, 80, out);
+        return memcmp(out, expectedHash, 32) == 0;
+    }
+#   endif
+
 #   ifdef XMRIG_ALGO_VERUSHASH
     if (m_algorithm.family() == Algorithm::VERUS) {
         return (N == 1) && verusHashSelfTest();
@@ -1063,6 +1099,17 @@ void xmrig::CpuWorker<N>::start()
                         // repeat(height) = min(floor(height/50000)+1, 16) -- see x16rsHacHash's comment.
                         const uint32_t repeat = std::min<uint32_t>(static_cast<uint32_t>(job.height() / 50000) + 1, 16);
                         x16rsHacHash(m_job.blob(), job.size(), m_hash, repeat);
+                    }
+                    else {
+                        valid = false;
+                    }
+                    break;
+#               endif
+
+#               ifdef XMRIG_ALGO_MINOTAURX
+                case Algorithm::MINOTAURX:
+                    if (N == 1) {
+                        minotaurx::hash(m_job.blob(), job.size(), m_hash);
                     }
                     else {
                         valid = false;

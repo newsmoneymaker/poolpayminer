@@ -78,6 +78,15 @@ public:
                                         // total (not GhostRider's 15 cores / 5-5-5 / 18 rounds) -- confirmed by reading
                                         // FortuneBlock's own src/hash.h and src/hash_selection.h/.cpp directly, do not
                                         // alias this to GHOSTRIDER_RTM, see critical-wrong-randomx-variant-bug memory.
+        MINOTAURX_CAS   = 0x4d150000,   // "minotaurx"        Cascoin's CPU PoW: SHA512 seed -> fixed 22-node binary tree
+                                        // ("Torture Garden"), each node = one of 15 SPH primitives chosen by the seed's
+                                        // own bytes, branch left/right on the running hash's last byte's parity, EXCEPT
+                                        // the final gate node is always forced to yespower (N=2048, r=8, pers "et in
+                                        // arcadia ego") -- the "X" hardening. Confirmed by reading Cascoin's own
+                                        // src/crypto/minotaurx/minotaur.h and src/primitives/block.cpp::GetPoWHash()
+                                        // directly (always the "X"/hardened variant for real blocks, never plain
+                                        // Minotaur). No CryptoNight component at all -- single-lane like X16RS/yespower,
+                                        // not octa-batched like GHOSTRIDER/FORTUNEHASH.
         YESPOWER_R16    = 0x79170000,   // "yespower-r16"     yespower 1.0, N=4096, r=16, 8 MB (Yenten).
         YESPOWER_TIDE   = 0x79150000,   // "yespowertide"     yespower 1.0, N=2048, r=8, no personalization, 2 MB (Tidecoin).
         YESPOWER_ADVC   = 0x79171041,   // "yespower-advc"    yespower 1.0, N=2048, r=32, pers "Let the quest begin" (19 bytes), 8 MB (AdventureCoin / ADVC,
@@ -190,6 +199,7 @@ public:
         KAWPOW          = 0x6b000000,
         GHOSTRIDER      = 0x6c000000,
         FORTUNEHASH     = 0x46000000,
+        MINOTAURX       = 0x4d000000,
         YESPOWER        = 0x79000000,
         YESCRYPT        = 0x7a000000,
         FLEX            = 0x66000000,
@@ -275,6 +285,11 @@ public:
     static const char* kFORTUNEHASH_FTB;
 #   endif
 
+#   ifdef XMRIG_ALGO_MINOTAURX
+    static const char* kMINOTAURX;
+    static const char* kMINOTAURX_CAS;
+#   endif
+
 #   ifdef XMRIG_ALGO_YESPOWER
     static const char* kYESPOWER;
     static const char* kYESPOWER_R16;
@@ -336,7 +351,7 @@ public:
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
     // the algorithms that speak Bitcoin's Stratum (mining.subscribe/notify with coinb1/coinb2, see EthStratumClient) and are mined over an 80 byte header
-    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == FORTUNEHASH_FTB || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESPOWER_ADVC || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN || id == VERUSHASH; }
+    static inline constexpr bool isBitcoinStratum(Id id)    { return id == GHOSTRIDER_RTM || id == FORTUNEHASH_FTB || id == MINOTAURX_CAS || id == YESPOWER_R16 || id == YESPOWER_TIDE || id == YESPOWER_ADVC || id == YESCRYPT_R8 || id == YESCRYPT_R16 || id == YESCRYPT_R32 || id == FLEX_KCN || id == FLEX_LCN || id == VERUSHASH; }
     inline bool isBitcoinStratum() const                    { return isBitcoinStratum(m_id); }
     inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM || m_id == FORTUNEHASH_FTB) ? 8 : 1); };
     inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM || m_id == FORTUNEHASH_FTB) ? 8 : 1); };
